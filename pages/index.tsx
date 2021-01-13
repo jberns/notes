@@ -1,8 +1,29 @@
 import Head from "next/head";
+import { useMST } from "./_app";
+import { observer } from "mobx-react";
 
 export default function Home() {
+  const store = useMST();
+  console.log(store);
+
+  const ProjectList = observer(() => {
+    return (
+      <div>
+        {Array.from(store.projects.values()).map((project) => (
+          <div className='bg-gray-primary w-full'>
+            <div className='z-0 bg-blue-100 bg-opacity-0 hover:bg-opacity-5 w-full'>
+              <p className='z-auto text-white opacity-h-emp p-2 hover:opacity-100'>
+                {project.name}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  });
+
   return (
-    <div>
+    <div className='bg-gray-primary'>
       <Head>
         <title>Create Next App</title>
         <link rel='icon' href='/favicon.ico' />
@@ -12,9 +33,32 @@ export default function Home() {
         {/* <!-- This example requires Tailwind CSS v2.0+ --> */}
         <div className='w-full max-w-8xl mx-auto'>
           <div className='flex'>
-            <div class='h-screen top-0 sticky p-4'>Sticky Sidebar</div>
-            <div className='flex-grow bg-gray-300'>
-              <nav className='w-full flex bg-gray-800'>
+            <div className='h-screen top-0 sticky w-64'>
+              <div className='bg-gray-primary w-full'>
+                {store.projects && <ProjectList />}
+                <div className='z-0 bg-blue-100 bg-opacity-0 hover:bg-opacity-5 w-full'>
+                  <p className='z-auto text-white opacity-h-emp p-2 hover:opacity-100'>
+                    <button onClick={()=>store.projects.get("1").changeName("I changed!")}>Change Name</button>
+                  </p>
+                </div>
+              </div>
+              <div className='bg-gray-primary w-full'>
+                <div className='z-0 bg-blue-100 bg-opacity-10 w-full'>
+                  <p className='z-auto text-white opacity-h-emp p-2'>
+                    Sticky Sidebar
+                  </p>
+                </div>
+              </div>
+              <div className='bg-gray-primary w-full'>
+                <div className='z-0 bg-blue-100 bg-opacity-0 hover:bg-opacity-5 w-full'>
+                  <p className='z-auto text-white opacity-h-emp p-2 hover:opacity-100'>
+                    Sticky Sidebar
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className='flex-grow bg-gray-primary'>
+              <nav className='w-full flex bg-blue-100 bg-opacity-10'>
                 <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
                   <div className='flex items-center justify-between h-16'>
                     <div className='flex items-center'>
@@ -30,7 +74,7 @@ export default function Home() {
                           {/* <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" --> */}
                           <a
                             href='#'
-                            className='bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium'
+                            className='bg-blue-100 bg-opacity-20 text-white opacity-h-emp px-3 py-2 rounded-md text-sm font-medium'
                           >
                             Dashboard
                           </a>
@@ -113,7 +157,7 @@ export default function Home() {
                   From: "transform opacity-100 scale-100"
                   To: "transform opacity-0 scale-95"
               --> */}
-                          <div
+                          {/* <div
                             className='origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5'
                             role='menu'
                             aria-orientation='vertical'
@@ -142,7 +186,7 @@ export default function Home() {
                             >
                               Sign out
                             </a>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
@@ -300,19 +344,18 @@ export default function Home() {
                   </div>
                 </div>
               </nav>
-
-              <header className='bg-white shadow'>
-                <div className='max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8'>
-                  <h1 className='text-3xl font-bold leading-tight text-gray-900'>
-                    Dashboard
-                  </h1>
-                </div>
-              </header>
               <main>
-                <div className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8'>
+                <div className='bg-blue-100 bg-opacity-20 mx-auto py-6 sm:px-6 lg:px-8'>
                   {/* <!-- Replace with your content --> */}
-                  <div className='px-4 py-6 sm:px-0'>
-                    <div className='border-4 border-dashed border-gray-200 rounded-lg h-96'></div>
+                  <div className='text-white opacity-h-emp px-4 py-6 sm:px-0'>
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Duis aute irure dolor in reprehenderit in voluptate velit
+                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+                    occaecat cupidatat non proident, sunt in culpa qui officia
+                    deserunt mollit anim id est laborum."
                   </div>
 
                   <div className='px-4 py-6 sm:px-0'>
