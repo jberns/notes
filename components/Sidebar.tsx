@@ -3,6 +3,9 @@ import { useMST } from "../pages/_app";
 import { observer } from "mobx-react";
 import { Dark } from "./Dark";
 
+import { Project } from "../models/Project";
+import { randomInt } from "crypto";
+
 export function Sidebar() {
   const store = useMST();
   console.log(store);
@@ -11,33 +14,35 @@ export function Sidebar() {
     return (
       <div>
         {Array.from(store.projects.values()).map((project) => (
-          <div className='bg-gray-primary w-full'>
-            <div className='z-0 bg-blue-100 bg-opacity-0 hover:bg-opacity-5 w-full'>
-              <a
-                href='#'
-                className='bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-              >
-                {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
-                      <!-- Heroicon name: home --> */}
-                <svg
-                  className='text-gray-300 mr-3 h-6 w-6'
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
-                  aria-hidden='true'
+          <Dark>
+            <div className='w-full'>
+              <div className='z-0 bg-blue-100 bg-opacity-0 hover:bg-opacity-5 w-full'>
+                <a
+                  href='#'
+                  className=' text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
                 >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='2'
-                    d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
-                  />
-                </svg>
-                {project.name}
-              </a>
+                  {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
+                      <!-- Heroicon name: home --> */}
+                  <svg
+                    className='text-gray-300 mr-3 h-6 w-6'
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                    aria-hidden='true'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
+                    />
+                  </svg>
+                  {project.name}
+                </a>
+              </div>
             </div>
-          </div>
+          </Dark>
         ))}
       </div>
     );
@@ -264,10 +269,6 @@ export function Sidebar() {
             </div>
             <div className='flex-1 flex flex-col overflow-y-auto'>
               <nav className='flex-1 px-2 py-4 bg-gray-800 space-y-1'>
-                <Dark>
-                  <p className='text-white'>Hello darkness my old friend!</p>
-                  Crazy world
-                </Dark>
                 {/* <!-- Current: "bg-gray-200 text-gray-900", Default: "text-gray-600 hover:bg-gray-50 hover:text-gray-900" --> */}
                 {store.projects && <ProjectList />}
                 <a
@@ -297,6 +298,22 @@ export function Sidebar() {
                     }
                   >
                     Change Name
+                  </button>
+                  <button
+                    onClick={() => {
+                      const projectId = Math.floor(
+                        Math.random() * 100
+                      ).toString();
+
+                      return store.addProject(
+                        Project.create({
+                          id: projectId,
+                          name: `New Project - ${projectId}`,
+                        })
+                      );
+                    }}
+                  >
+                    Add Project
                   </button>
                   Dashboard
                 </a>
