@@ -1,15 +1,15 @@
 import React from "react";
 
 export enum DP {
-  "dp00" = "bg-opacity-00",
-  "dp01" = "bg-opacity-01",
-  "dp02" = "bg-opacity-02",
-  "dp04" = "bg-opacity-04",
-  "dp06" = "bg-opacity-06",
-  "dp08" = "bg-opacity-08",
-  "dp12" = "bg-opacity-12",
-  "dp16" = "bg-opacity-16",
-  "dp25" = "bg-opacity-25",
+  "dp00" = "bg-opacity-dp00",
+  "dp01" = "bg-opacity-dp01",
+  "dp02" = "bg-opacity-dp02",
+  "dp04" = "bg-opacity-dp04",
+  "dp06" = "bg-opacity-dp06",
+  "dp08" = "bg-opacity-dp08",
+  "dp12" = "bg-opacity-dp12",
+  "dp16" = "bg-opacity-dp16",
+  "dp25" = "bg-opacity-dp25",
   "none" = "bg-opacity-none",
 }
 
