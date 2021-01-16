@@ -1,10 +1,10 @@
 import Head from "next/head";
 import { useMST } from "../pages/_app";
 import { observer } from "mobx-react";
-import { Dark } from "./Dark";
+import { Dark, DP } from "./Dark";
+import Link from "next/link";
 
 import { Project } from "../models/Project";
-import { randomInt } from "crypto";
 
 export function Sidebar() {
   const store = useMST();
@@ -14,42 +14,45 @@ export function Sidebar() {
     return (
       <div>
         {Array.from(store.projects.values()).map((project) => (
-          <Dark>
-            <div className='w-full'>
-              <div className='z-0 bg-blue-100 bg-opacity-0 hover:bg-opacity-5 w-full'>
-                <a
-                  href='#'
-                  className=' text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+          //TODO add hover for active"
+          <Link href={`/projects/${project.id}`}>
+            <Dark
+              dp={DP.dp01}
+              containerClassName='rounded-md'
+              className={`hover:${DP.dp12} hover:text-white items-center text-sm font-medium rounded-md`}
+            >
+              <a className='text-white opacity-l-emp group flex items-center text-sm px-2 py-2 font-medium rounded-md'>
+                {
+                  /* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
+                      <!-- Heroicon name: home --> */
+                  //TODO Add Hover "group-hover:text-gray-300"
+                }
+                <svg
+                  className='text-gray-400 mr-4 h-6 w-6'
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                  aria-hidden='true'
                 >
-                  {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
-                      <!-- Heroicon name: home --> */}
-                  <svg
-                    className='text-gray-300 mr-3 h-6 w-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
-                    />
-                  </svg>
-                  {project.name}
-                </a>
-              </div>
-            </div>
-          </Dark>
+                  <path
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                    stroke-width='2'
+                    d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z'
+                  />
+                </svg>
+                {project.name}
+              </a>
+            </Dark>
+          </Link>
         ))}
       </div>
     );
   });
 
   return (
-    <div className='h-screen flex overflow-hidden bg-gray-100'>
+    <div className='h-screen flex overflow-hidden'>
       {/* <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. --> */}
       <div className='md:hidden'>
         <div className='fixed inset-0 flex z-40'>
@@ -76,7 +79,7 @@ export function Sidebar() {
                   From: "translate-x-0"
                   To: "-translate-x-full"
               --> */}
-          <div className='relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-gray-800'>
+          <div className='relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4'>
             <div className='absolute top-0 right-0 -mr-12 pt-2'>
               <button className='ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'>
                 <span className='sr-only'>Close sidebar</span>
@@ -110,7 +113,7 @@ export function Sidebar() {
                 {/* <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" --> */}
                 <a
                   href='#'
-                  className='bg-gray-900 text-white group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                  className='text-white group flex items-center px-2 py-2 text-base font-medium rounded-md'
                 >
                   {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
                       <!-- Heroicon name: home --> */}
@@ -260,20 +263,47 @@ export function Sidebar() {
         <div className='flex flex-col w-64'>
           {/* <!-- Sidebar component, swap this element with another sidebar if you like --> */}
           <div className='flex flex-col h-0 flex-1'>
-            <div className='flex items-center h-16 flex-shrink-0 px-4 bg-gray-900'>
-              <img
-                className='h-8 w-auto'
-                src='https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg'
-                alt='Workflow'
-              />
-            </div>
-            <div className='flex-1 flex flex-col overflow-y-auto'>
-              <nav className='flex-1 px-2 py-4 bg-gray-800 space-y-1'>
+            <Dark dp={DP.dp01}>
+              <div className='flex items-center h-16 flex-shrink-0 px-4'>
+                <img
+                  className='h-8 w-auto'
+                  src='https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg'
+                  alt='Workflow'
+                />
+              </div>
+            </Dark>
+            <Dark dp={DP.dp01} className='flex-1 flex flex-col overflow-y-auto'>
+              <nav className='flex-1 px-2 py-4 space-y-1'>
                 {/* <!-- Current: "bg-gray-200 text-gray-900", Default: "text-gray-600 hover:bg-gray-50 hover:text-gray-900" --> */}
-                {store.projects && <ProjectList />}
+                <Link href='/'>
+                  <a
+                    href='#'
+                    className='text-white opacity-l-emp group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                  >
+                    {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
+                      <!-- Heroicon name: home --> */}
+                    <svg
+                      className='text-gray-300 mr-3 h-6 w-6'
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke='currentColor'
+                      aria-hidden='true'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke-width='2'
+                        d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
+                      />
+                    </svg>
+                    Dashboard
+                  </a>
+                </Link>
+
                 <a
                   href='#'
-                  className='bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                  className='text-white opacity-l-emp group flex items-center px-2 py-2 text-sm font-medium rounded-md'
                 >
                   {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
                       <!-- Heroicon name: home --> */}
@@ -315,8 +345,9 @@ export function Sidebar() {
                   >
                     Add Project
                   </button>
-                  Dashboard
                 </a>
+
+                {store.projects && <ProjectList />}
 
                 <a
                   href='#'
@@ -433,7 +464,7 @@ export function Sidebar() {
                   Reports
                 </a>
               </nav>
-            </div>
+            </Dark>
           </div>
         </div>
       </div>
