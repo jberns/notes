@@ -15,7 +15,7 @@ export function useMST() {
   return store;
 }
 
-let initialState = {}
+let initialState = {};
 initialState = {
   projects: {
     1: { id: "1", name: "First Project" },
@@ -40,9 +40,13 @@ onSnapshot(rootStore, (snapshot) => {
 });
 
 function MyApp({ Component, pageProps }) {
+  const Layout = Component.Layout ? Component.Layout : React.Fragment;
+  
   return (
     <MSTProvider value={rootStore}>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </MSTProvider>
   );
 }
