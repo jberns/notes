@@ -1,10 +1,8 @@
-import Head from "next/head";
-import { useMST } from "../pages/_app";
 import { observer } from "mobx-react";
-import { Dark, DP } from "./Dark";
 import Link from "next/link";
-
-import { Project } from "../models/Project";
+import { Page, Project } from "../models/Project";
+import { useMST } from "../pages/_app";
+import { Dark, DP } from "./Dark";
 
 export function Sidebar() {
   const store = useMST();
@@ -15,37 +13,75 @@ export function Sidebar() {
       <div>
         {Array.from(store.projects.values()).map((project) => (
           //TODO add hover for active"
-          <Link href={`/projects/${project.id}`}>
+          <div>
             <Dark
               dp={DP.dp01}
               containerClassName='rounded-md'
-              className={`hover:${DP.dp12} hover:text-white items-center text-sm font-medium rounded-md`}
+              className={`hover:${DP.dp12} hover:text-white inline-flex items-center rounded-md`}
             >
-              <a className='text-white opacity-l-emp group flex items-center text-sm px-2 py-2 font-medium rounded-md'>
-                {
-                  /* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
-                      <!-- Heroicon name: home --> */
-                  //TODO Add Hover "group-hover:text-gray-300"
-                }
+              <div className='w-full'>
+                <Link href={`/projects/${project.id}`}>
+                  <a className='hover:opacity-100 text-white opacity-l-emp group flex items-center text-sm px-2 py-2 font-medium rounded-md'>
+                    {
+                      /* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
+                  <!-- Heroicon name: home --> */
+                      //TODO Add Hover "group-hover:text-gray-300"
+                    }
+                    <svg
+                      className='mr-4 h-6 w-6'
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke='currentColor'
+                      aria-hidden='true'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke-width='2'
+                        d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z'
+                      />
+                    </svg>
+                    {project.name}
+                  </a>
+                </Link>
+              </div>
+              <div
+                className='cursor-pointer hover:opacity-100 opacity-l-emp text-white px-2 h-full'
+                onClick={() => {
+                  const pageId = Math.floor(Math.random() * 100).toString();
+
+                  return project.addPage(
+                    Page.create({
+                      id: pageId,
+                      name: `New Page - ${pageId}`,
+                    })
+                  );
+                }}
+              >
                 <svg
-                  className='text-gray-400 mr-4 h-6 w-6'
+                  className='h-6 w-6'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
                   stroke='currentColor'
-                  aria-hidden='true'
                 >
                   <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='2'
-                    d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M12 6v6m0 0v6m0-6h6m-6 0H6'
                   />
                 </svg>
-                {project.name}
-              </a>
+              </div>
             </Dark>
-          </Link>
+
+            {Array.from(project.pages.values()).map((page) => (
+              <Link href={`/projects/${project.id}/${page.id}`}>
+                <div className='text-white opacity-l-emp'>{page.name}</div>
+              </Link>
+            ))}
+          </div>
         ))}
       </div>
     );
@@ -323,9 +359,10 @@ export function Sidebar() {
                     />
                   </svg>
                   <button
-                    onClick={() =>
-                      store.projects.get("1").changeName("I changed!")
-                    }
+                    onClick={() => {
+                      const project = store.projects.get("1");
+                      project ? project.changeName("I Changed new!") : null;
+                    }}
                   >
                     Change Name
                   </button>
@@ -348,121 +385,6 @@ export function Sidebar() {
                 </a>
 
                 {store.projects && <ProjectList />}
-
-                <a
-                  href='#'
-                  className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                >
-                  {/* <!-- Heroicon name: users --> */}
-                  <svg
-                    className='text-gray-400 group-hover:text-gray-300 mr-3 h-6 w-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'
-                    />
-                  </svg>
-                  Team
-                </a>
-
-                <a
-                  href='#'
-                  className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                >
-                  {/* <!-- Heroicon name: folder --> */}
-                  <svg
-                    className='text-gray-400 group-hover:text-gray-300 mr-3 h-6 w-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z'
-                    />
-                  </svg>
-                  Projects
-                </a>
-
-                <a
-                  href='#'
-                  className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                >
-                  {/* <!-- Heroicon name: calendar --> */}
-                  <svg
-                    className='text-gray-400 group-hover:text-gray-300 mr-3 h-6 w-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
-                    />
-                  </svg>
-                  Calendar
-                </a>
-
-                <a
-                  href='#'
-                  className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                >
-                  {/* <!-- Heroicon name: inbox --> */}
-                  <svg
-                    className='text-gray-400 group-hover:text-gray-300 mr-3 h-6 w-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4'
-                    />
-                  </svg>
-                  Documents
-                </a>
-
-                <a
-                  href='#'
-                  className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                >
-                  {/* <!-- Heroicon name: chart-bar --> */}
-                  <svg
-                    className='text-gray-400 group-hover:text-gray-300 mr-3 h-6 w-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
-                    />
-                  </svg>
-                  Reports
-                </a>
               </nav>
             </Dark>
           </div>

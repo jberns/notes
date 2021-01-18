@@ -1,11 +1,8 @@
-import Head from "next/head";
-import { useMST } from "./_app";
-import { observer } from "mobx-react";
-
-import { Sidebar } from "../components/Sidebar";
 import { SidebarLayout } from "../layouts/SidebarLayout";
+import type { Page } from "../utils/types";
+import { useMST } from "./_app";
 
-const Home = () => {
+const Home: Page = () => {
   const store = useMST();
   console.log(store);
 
@@ -14,7 +11,7 @@ const Home = () => {
       <h1>This is the home page</h1>
     </div>
   );
-}
+};
 
 Home.Layout = SidebarLayout;
 

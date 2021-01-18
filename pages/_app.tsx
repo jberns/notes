@@ -1,11 +1,13 @@
+import { onSnapshot } from "mobx-state-tree";
 import React, { useContext } from "react";
-import "../styles/globals.css";
 import { IRootStore, RootStore } from "../models/Project";
-import { onSnapshot, getSnapshot, addMiddleware } from "mobx-state-tree";
+import "../styles/globals.css";
+import type { Page } from "../utils/types";
 
 const LOCAL_STORAGE = "notes";
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
+// @ts-ignore
 const MSTContext = React.createContext<IRootStore>(null);
 
 export const MSTProvider = MSTContext.Provider;
@@ -39,9 +41,9 @@ onSnapshot(rootStore, (snapshot) => {
   localStorage.setItem(LOCAL_STORAGE, JSON.stringify(snapshot));
 });
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: { Component: Page; pageProps: any }) {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
-  
+
   return (
     <MSTProvider value={rootStore}>
       <Layout>

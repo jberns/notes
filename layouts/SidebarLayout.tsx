@@ -5,7 +5,7 @@ import { Dark, DP } from "../components/Dark";
 
 import { Sidebar } from "../components/Sidebar";
 
-export function SidebarLayout(props) {
+export function SidebarLayout(props:any) {
   const { children } = props;
   const store = useMST();
 
