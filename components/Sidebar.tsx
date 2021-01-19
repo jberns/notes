@@ -1,7 +1,8 @@
 import { observer } from "mobx-react";
 import Link from "next/link";
-import { Page, Project } from "../models/Project";
+import { Note, Page, Project } from "../models/Project";
 import { useMST } from "../pages/_app";
+import { uid } from "../utils/utils";
 import { Dark, DP } from "./Dark";
 
 export function Sidebar() {
@@ -49,14 +50,25 @@ export function Sidebar() {
               <div
                 className='cursor-pointer hover:opacity-100 opacity-l-emp text-white px-2 h-full'
                 onClick={() => {
+                  const id = uid();
+                  const defaultNote = Note.create({
+                    id: id,
+                    text: "👋 Hey!",
+                    tag: "p",
+                  });
+
                   const pageId = Math.floor(Math.random() * 100).toString();
 
-                  return project.addPage(
+                  project.addPage(
                     Page.create({
                       id: pageId,
                       name: `New Page - ${pageId}`,
                     })
                   );
+
+                  const page = project.pages.find((page) => page.id === pageId);
+
+                  page?.addNoteRef(defaultNote, 0);
                 }}
               >
                 <svg
@@ -308,8 +320,12 @@ export function Sidebar() {
                 />
               </div>
             </Dark>
-            <Dark dp={DP.dp01} className='flex-1 flex flex-col overflow-y-auto'>
-              <nav className='flex-1 px-2 py-4 space-y-1'>
+            <Dark
+              dp={DP.dp01}
+              className='flex-1 flex flex-col overflow-y-auto h-full'
+              containerClassName='h-full'
+            >
+              <nav className='flex-1 px-2 py-4 space-y-1 h-full'>
                 {/* <!-- Current: "bg-gray-200 text-gray-900", Default: "text-gray-600 hover:bg-gray-50 hover:text-gray-900" --> */}
                 <Link href='/'>
                   <a
@@ -360,8 +376,8 @@ export function Sidebar() {
                   </svg>
                   <button
                     onClick={() => {
-                      const project = store.projects.get("1");
-                      project ? project.changeName("I Changed new!") : null;
+                      const project = store.projects[1];
+                      project ? project.changeName("I Changed new new!") : null;
                     }}
                   >
                     Change Name

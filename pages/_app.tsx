@@ -4,7 +4,6 @@ import { IRootStore, RootStore } from "../models/Project";
 import "../styles/globals.css";
 import type { Page } from "../utils/types";
 
-const LOCAL_STORAGE = "notes";
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
@@ -16,13 +15,14 @@ export function useMST() {
   const store = useContext(MSTContext);
   return store;
 }
+const LOCAL_STORAGE = "notes";
 
 let initialState = {};
 initialState = {
-  projects: {
-    1: { id: "1", name: "First Project" },
-    2: { id: "2", name: "Second Project" },
-  },
+  projects: [
+    { id: "1", name: "First Project" },
+    { id: "2", name: "Second Project" },
+  ],
 };
 
 if (

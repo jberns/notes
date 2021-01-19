@@ -9,14 +9,13 @@ const ProjectPage: Page = () => {
   const store = useMST();
   const router = useRouter();
 
-  const { name } = router.query;
+  const { projectId } = router.query;
   let projectDetails = null;
-  console.log(name);
 
   // @ts-ignore
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
-  name ? projectDetails = store.projects.get(name) : null;
+  projectId ? projectDetails = store.projects.find(project => project.id === projectId) : null;
 
   return projectDetails ? (
     <div>

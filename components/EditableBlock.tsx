@@ -1,14 +1,30 @@
+import { observer } from "mobx-react";
+import { string } from "mobx-state-tree/dist/internal";
+import { storeDecorator } from "mobx/dist/internal";
 import React, { useState } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import { INote } from "../models/Project";
-import { INewBlock } from "../pages/projects/[name]/[page]";
-
-interface IContentEditable {
+import { INewBlock } from "../pages/projects/[projectId]/[pageId]";
+import { useMST } from "../pages/_app";
+export interface IContentEditable {
+  key: string;
+  index: number;
   note: INote;
-  addBlock: (currentBlock: React.RefObject<HTMLElement>, newBlock: INewBlock) => void;
+  addBlock: ({
+    index,
+    ref,
+    newBlock,
+  }: {
+    index: number;
+    ref: React.RefObject<HTMLElement>;
+    newBlock: INewBlock;
+  }) => void;
 }
 
-export function EditableBlock(props: IContentEditable) {
+
+export const EditableBlock = observer((props: IContentEditable) => {
+  const store = useMST();
+
   const { note, addBlock } = props;
   const contentEditable = React.createRef<HTMLElement>();
   const [html, setHtml] = useState(note.text);
@@ -18,6 +34,7 @@ export function EditableBlock(props: IContentEditable) {
   const updateText = (e: ContentEditableEvent) => {
     setHtml(e.target.value);
     note.updateText(e.target.value);
+    store.updateNote(note.id, e.target.value);
   };
 
   const onKeyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -27,7 +44,11 @@ export function EditableBlock(props: IContentEditable) {
 
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      addBlock(contentEditable, { text: "1", tag: "p" });
+      addBlock({
+        index: props.index,
+        ref: contentEditable,
+        newBlock: { text: "", tag: "p" },
+      });
     }
 
     setPreviousKey(e.key);
@@ -43,4 +64,4 @@ export function EditableBlock(props: IContentEditable) {
       onKeyDown={onKeyDownHandler}
     />
   );
-}
+});

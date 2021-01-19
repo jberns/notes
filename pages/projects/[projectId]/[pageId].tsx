@@ -14,40 +14,56 @@ export interface INewBlock {
   tag: string;
 }
 
+//TODO Clean this up with IContentEditable Interface
+export interface IAddBlock {
+  index: number;
+  ref: React.RefObject<HTMLElement>;
+  newBlock: INewBlock;
+}
+
 const NotesPage: Page = () => {
   const store = useMST();
   const router = useRouter();
 
   const [currentBlock, setCurrentBlock] = useState<HTMLElement | null>();
 
-  const { name, page } = router.query;
+  const { projectId, pageId } = router.query;
   let projectDetails = null;
-  let pageDetails: IPage | null = null;
+  let pageDetails: IPage | undefined | null = null;
   console.log(router.query);
+  console.log("Notes", store.notes);
 
   // @ts-ignore
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
-  name ? (projectDetails = store.projects.get(name)) : null;
+  projectId
+    ? (projectDetails = store.projects.find(
+        (project) => project.id === projectId
+      ))
+    : null;
   // @ts-ignore
-  page ? (pageDetails = projectDetails?.pages.get(page)) : null;
+  pageId
+    ? (pageDetails = projectDetails?.pages.find((page) => page.id === pageId))
+    : null;
 
-  const addBlock = (
-    currentBlock: React.RefObject<HTMLElement>,
-    newBlock: INewBlock
-  ) => {
-    const id = uid();
-    pageDetails?.addNote(
-      Note.create({ id: id, text: newBlock.text, tag: newBlock.tag })
+  const addBlock = ({ index, ref, newBlock }: IAddBlock): void => {
+    const blocks = pageDetails?.notes_ref;
+
+    console.log("key", index);
+
+    const newId = uid();
+    pageDetails?.addNoteRef(
+      Note.create({ id: newId, text: newBlock.text, tag: newBlock.tag }),
+      index
     );
 
-    setCurrentBlock(currentBlock.current);
+    setCurrentBlock(ref.current);
   };
 
   useEffect(() => {
     console.log(currentBlock);
     // @ts-ignore
-    currentBlock?.nextElementSibling.focus()
+    currentBlock?.nextElementSibling?.focus();
   });
 
   return projectDetails && pageDetails ? (
@@ -61,13 +77,21 @@ const NotesPage: Page = () => {
       <p>Page ID: {pageDetails.id}</p>
       <p>Page Name: {pageDetails.name}</p>
       <br />
-      <div className='Page'>
+      {/* <div className='Page'>
         Notes
         {Array.from(pageDetails.notes.values()).map((note, key) => {
           console.log(note.tag);
           return <EditableBlock key={key} note={note} addBlock={addBlock} />;
         })}
-      </div>
+      </div> */}
+
+      <h1>Testing Notes Ref</h1>
+      {console.log(pageDetails.notes_ref)}
+      {pageDetails.notes_ref.map((note, key) => {
+        return (
+          note && <EditableBlock key={note.id} index={key} note={note} addBlock={addBlock} />
+        );
+      })}
     </div>
   ) : (
     <div>Loading</div>

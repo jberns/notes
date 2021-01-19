@@ -22,7 +22,7 @@ interface IDarkProps {
 }
 
 export function Dark(props: IDarkProps) {
-  const { children, className, dp = DP.dp00, containerClassName } = props;
+  const { children, className, dp = DP.dp00, containerClassName="" } = props;
   let bg = "bg-gray-primary";
   let tint = "bg-blue-100";
 
@@ -32,7 +32,7 @@ export function Dark(props: IDarkProps) {
   }
 
   return (
-    <div className={`${bg} w-full h-full ${containerClassName}`}>
+    <div className={`${bg} w-full ${containerClassName}`}>
       <div className={`w-full h-full ${tint} ${dp} ${className}`}>
         {children}
       </div>
