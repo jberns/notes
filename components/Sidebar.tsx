@@ -5,99 +5,13 @@ import { useMST } from "../pages/_app";
 import { uid } from "../utils/utils";
 import { Dark, DP } from "./Dark";
 
+import { TempLink } from "./TempLink";
+
+import { SidebarProjectList } from "./SidebarProjectList";
+
 export function Sidebar() {
   const store = useMST();
   console.log(store);
-
-  const ProjectList = observer(() => {
-    return (
-      <div>
-        {Array.from(store.projects.values()).map((project) => (
-          //TODO add hover for active"
-          <div>
-            <Dark
-              dp={DP.dp01}
-              containerClassName='rounded-md'
-              className={`hover:${DP.dp12} hover:text-white inline-flex items-center rounded-md`}
-            >
-              <div className='w-full'>
-                <Link href={`/projects/${project.id}`}>
-                  <a className='hover:opacity-100 text-white opacity-l-emp group flex items-center text-sm px-2 py-2 font-medium rounded-md'>
-                    {
-                      /* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
-                  <!-- Heroicon name: home --> */
-                      //TODO Add Hover "group-hover:text-gray-300"
-                    }
-                    <svg
-                      className='mr-4 h-6 w-6'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      stroke='currentColor'
-                      aria-hidden='true'
-                    >
-                      <path
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                        stroke-width='2'
-                        d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z'
-                      />
-                    </svg>
-                    {project.name}
-                  </a>
-                </Link>
-              </div>
-              <div
-                className='cursor-pointer hover:opacity-100 opacity-l-emp text-white px-2 h-full'
-                onClick={() => {
-                  const id = uid();
-                  const defaultNote = Note.create({
-                    id: id,
-                    text: "👋 Hey!",
-                    tag: "p",
-                  });
-
-                  const pageId = Math.floor(Math.random() * 100).toString();
-
-                  project.addPage(
-                    Page.create({
-                      id: pageId,
-                      name: `New Page - ${pageId}`,
-                    })
-                  );
-
-                  const page = project.pages.find((page) => page.id === pageId);
-
-                  page?.addNoteRef(defaultNote, 0);
-                }}
-              >
-                <svg
-                  className='h-6 w-6'
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M12 6v6m0 0v6m0-6h6m-6 0H6'
-                  />
-                </svg>
-              </div>
-            </Dark>
-
-            {Array.from(project.pages.values()).map((page) => (
-              <Link href={`/projects/${project.id}/${page.id}`}>
-                <div className='text-white opacity-l-emp'>{page.name}</div>
-              </Link>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  });
 
   return (
     <div className='h-screen flex overflow-hidden'>
@@ -308,7 +222,7 @@ export function Sidebar() {
 
       {/* <!-- Static sidebar for desktop --> */}
       <div className='hidden md:flex md:flex-shrink-0'>
-        <div className='flex flex-col w-64'>
+        <div className='flex flex-col w-72'>
           {/* <!-- Sidebar component, swap this element with another sidebar if you like --> */}
           <div className='flex flex-col h-0 flex-1'>
             <Dark dp={DP.dp01}>
@@ -353,54 +267,9 @@ export function Sidebar() {
                   </a>
                 </Link>
 
-                <a
-                  href='#'
-                  className='text-white opacity-l-emp group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                >
-                  {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
-                      <!-- Heroicon name: home --> */}
-                  <svg
-                    className='text-gray-300 mr-3 h-6 w-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
-                    />
-                  </svg>
-                  <button
-                    onClick={() => {
-                      const project = store.projects[1];
-                      project ? project.changeName("I Changed new new!") : null;
-                    }}
-                  >
-                    Change Name
-                  </button>
-                  <button
-                    onClick={() => {
-                      const projectId = Math.floor(
-                        Math.random() * 100
-                      ).toString();
+                <TempLink />
 
-                      return store.addProject(
-                        Project.create({
-                          id: projectId,
-                          name: `New Project - ${projectId}`,
-                        })
-                      );
-                    }}
-                  >
-                    Add Project
-                  </button>
-                </a>
-
-                {store.projects && <ProjectList />}
+                <SidebarProjectList />
               </nav>
             </Dark>
           </div>

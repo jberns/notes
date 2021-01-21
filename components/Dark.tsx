@@ -32,8 +32,8 @@ export function Dark(props: IDarkProps) {
   }
 
   return (
-    <div className={`${bg} w-full ${containerClassName}`}>
-      <div className={`w-full h-full ${tint} ${dp} ${className}`}>
+    <div className={`${bg} ${containerClassName}`}>
+      <div className={`${tint} ${dp} ${className}`}>
         {children}
       </div>
     </div>

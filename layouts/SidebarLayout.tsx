@@ -5,7 +5,7 @@ import { Dark, DP } from "../components/Dark";
 
 import { Sidebar } from "../components/Sidebar";
 
-export function SidebarLayout(props:any) {
+export function SidebarLayout(props: any) {
   const { children } = props;
   const store = useMST();
 
@@ -40,7 +40,11 @@ export function SidebarLayout(props:any) {
                   />
                 </svg>
               </button>
-              <Dark dp={DP.dp02} className='flex-1 px-4 flex justify-between'>
+              <Dark
+                dp={DP.dp02}
+                className='h-full flex-1 px-4 flex justify-between'
+                containerClassName='w-full'
+              >
                 <div className='flex-1 flex'>
                   <form className='w-full flex md:ml-0' action='#' method='GET'>
                     <label htmlFor='search_field' className='sr-only'>
@@ -154,23 +158,12 @@ export function SidebarLayout(props:any) {
                 </div>
               </Dark>
             </div>
-              <main
-                className='flex-1 relative overflow-y-auto focus:outline-none'
-                tabIndex={0}
-              >
-                <div className='py-6'>
-                  <div className='max-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
-                    <h1 className='text-white opacity--emp text-2xl font-semibold'>
-                      Dashboard
-                    </h1>
-                  </div>
-                  <div className='max-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
-                    {/* <!-- Replace with your content --> */}
-                    <div className='py-4 text-white opacity-l-emp'>{children}</div>
-                    {/* <!-- /End replace --> */}
-                  </div>
-                </div>
-              </main>
+            <main
+              className='flex-1 relative overflow-y-auto focus:outline-none'
+              tabIndex={0}
+            >
+              <div className='py-6'>{children}</div>
+            </main>
           </div>
         </div>
       </Dark>

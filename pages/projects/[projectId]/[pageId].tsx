@@ -47,10 +47,6 @@ const NotesPage: Page = () => {
     : null;
 
   const addBlock = ({ index, ref, newBlock }: IAddBlock): void => {
-    const blocks = pageDetails?.notes_ref;
-
-    console.log("key", index);
-
     const newId = uid();
     pageDetails?.addNoteRef(
       Note.create({ id: newId, text: newBlock.text, tag: newBlock.tag }),
@@ -71,27 +67,29 @@ const NotesPage: Page = () => {
       <Head>
         <title>{projectDetails.name}</title>
       </Head>
-      <p>Project ID: {projectDetails.id}</p>
-      <p>Project Name: {projectDetails.name}</p>
-
-      <p>Page ID: {pageDetails.id}</p>
-      <p>Page Name: {pageDetails.name}</p>
-      <br />
-      {/* <div className='Page'>
-        Notes
-        {Array.from(pageDetails.notes.values()).map((note, key) => {
-          console.log(note.tag);
-          return <EditableBlock key={key} note={note} addBlock={addBlock} />;
-        })}
-      </div> */}
-
-      <h1>Testing Notes Ref</h1>
-      {console.log(pageDetails.notes_ref)}
-      {pageDetails.notes_ref.map((note, key) => {
-        return (
-          note && <EditableBlock key={note.id} index={key} note={note} addBlock={addBlock} />
-        );
-      })}
+      <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
+        <h1 className='text-white opacity--emp text-2xl font-semibold'>
+          {projectDetails.name} {">"} {pageDetails.name}
+        </h1>
+      </div>
+      <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
+        {/* <!-- Replace with your content --> */}
+        <div className='py-4 text-white opacity-l-emp'>
+          {pageDetails.notes_ref.map((note, key) => {
+            return (
+              note && (
+                <EditableBlock
+                  key={note.id}
+                  index={key}
+                  note={note}
+                  addBlock={addBlock}
+                />
+              )
+            );
+          })}
+        </div>
+        {/* <!-- /End replace --> */}
+      </div>
     </div>
   ) : (
     <div>Loading</div>
