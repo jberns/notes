@@ -4,29 +4,24 @@ import { storeDecorator } from "mobx/dist/internal";
 import React, { useState } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import { INote } from "../models/Project";
-import { INewBlock } from "../pages/projects/[projectId]/[pageId]";
+import {
+  IAddBlock,
+  IDeleteBlock,
+} from "../pages/projects/[projectId]/[pageId]";
 import { useMST } from "../pages/_app";
 export interface IContentEditable {
   key: string;
   index: number;
   note: INote;
-  addBlock: ({
-    index,
-    ref,
-    newBlock,
-  }: {
-    index: number;
-    ref: React.RefObject<HTMLElement>;
-    newBlock: INewBlock;
-  }) => void;
+  addBlock: (props: IAddBlock) => void;
+  deleteBlock: (props: IDeleteBlock) => void;
 }
-
 
 export const EditableBlock = observer((props: IContentEditable) => {
   const store = useMST();
 
-  const { note, addBlock } = props;
-  const contentEditable = React.createRef<HTMLElement>();
+  const { note, addBlock, deleteBlock } = props;
+  const contentEditable = React.createRef<HTMLInputElement>();
   const [html, setHtml] = useState(note.text);
   const [previousKey, setPreviousKey] = useState("");
   const [htmlBackup, setHtmlBackup] = useState("");
@@ -49,6 +44,11 @@ export const EditableBlock = observer((props: IContentEditable) => {
         ref: contentEditable,
         newBlock: { text: "", tag: "p" },
       });
+    }
+
+    if (e.key === "Backspace" && !note.text) {
+      e.preventDefault();
+      deleteBlock({ id: note.id, ref: contentEditable });
     }
 
     setPreviousKey(e.key);

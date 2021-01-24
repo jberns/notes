@@ -25,15 +25,10 @@ export const Page = types.model({
   id: types.identifier,
   name: types.string,
   icon: types.optional(types.string, ""),
-  notes_ref: types.optional(types.array(types.late(() => types.reference(Note))), []),
-  // notes: types.optional(types.array(Note), () => {
-  //   const id = uid();
-  //   return [{ id: id, text: "👋 Hey!", tag: "p" }]
-  // })
+  // notes_ref: types.optional(types.array(types.late(() => types.reference(Note))), []),
+  notes_ref: types.optional(types.array(types.safeReference(Note, {acceptsUndefined:false})), []),
+
 }).actions(self => ({
-  // addNote(newNote: INote) {
-  //   self.notes.push(newNote)
-  // },
   addNoteRef(newNote: INote, key: number) {
     getParentOfType(self, RootStore).addNote(newNote)
     self.notes_ref.splice(key + 1, 0, newNote)
@@ -66,6 +61,9 @@ export const RootStore = types.model({
   },
   updateNote(id: string, text: string) {
     self.notes.get(id)?.updateText(text);
+  },
+  deleteNote(id:string){
+    self.notes.delete(id)
   }
 }))
 

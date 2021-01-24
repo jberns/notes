@@ -5,34 +5,26 @@ import { uid } from "../utils/utils";
 import { Dark, DP } from "./Dark";
 import { Plus } from "./Heroicons";
 
-export enum SidebarType {
-  Project,
-  Page,
-}
-
 interface ISidebarLinkProps {
   icon: JSX.Element;
   href: string;
   model: IProject | IPage;
-  type: SidebarType;
   leftMargin?: string;
   children?: JSX.Element;
 }
 
 export function SidebarLink(props: ISidebarLinkProps) {
-  const { icon, href, model, type, children } = props;
+  const { icon, href, model, children } = props;
   const router = useRouter();
 
   console.log({ router: router.pathname, href: href });
 
   let dp = DP.dp01;
   let leftMargin = props.leftMargin || "";
-  let linkHover = `hover:opacity-h-emp`;
-  let nonActiveLink = `hover:${DP.dp04} opacity-l-emp`;
+  let nonActiveLink = `hover:${DP.dp04} hover:opacity-h-emp opacity-l-emp`;
 
   if (router.asPath === href) {
     dp = DP.dp08;
-    linkHover = "";
     nonActiveLink = "";
   }
 
@@ -72,7 +64,7 @@ export function SidebarLink(props: ISidebarLinkProps) {
   return (
     <Dark
       dp={dp}
-      className={`${linkHover} ${nonActiveLink} flex inline-flex w-full items-center rounded-md group`}
+      className={`${nonActiveLink} flex inline-flex w-full items-center rounded-md group`}
     >
       <div className={`${leftMargin} w-full`}>
         <Link href={href}>
@@ -84,7 +76,7 @@ export function SidebarLink(props: ISidebarLinkProps) {
           </a>
         </Link>
       </div>
-      {type === SidebarType.Project && Project.is(model) && addProject(model)}
+      {Project.is(model) && addProject(model)}
     </Dark>
   );
 }

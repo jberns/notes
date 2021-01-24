@@ -17,8 +17,13 @@ export interface INewBlock {
 //TODO Clean this up with IContentEditable Interface
 export interface IAddBlock {
   index: number;
-  ref: React.RefObject<HTMLElement>;
+  ref: React.RefObject<HTMLInputElement>;
   newBlock: INewBlock;
+}
+
+export interface IDeleteBlock {
+  id: string,
+  ref: React.RefObject<HTMLInputElement>;
 }
 
 const NotesPage: Page = () => {
@@ -46,7 +51,8 @@ const NotesPage: Page = () => {
     ? (pageDetails = projectDetails?.pages.find((page) => page.id === pageId))
     : null;
 
-  const addBlock = ({ index, ref, newBlock }: IAddBlock): void => {
+  const addBlock = (props: IAddBlock): void => {
+    const {index, ref, newBlock} = props;
     const newId = uid();
     pageDetails?.addNoteRef(
       Note.create({ id: newId, text: newBlock.text, tag: newBlock.tag }),
@@ -56,9 +62,20 @@ const NotesPage: Page = () => {
     setCurrentBlock(ref.current);
   };
 
+  const deleteBlock = (props: IDeleteBlock): void => {
+    const {id, ref} = props;
+    const previousBlock = ref.current?.previousElementSibling;
+    
+    if (previousBlock){
+      store.deleteNote(id)
+      // @ts-ignore Focus is not included in element
+      previousBlock.focus();
+    }
+  }
+
   useEffect(() => {
     console.log(currentBlock);
-    // @ts-ignore
+    // @ts-ignore Focus is not included in element
     currentBlock?.nextElementSibling?.focus();
   });
 
@@ -83,6 +100,7 @@ const NotesPage: Page = () => {
                   index={key}
                   note={note}
                   addBlock={addBlock}
+                  deleteBlock={deleteBlock}
                 />
               )
             );

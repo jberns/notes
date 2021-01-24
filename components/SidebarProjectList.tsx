@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { useMST } from "../pages/_app";
 import { DocumentText, Folder } from "./Heroicons";
-import { SidebarLink, SidebarType } from "./SidebarLink";
+import { SidebarLink } from "./SidebarLink";
 
 export const SidebarProjectList = observer(() => {
   const store = useMST();
@@ -14,7 +14,6 @@ export const SidebarProjectList = observer(() => {
         <div>
           <div className=''>
             <SidebarLink
-              type={SidebarType.Project}
               icon={Folder()}
               href={`/projects/${project.id}`}
               model={project}
@@ -23,7 +22,6 @@ export const SidebarProjectList = observer(() => {
 
           {Array.from(project.pages.values()).map((page) => (
             <SidebarLink
-              type={SidebarType.Page}
               leftMargin='ml-10'
               icon={DocumentText()}
               href={`/projects/${project.id}/${page.id}`}
