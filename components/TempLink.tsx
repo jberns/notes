@@ -1,9 +1,6 @@
-import { observer } from "mobx-react";
 import Link from "next/link";
-import { Note, Page, Project } from "../models/Project";
+import { Project } from "../models/Project";
 import { useMST } from "../pages/_app";
-import { uid } from "../utils/utils";
-import { Dark, DP } from "./Dark";
 
 export function TempLink() {
   const store = useMST();

@@ -1,26 +1,26 @@
-import { observer } from "mobx-react";
 import Link from "next/link";
-import { Note, Page, Project, IProject } from "../models/Project";
-import { useMST } from "../pages/_app";
+import { useRouter } from "next/router";
+import { IPage, IProject, Note, Page, Project } from "../models/Project";
 import { uid } from "../utils/utils";
 import { Dark, DP } from "./Dark";
+import { Plus } from "./Heroicons";
 
-import { TempLink } from "./TempLink";
-
-import { Folder, Plus } from "./Heroicons";
-import { useRouter } from "next/router";
+export enum SidebarType {
+  Project,
+  Page,
+}
 
 interface ISidebarLinkProps {
   icon: JSX.Element;
   href: string;
-  name: string;
+  model: IProject | IPage;
+  type: SidebarType;
   leftMargin?: string;
-  children?:JSX.Element;
+  children?: JSX.Element;
 }
 
 export function SidebarLink(props: ISidebarLinkProps) {
-  const { icon, href, name, children } = props;
-
+  const { icon, href, model, type, children } = props;
   const router = useRouter();
 
   console.log({ router: router.pathname, href: href });
@@ -28,33 +28,63 @@ export function SidebarLink(props: ISidebarLinkProps) {
   let dp = DP.dp01;
   let leftMargin = props.leftMargin || "";
   let linkHover = `hover:opacity-h-emp`;
-  let nonActiveLink = "opacity-l-emp";
-  let nonActiveContainer = `hover:${DP.dp04}`;
+  let nonActiveLink = `hover:${DP.dp04} opacity-l-emp`;
 
   if (router.asPath === href) {
     dp = DP.dp08;
     linkHover = "";
     nonActiveLink = "";
-    nonActiveContainer = "";
   }
+
+  const createNewPage = (project: IProject) => {
+    const id = uid();
+    const defaultNote = Note.create({
+      id: id,
+      text: "👋 Hey there!!",
+      tag: "p",
+    });
+
+    const pageId = Math.floor(Math.random() * 100).toString();
+
+    project.addPage(
+      Page.create({
+        id: pageId,
+        name: `New Page - ${pageId}`,
+      })
+    );
+
+    const page = project.pages.find((page) => page.id === pageId);
+
+    page?.addNoteRef(defaultNote, 0);
+  };
+
+  const addProject = (model: IProject) => {
+    return (
+      <div
+        className={`cursor-pointer hover:opacity-100 opacity-l-emp text-white px-2 h-full`}
+        onClick={() => createNewPage(model)}
+      >
+        <Plus />
+      </div>
+    );
+  };
 
   return (
     <Dark
       dp={dp}
-      containerClassName={`${leftMargin} rounded-md`}
-      className={`${nonActiveContainer} flex w-full inline-flex items-center rounded-md`}
+      className={`${linkHover} ${nonActiveLink} flex inline-flex w-full items-center rounded-md group`}
     >
-      <div className="w-full">
+      <div className={`${leftMargin} w-full`}>
         <Link href={href}>
           <a
-            className={`${linkHover} ${nonActiveLink} text-white opacity-h-emp group flex items-center text-sm px-2 py-2 font-medium rounded-md`}
+            className={`flex text-white opacity-h-emp  items-center text-sm px-2 py-2 font-medium rounded-md`}
           >
             {icon}
-            <span className='ml-4'>{name}</span>
+            <span className='ml-4'>{model.name}</span>
           </a>
         </Link>
       </div>
-      <div>{children}</div>
+      {type === SidebarType.Project && Project.is(model) && addProject(model)}
     </Dark>
   );
 }

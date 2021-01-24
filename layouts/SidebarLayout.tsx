@@ -1,13 +1,10 @@
 import Head from "next/head";
-import { useMST } from "../pages/_app";
-import { observer } from "mobx-react";
 import { Dark, DP } from "../components/Dark";
 
 import { Sidebar } from "../components/Sidebar";
 
 export function SidebarLayout(props: any) {
   const { children } = props;
-  const store = useMST();
 
   return (
     <div className='bg-gray-primary'>
@@ -43,7 +40,6 @@ export function SidebarLayout(props: any) {
               <Dark
                 dp={DP.dp02}
                 className='h-full flex-1 px-4 flex justify-between'
-                containerClassName='w-full'
               >
                 <div className='flex-1 flex'>
                   <form className='w-full flex md:ml-0' action='#' method='GET'>

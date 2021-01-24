@@ -1,13 +1,7 @@
-import { observer } from "mobx-react";
-import Link from "next/link";
-import { Note, Page, Project } from "../models/Project";
 import { useMST } from "../pages/_app";
-import { uid } from "../utils/utils";
 import { Dark, DP } from "./Dark";
-
-import { TempLink } from "./TempLink";
-
 import { SidebarProjectList } from "./SidebarProjectList";
+import { TempLink } from "./TempLink";
 
 export function Sidebar() {
   const store = useMST();
@@ -237,12 +231,9 @@ export function Sidebar() {
             <Dark
               dp={DP.dp01}
               className='flex-1 flex flex-col overflow-y-auto h-full'
-              containerClassName='h-full'
             >
               <nav className='flex-1 px-2 py-4 space-y-1 h-full'>
-
                 <TempLink />
-
                 <SidebarProjectList />
               </nav>
             </Dark>
