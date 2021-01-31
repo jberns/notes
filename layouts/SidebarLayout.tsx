@@ -9,10 +9,10 @@ export function SidebarLayout(props: any) {
   return (
     <div className='bg-gray-primary'>
       <Head>
-        <title>Hello Notes!</title>
+        <title>Simple Notes</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Dark dp={DP.dp06}>
+      <Dark dp={DP.dp04}>
         <div className='h-screen flex overflow-hidden'>
           {/* <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. --> */}
           <Sidebar />

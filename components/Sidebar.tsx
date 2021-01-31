@@ -221,11 +221,7 @@ export function Sidebar() {
           <div className='flex flex-col h-0 flex-1'>
             <Dark dp={DP.dp01}>
               <div className='flex items-center h-16 flex-shrink-0 px-4'>
-                <img
-                  className='h-8 w-auto'
-                  src='https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg'
-                  alt='Workflow'
-                />
+                <span className="text-white italic font-bold text-xl text-purple-500">SimpleNotes</span>
               </div>
             </Dark>
             <Dark
