@@ -30,16 +30,18 @@ export class EditableBlock extends React.Component<IContentEditable> {
   static contextType = MSTContext;
 
   getCaretCoordinates = (fromStart = true) => {
-    console.log("coords");
     let x = 0;
     let y = 0;
+    
     let selection = window.getSelection();
     let range = selection?.getRangeAt(0).cloneRange();
     range!.collapse(false);
-    let rect = range?.getClientRects();
-    console.log("rect", selection?.getRangeAt(0));
-    x = rect![0].left;
-    y = rect![0].top;
+    let rect = range?.getClientRects()[0];
+    if (rect) {
+      x = rect.left;
+      y = rect.top;
+    }
+
     console.log(selection);
     console.log(x, y);
 

@@ -21,7 +21,7 @@ export interface IContentEditable {
 
 export const EditableBlock = observer((props: IContentEditable) => {
   const store = useMST();
-  const contentEditable = React.createRef<HTMLInputElement>();
+  let contentEditable = React.createRef<HTMLInputElement>();
 
   const { note, addBlock, deleteBlock } = props;
 
@@ -101,14 +101,18 @@ export const EditableBlock = observer((props: IContentEditable) => {
   // };
 
   const getCaretCoordinates = (fromStart = true) => {
-    let x = 0, y = 0;
+    console.log("coords");
+    let x = 0;
+    let y = 0;
     let selection = window.getSelection();
-    let range = selection?.getRangeAt(0).cloneRange()
-    range?.collapse(false)
-    let rect = range?.getClientRects()
+    let range = selection?.getRangeAt(0).cloneRange();
+    range!.collapse(false);
+    let rect = range?.getClientRects();
     console.log("rect", selection?.getRangeAt(0));
-    // x = rect![0].left
-    // y = rect![0].top
+    x = rect![0].left;
+    y = rect![0].top;
+    console.log(selection);
+    console.log(x, y);
 
     return { x, y };
   };
