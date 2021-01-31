@@ -17,10 +17,15 @@ interface IDarkProps {
   children: React.ReactNode;
   className?: string;
   dp?: DP;
+  role?: string;
 }
 
 export function Dark(props: IDarkProps) {
-  const { children, className, dp = DP.dp00} = props;
+  const { children, className, dp = DP.dp00 } = props;
 
-  return <div className={`${dp} ${className}`}>{children}</div>;
+  return (
+    <div className={`${dp} ${className}`}>
+      {children}
+    </div>
+  );
 }

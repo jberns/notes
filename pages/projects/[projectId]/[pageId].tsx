@@ -2,12 +2,13 @@ import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { EditableBlock } from "../../../components/EditableBlock";
+import { EditableBlock } from "../../../components/EditableBlockClass";
 import { SidebarLayout } from "../../../layouts/SidebarLayout";
 import { IPage, Note } from "../../../models/Project";
 import type { Page } from "../../../utils/types";
 import { uid } from "../../../utils/utils";
 import { useMST } from "../../_app";
+import { SelectMenu } from "../../../components/SelectMenu";
 
 export interface INewBlock {
   text: string;
@@ -17,13 +18,13 @@ export interface INewBlock {
 //TODO Clean this up with IContentEditable Interface
 export interface IAddBlock {
   index: number;
-  ref: React.RefObject<HTMLInputElement>;
+  ref: React.RefObject<HTMLInputElement> | undefined;
   newBlock: INewBlock;
 }
 
 export interface IDeleteBlock {
-  id: string,
-  ref: React.RefObject<HTMLInputElement>;
+  id: string;
+  ref: React.RefObject<HTMLInputElement> | undefined;
 }
 
 const NotesPage: Page = () => {
@@ -35,8 +36,6 @@ const NotesPage: Page = () => {
   const { projectId, pageId } = router.query;
   let projectDetails = null;
   let pageDetails: IPage | undefined | null = null;
-  console.log(router.query);
-  console.log("Notes", store.notes);
 
   // @ts-ignore
   // The query can return an array if the query has multiple parameters
@@ -52,32 +51,36 @@ const NotesPage: Page = () => {
     : null;
 
   const addBlock = (props: IAddBlock): void => {
-    const {index, ref, newBlock} = props;
+    const { index, ref, newBlock } = props;
     const newId = uid();
     pageDetails?.addNoteRef(
       Note.create({ id: newId, text: newBlock.text, tag: newBlock.tag }),
       index
     );
-
-    setCurrentBlock(ref.current);
+    console.log("callback", ref);
+    if (ref) {
+      setCurrentBlock(ref.current);
+    }
   };
 
   const deleteBlock = (props: IDeleteBlock): void => {
-    const {id, ref} = props;
-    const previousBlock = ref.current?.previousElementSibling;
-    
-    if (previousBlock){
-      store.deleteNote(id)
+    const { id, ref } = props;
+    console.log({ ref, id });
+    const previousBlock = ref?.current?.previousElementSibling;
+
+    if (previousBlock) {
+      //Only delete if a previous block exists, otherwise the page can have no blocks
+      store.deleteNote(id);
+
       // @ts-ignore Focus is not included in element
       previousBlock.focus();
     }
-  }
+  };
 
   useEffect(() => {
-    console.log(currentBlock);
     // @ts-ignore Focus is not included in element
     currentBlock?.nextElementSibling?.focus();
-  });
+  }, [currentBlock]);
 
   return projectDetails && pageDetails ? (
     <div>

@@ -8,9 +8,10 @@ import {
   IAddBlock,
   IDeleteBlock,
 } from "../pages/projects/[projectId]/[pageId]";
-import { useMST } from "../pages/_app";
+import { MSTContext, useMST } from "../pages/_app";
 import { SelectMenu } from "./SelectMenu";
 import { Dark, DP } from "./Dark";
+
 export interface IContentEditable {
   key: string;
   index: number;
@@ -19,7 +20,131 @@ export interface IContentEditable {
   deleteBlock: (props: IDeleteBlock) => void;
 }
 
-export const EditableBlock = observer((props: IContentEditable) => {
+export class EditableBlock extends React.Component<IContentEditable> {
+  contentEditable: React.RefObject<unknown>;
+  constructor(props: IContentEditable) {
+    super(props);
+    this.contentEditable = React.createRef<HTMLInputElement>();
+    this.state = { store: this.context, html: "<b>Hello <i>World</i></b>" };
+  }
+  static contextType = MSTContext;
+
+  getCaretCoordinates = (fromStart = true) => {
+    console.log("coords");
+    let x = 0;
+    let y = 0;
+    let selection = window.getSelection();
+    let range = selection?.getRangeAt(0).cloneRange();
+    range!.collapse(false);
+    let rect = range?.getClientRects();
+    console.log("rect", selection?.getRangeAt(0));
+    x = rect![0].left;
+    y = rect![0].top;
+    console.log(selection);
+    console.log(x, y);
+
+    return { x, y };
+  };
+
+  componentDidMount() {
+    this.setState({ ...this.state, store: this.context });
+  }
+
+  updateText = (e: ContentEditableEvent) => {
+    this.setState({
+      ...this.state,
+      html: e.target.value,
+    });
+
+    this.getCaretCoordinates();
+
+    this.props.note.updateText(e.target.value);
+    console.log(this.state);
+    this.state?.store?.updateNote(this.props.note.id, e.target.value);
+  };
+
+  onKeyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "/") {
+      // setHtmlBackup(note.text);
+    }
+
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      console.log("ref", contentEditable);
+      addBlock({
+        index: props.index,
+        ref: contentEditable,
+        newBlock: { text: "", tag: "p" },
+      });
+    }
+
+    if (e.key === "Backspace" && !note.text) {
+      e.preventDefault();
+      deleteBlock({ id: note.id, ref: contentEditable });
+    }
+
+    this.setState({
+      ...this.state,
+      previouskey: e.key,
+    });
+  };
+
+  onKeyUpHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "/") {
+      console.log("/ key up");
+      this.openSelectMenuHandler();
+    }
+  };
+
+  closeSelectMenuHandler = () => {
+    // setHtmlBackup("");
+    // setSelectMenuIsOpen(false);
+  };
+
+  tagSelectionHandler = (tag: string) => {
+    console.log("Selected tag", tag);
+    note.updateTag(tag);
+    closeSelectMenuHandler();
+  };
+
+  openSelectMenuHandler = () => {
+    const { x, y } = this.getCaretCoordinates();
+    console.log(x, y);
+
+    this.setState({
+      ...this.state,
+      selectMenuIsOpen: true,
+      selectMenuPosition: { x, y },
+    });
+  };
+
+  render = () => {
+    const { note, addBlock, deleteBlock } = this.props;
+    return (
+      <>
+        {this.state.selectMenuIsOpen && (
+          <SelectMenu
+            position={this.state.selectMenuPosition}
+            onSelect={this.tagSelectionHandler}
+          />
+        )}
+        {
+          <ContentEditable
+            innerRef={this.contentEditable}
+            disabled={false} // use true to disable editing/ handle innerHTML change
+            html={note.text}
+            tagName={note.tag}
+            onChange={this.updateText}
+            onKeyDown={this.onKeyDownHandler}
+            onKeyUp={this.onKeyUpHandler}
+          />
+        }
+      </>
+    );
+  };
+}
+
+export const EditableBlock2 = observer((props: IContentEditable) => {
   const store = useMST();
   const contentEditable = React.createRef<HTMLInputElement>();
 
@@ -101,11 +226,12 @@ export const EditableBlock = observer((props: IContentEditable) => {
   // };
 
   const getCaretCoordinates = (fromStart = true) => {
-    let x = 0, y = 0;
+    let x = 0,
+      y = 0;
     let selection = window.getSelection();
-    let range = selection?.getRangeAt(0).cloneRange()
-    range?.collapse(false)
-    let rect = range?.getClientRects()
+    let range = selection?.getRangeAt(0).cloneRange();
+    range?.collapse(false);
+    let rect = range?.getClientRects();
     console.log("rect", selection?.getRangeAt(0));
     // x = rect![0].left
     // y = rect![0].top

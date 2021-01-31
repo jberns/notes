@@ -18,6 +18,9 @@ export const Note = types.model({
 }).actions(self => ({
   updateText(newText: string) {
     self.text = newText
+  },
+  updateTag(newTag: string) {
+    self.tag = newTag
   }
 }))
 
@@ -26,7 +29,7 @@ export const Page = types.model({
   name: types.string,
   icon: types.optional(types.string, ""),
   // notes_ref: types.optional(types.array(types.late(() => types.reference(Note))), []),
-  notes_ref: types.optional(types.array(types.safeReference(Note, {acceptsUndefined:false})), []),
+  notes_ref: types.optional(types.array(types.safeReference(Note, { acceptsUndefined: false })), []),
 
 }).actions(self => ({
   addNoteRef(newNote: INote, key: number) {
@@ -62,7 +65,7 @@ export const RootStore = types.model({
   updateNote(id: string, text: string) {
     self.notes.get(id)?.updateText(text);
   },
-  deleteNote(id:string){
+  deleteNote(id: string) {
     self.notes.delete(id)
   }
 }))

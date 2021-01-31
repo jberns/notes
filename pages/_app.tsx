@@ -7,7 +7,7 @@ import type { Page } from "../utils/types";
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
-const MSTContext = React.createContext<IRootStore>(null);
+export const MSTContext = React.createContext<IRootStore>(null);
 
 export const MSTProvider = MSTContext.Provider;
 
