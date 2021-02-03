@@ -4,10 +4,11 @@ import { Dark, DP } from "./Dark";
 export interface ISelectMenuProps {
   onSelect: (tag: string) => void;
   position: { x: number; y: number };
+  closeSelectMenuHandler: () => void;
 }
 
 export const SelectMenu = (props: ISelectMenuProps) => {
-  const { onSelect, position } = props;
+  const { onSelect, position, closeSelectMenuHandler } = props;
 
   const MENU_HEIGHT = 150;
   const allowedTags = [
@@ -33,14 +34,25 @@ export const SelectMenu = (props: ISelectMenuProps) => {
           return index;
         });
         break;
+
       case "Backspace":
-        e.preventDefault();
-        // TODO Should close menu if there is no command left
-        if (!command) null;
+        let currentCommand = "";
+
+        setCommand((prevCommand) => {
+          currentCommand = prevCommand;
+          return prevCommand;
+        });
+
+        if (!currentCommand) {
+          closeSelectMenuHandler();
+          break;
+        }
+
         setCommand((prevCommand) =>
           prevCommand.substring(0, prevCommand.length - 1)
         );
         break;
+
       case "ArrowUp":
         e.preventDefault();
         setSelectedItemIndex((prevSelected) => {
@@ -49,6 +61,7 @@ export const SelectMenu = (props: ISelectMenuProps) => {
           return prevSelected - 1;
         });
         break;
+
       case "ArrowDown":
       case "Tab":
         e.preventDefault();
@@ -59,6 +72,7 @@ export const SelectMenu = (props: ISelectMenuProps) => {
           return prevSelected + 1;
         });
         break;
+
       default:
         if (e.key.length === 1)
           setCommand((prevCommand) => prevCommand + e.key);
@@ -67,11 +81,9 @@ export const SelectMenu = (props: ISelectMenuProps) => {
   };
 
   useEffect(() => {
-    console.log("keydown listner added");
     document.addEventListener("keydown", keyDownHandler);
 
     return function cleanup() {
-      console.log("keydown removed");
       return document.removeEventListener("keydown", keyDownHandler);
     };
   }, []);
@@ -84,33 +96,35 @@ export const SelectMenu = (props: ISelectMenuProps) => {
 
   return (
     <div
-      className={`${DP.dp25} absolute shadow-lg mt-2 -ml-72 -mt-16 w-48 rounded-md py-1`}
+      className={`${DP.dp25} absolute shadow-lg mt-2 -ml-72 -mt-6 w-48 rounded-md py-1`}
       style={{ top: position.y, left: position.x }}
       role='menu'
       aria-orientation='vertical'
       aria-labelledby=''
     >
       {console.log(position)}
-        <p className='text-white'>Command: {command}</p>
-        <div className='Items'>
-          {items.map((item, key) => {
-            const isSelected = items.indexOf(item) === selectedItemIndex;
+      <p className='text-white'>Command: {command}</p>
+      <div className='Items'>
+        {items.map((item, key) => {
+          const isSelected = items.indexOf(item) === selectedItemIndex;
 
-            return (
-              <div
-                className={`${
-                  isSelected ? "opacity-h-emp" : "opacity-l-emp"
-                } block text-white px-4 py-2 text-sm hover:${DP.dp06} hover:opacity-h-emp`}
-                key={key}
-                role='menuItem'
-                tabIndex={0}
-                onClick={() => onSelect(item.tag)}
-              >
-                {item.label} - {item.tag}
-              </div>
-            );
-          })}
-        </div>
+          return (
+            <div
+              className={`${
+                isSelected ? "opacity-h-emp" : "opacity-l-emp"
+              } block text-white px-4 py-2 text-sm hover:${
+                DP.dp06
+              } hover:opacity-h-emp`}
+              key={key}
+              role='menuItem'
+              tabIndex={0}
+              onClick={() => onSelect(item.tag)}
+            >
+              {item.label} - {item.tag}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

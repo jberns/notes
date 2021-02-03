@@ -1,9 +1,13 @@
 import Head from "next/head";
 import { Dark, DP } from "../components/Dark";
+import { observer } from "mobx-react";
 
 import { Sidebar } from "../components/Sidebar";
+import { ProfileMenu } from "../components/ProfileMenu";
+import { useMST } from "../pages/_app";
 
-export function SidebarLayout(props: any) {
+export const SidebarLayout = observer((props: any) => {
+  const store = useMST();
   const { children } = props;
 
   return (
@@ -18,7 +22,10 @@ export function SidebarLayout(props: any) {
           <Sidebar />
           <div className='flex flex-col w-0 flex-1 overflow-hidden'>
             <div className='relative z-10 flex-shrink-0 flex h-16 shadow'>
-              <button className='px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden'>
+              <button
+                className='px-4 border-r border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden'
+                onClick={() => store.openMobileSidebar()}
+              >
                 <span className='sr-only'>Open sidebar</span>
                 {/* <!-- Heroicon name: menu-alt-2 --> */}
                 <svg
@@ -95,62 +102,7 @@ export function SidebarLayout(props: any) {
                   </button>
 
                   {/* <!-- Profile dropdown --> */}
-                  <div className='ml-3 relative'>
-                    <div>
-                      <button
-                        className='max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-                        id='user-menu'
-                        aria-haspopup='true'
-                      >
-                        <span className='sr-only'>Open user menu</span>
-                        <img
-                          className='h-8 w-8 rounded-full'
-                          src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-                          alt=''
-                        />
-                      </button>
-                    </div>
-                    {/* <!--
-                      Profile dropdown panel, show/hide based on dropdown state.
-
-                      Entering: "transition ease-out duration-100"
-                        From: "transform opacity-0 scale-95"
-                        To: "transform opacity-100 scale-100"
-                      Leaving: "transition ease-in duration-75"
-                        From: "transform opacity-100 scale-100"
-                        To: "transform opacity-0 scale-95"
-                    --> */}
-                    <div
-                      className='origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5'
-                      role='menu'
-                      aria-orientation='vertical'
-                      aria-labelledby='user-menu'
-                    >
-                      <a
-                        href='#'
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                        role='menuitem'
-                      >
-                        Your Profile
-                      </a>
-
-                      <a
-                        href='#'
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                        role='menuitem'
-                      >
-                        Settings
-                      </a>
-
-                      <a
-                        href='#'
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                        role='menuitem'
-                      >
-                        Sign out
-                      </a>
-                    </div>
-                  </div>
+                  <ProfileMenu />
                 </div>
               </Dark>
             </div>
@@ -165,4 +117,4 @@ export function SidebarLayout(props: any) {
       </Dark>
     </div>
   );
-}
+});

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { IPage, IProject, Note, Page, Project } from "../models/Project";
-import { uid } from "../utils/utils";
+import { uid } from "../utils";
 import { Dark, DP } from "./Dark";
 import { Plus } from "./Heroicons";
 

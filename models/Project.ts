@@ -1,5 +1,5 @@
 import { getParentOfType, Instance, types } from "mobx-state-tree";
-import { uid } from "../utils/utils";
+import { uid } from "../utils";
 
 export interface IRootStore extends Instance<typeof RootStore> { }
 export interface IProject extends Instance<typeof Project> { }
@@ -52,9 +52,18 @@ export const Project = types.model({
   }
 }))
 
+export const Navigation = types.model({
+  isMobileSidebarOpen: types.optional(types.boolean, false)
+}).actions(self => ({
+  changeMobileSidebarState(isMobileSidebarOpen: boolean) {
+    self.isMobileSidebarOpen = isMobileSidebarOpen
+  }
+}))
+
 export const RootStore = types.model({
   projects: types.array(Project),
-  notes: types.map(Note)
+  notes: types.map(Note),
+  navigation: Navigation
 }).actions(self => ({
   addProject(project: IProject) {
     self.projects.push(project)
@@ -67,6 +76,12 @@ export const RootStore = types.model({
   },
   deleteNote(id: string) {
     self.notes.delete(id)
+  },
+  openMobileSidebar() {
+    self.navigation.changeMobileSidebarState(true)
+  },
+  closeMobileSidebar() {
+    self.navigation.changeMobileSidebarState(false)
   }
 }))
 

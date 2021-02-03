@@ -23,6 +23,9 @@ initialState = {
     { id: "1", name: "First Project" },
     { id: "2", name: "Second Project" },
   ],
+  navigation: {
+    isMobileSidebarOpen: false
+  }
 };
 
 if (
@@ -35,6 +38,7 @@ if (
   if (RootStore.is(json)) initialState = json;
 }
 
+// @ts-ignore
 let rootStore = RootStore.create(initialState);
 
 onSnapshot(rootStore, (snapshot) => {

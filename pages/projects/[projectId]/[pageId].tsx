@@ -6,7 +6,7 @@ import { EditableBlock } from "../../../components/EditableBlockClass";
 import { SidebarLayout } from "../../../layouts/SidebarLayout";
 import { IPage, Note } from "../../../models/Project";
 import type { Page } from "../../../utils/types";
-import { uid } from "../../../utils/utils";
+import { uid, setCaretToEnd } from "../../../utils";
 import { useMST } from "../../_app";
 import { SelectMenu } from "../../../components/SelectMenu";
 
@@ -21,7 +21,6 @@ export interface IAddBlock {
   ref: React.RefObject<HTMLInputElement> | undefined;
   newBlock: INewBlock;
 }
-
 export interface IDeleteBlock {
   id: string;
   ref: React.RefObject<HTMLInputElement> | undefined;
@@ -31,7 +30,10 @@ const NotesPage: Page = () => {
   const store = useMST();
   const router = useRouter();
 
-  const [currentBlock, setCurrentBlock] = useState<HTMLElement | null>();
+  const [
+    currentBlock,
+    setCurrentBlock,
+  ] = useState<React.RefObject<HTMLInputElement> | null>();
 
   const { projectId, pageId } = router.query;
   let projectDetails = null;
@@ -57,29 +59,48 @@ const NotesPage: Page = () => {
       Note.create({ id: newId, text: newBlock.text, tag: newBlock.tag }),
       index
     );
-    console.log("callback", ref);
+
     if (ref) {
-      setCurrentBlock(ref.current);
+      setCurrentBlock(ref);
     }
   };
 
   const deleteBlock = (props: IDeleteBlock): void => {
     const { id, ref } = props;
-    console.log({ ref, id });
     const previousBlock = ref?.current?.previousElementSibling;
 
     if (previousBlock) {
       //Only delete if a previous block exists, otherwise the page can have no blocks
       store.deleteNote(id);
+      selectPreviousBlock(ref);
+    }
+  };
 
+  const selectNextBlock = (
+    ref: React.RefObject<HTMLInputElement> | null | undefined
+  ) => {
+    const nextBlock = ref?.current?.nextElementSibling;
+    if (nextBlock) {
+      //@ts-ignore
+      nextBlock?.focus();
+      setCaretToEnd(nextBlock);
+    }
+  };
+
+  const selectPreviousBlock = (
+    ref: React.RefObject<HTMLInputElement> | null | undefined
+  ) => {
+    const previousBlock = ref?.current?.previousElementSibling;
+
+    if (previousBlock) {
       // @ts-ignore Focus is not included in element
       previousBlock.focus();
+      setCaretToEnd(previousBlock);
     }
   };
 
   useEffect(() => {
-    // @ts-ignore Focus is not included in element
-    currentBlock?.nextElementSibling?.focus();
+    selectNextBlock(currentBlock);
   }, [currentBlock]);
 
   return projectDetails && pageDetails ? (
@@ -104,6 +125,8 @@ const NotesPage: Page = () => {
                   note={note}
                   addBlock={addBlock}
                   deleteBlock={deleteBlock}
+                  selectNextBlock={selectNextBlock}
+                  selectPreviousBlock={selectPreviousBlock}
                 />
               )
             );
