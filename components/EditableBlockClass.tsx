@@ -179,7 +179,7 @@ export class EditableBlock extends React.Component<
         {
           <ContentEditable
             id={note.id}
-            className={`Block p-1 my-1 ${DP.dp06} rounded-md hover:${DP.dp25} hover:shadow-2xl`}
+            className={`Block p-1 my-1 ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}` }
             innerRef={this.contentEditable}
             disabled={false} // use true to disable editing/ handle innerHTML change
             html={note.text}
