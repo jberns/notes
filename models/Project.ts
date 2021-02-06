@@ -35,6 +35,10 @@ export const Page = types.model({
   addNoteRef(newNote: INote, key: number) {
     getParentOfType(self, RootStore).addNote(newNote)
     self.notes_ref.splice(key + 1, 0, newNote)
+  },
+  updateNoteRef(newNoteRefArray: INote[]){
+    //@ts-ignore
+    self.notes_ref = newNoteRefArray
   }
 }))
 

@@ -1,9 +1,9 @@
-import { useMST } from "../pages/_app";
-import { Dark, DP } from "./Dark";
-import { SidebarProjectList } from "./SidebarProjectList";
-import { TempLink } from "./TempLink";
-import { SidebarMobileMenu } from "./SidebarMobileMenu";
 import { observer } from "mobx-react";
+import { useMST } from "../../pages/_app";
+import { Dark, DP } from "../Dark";
+import { TempLink } from "../TempLink";
+import { SidebarMobileMenu } from "./SidebarMobileMenu";
+import { SidebarProjectList } from "./SidebarProjectList";
 
 export const Sidebar = observer(() => {
   const store = useMST();
@@ -20,8 +20,8 @@ export const Sidebar = observer(() => {
           <div className='flex flex-col h-0 flex-1'>
             <Dark dp={DP.dp01}>
               <div className='flex items-center h-16 flex-shrink-0 px-4'>
-                <span className='text-white italic font-bold text-xl text-purple-500'>
-                  SimpleNotes
+                <span className='text-blue-200 opacity-h-emp italic font-bold text-xl'>
+                  Project Notes
                 </span>
               </div>
             </Dark>

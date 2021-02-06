@@ -3,7 +3,12 @@ import React, { useContext } from "react";
 import { IRootStore, RootStore } from "../models/Project";
 import "../styles/globals.css";
 import type { Page } from "../utils/types";
-
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
@@ -24,8 +29,8 @@ initialState = {
     { id: "2", name: "Second Project" },
   ],
   navigation: {
-    isMobileSidebarOpen: false
-  }
+    isMobileSidebarOpen: false,
+  },
 };
 
 if (
@@ -50,9 +55,9 @@ function MyApp({ Component, pageProps }: { Component: Page; pageProps: any }) {
 
   return (
     <MSTProvider value={rootStore}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
     </MSTProvider>
   );
 }

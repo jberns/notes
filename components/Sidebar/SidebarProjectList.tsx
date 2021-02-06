@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
-import { useMST } from "../pages/_app";
-import { DocumentText, Folder } from "./Heroicons";
+import { useMST } from "../../pages/_app";
+import { DocumentText, Folder } from "../Heroicons";
 import { SidebarLink } from "./SidebarLink";
 
 export const SidebarProjectList = observer(() => {

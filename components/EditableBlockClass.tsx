@@ -1,16 +1,19 @@
-import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React from "react";
+import {
+  Draggable,
+  DraggableProvidedDraggableProps,
+  DraggableStateSnapshot,
+} from "react-beautiful-dnd";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
-import { INote, IRootStore, Note } from "../models/Project";
+import { INote, IRootStore } from "../models/Project";
 import {
   IAddBlock,
   IDeleteBlock,
 } from "../pages/projects/[projectId]/[pageId]";
-import { MSTContext, useMST } from "../pages/_app";
-import { SelectMenu } from "./SelectMenu";
-import { Dark, DP } from "./Dark";
-
+import { MSTContext } from "../pages/_app";
 import { getCaretCoordinates, setCaretToEnd } from "../utils";
+import { DP } from "./Dark";
+import { SelectMenu } from "./SelectMenu";
 
 export interface IContentEditable {
   key: string;
@@ -19,7 +22,10 @@ export interface IContentEditable {
   addBlock: (props: IAddBlock) => void;
   deleteBlock: (props: IDeleteBlock) => void;
   selectNextBlock: (ref: React.RefObject<HTMLInputElement>) => void;
-  selectPreviousBlock: (ref: React.RefObject<HTMLInputElement>) => void;
+  selectPreviousElement: (
+    ref: React.RefObject<HTMLInputElement>
+  ) => Element | null | undefined;
+  selectPreviousBlock: (ref: Element | null | undefined) => void;
 }
 
 type ContentEditableState = {
@@ -76,6 +82,7 @@ export class EditableBlock extends React.Component<
       addBlock,
       deleteBlock,
       selectNextBlock,
+      selectPreviousElement,
       selectPreviousBlock,
     } = this.props;
 
@@ -111,7 +118,8 @@ export class EditableBlock extends React.Component<
 
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        selectPreviousBlock(this.contentEditable);
+        const previousElement = selectPreviousElement(this.contentEditable);
+        selectPreviousBlock(previousElement);
       }
     } else {
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -167,6 +175,14 @@ export class EditableBlock extends React.Component<
     const { note } = this.props;
     const { selectMenuIsOpen, selectMenuPosition } = this.state;
 
+    const getItemStyle = (
+      isDragging: DraggableStateSnapshot["isDragging"],
+      draggableStyle: DraggableProvidedDraggableProps["style"]
+    ) => ({
+      userSelect: "none",
+      ...draggableStyle,
+    });
+
     return (
       <>
         {selectMenuIsOpen && (
@@ -177,17 +193,42 @@ export class EditableBlock extends React.Component<
           />
         )}
         {
-          <ContentEditable
-            id={note.id}
-            className={`Block p-1 my-1 ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}` }
-            innerRef={this.contentEditable}
-            disabled={false} // use true to disable editing/ handle innerHTML change
-            html={note.text}
-            tagName={note.tag}
-            onChange={this.updateText}
-            onKeyDown={this.onKeyDownHandler}
-            onKeyUp={this.onKeyUpHandler}
-          />
+          <Draggable
+            key={note.id}
+            draggableId={note.id}
+            index={this.props.index}
+          >
+            {(provided, snapshot) => (
+              <div
+                id={note.id}
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                //@ts-ignore userSelect is not on style
+                style={getItemStyle(
+                  snapshot.isDragging,
+                  provided.draggableProps.style
+                )}
+                className={`mt-2 group flex`}
+              >
+                <ContentEditable
+                  id={note.id}
+                  className={`flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
+                  style={{ padding: "5px" }}
+                  innerRef={this.contentEditable}
+                  disabled={false} // use true to disable editing/ handle innerHTML change
+                  html={note.text}
+                  tagName={note.tag}
+                  onChange={this.updateText}
+                  onKeyDown={this.onKeyDownHandler}
+                  onKeyUp={this.onKeyUpHandler}
+                />
+                <span className='ml-2 place-self-center opacity-0 group-hover:opacity-100'>
+                  :
+                </span>
+              </div>
+            )}
+          </Draggable>
         }
       </>
     );

@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, EventHandler, useCallback } from "react";
 import { matchSorter } from "match-sorter";
-import { Dark, DP } from "./Dark";
+import { useEffect, useState } from "react";
+import { DP } from "./Dark";
 export interface ISelectMenuProps {
   onSelect: (tag: string) => void;
   position: { x: number; y: number };
@@ -25,6 +25,7 @@ export const SelectMenu = (props: ISelectMenuProps) => {
   const keyDownHandler = (e: KeyboardEvent) => {
     switch (e.key) {
       case "Enter":
+      case "Tab":
         e.preventDefault();
         setSelectedItemIndex((index) => {
           setItems((items) => {
@@ -63,7 +64,6 @@ export const SelectMenu = (props: ISelectMenuProps) => {
         break;
 
       case "ArrowDown":
-      case "Tab":
         e.preventDefault();
         setSelectedItemIndex((prevSelected) => {
           const itemsLength = items.length;
@@ -96,13 +96,12 @@ export const SelectMenu = (props: ISelectMenuProps) => {
 
   return (
     <div
-      className={`${DP.dp25} absolute shadow-lg mt-2 -ml-72 -mt-6 w-48 rounded-md py-1`}
+      className={`${DP.dp08} absolute shadow-lg mt-2 -ml-72 -mt-6 w-48 rounded-md py-1`}
       style={{ top: position.y, left: position.x }}
       role='menu'
       aria-orientation='vertical'
       aria-labelledby=''
     >
-      {console.log(position)}
       <p className='text-white'>Command: {command}</p>
       <div className='Items'>
         {items.map((item, key) => {
@@ -113,7 +112,7 @@ export const SelectMenu = (props: ISelectMenuProps) => {
               className={`${
                 isSelected ? "opacity-h-emp" : "opacity-l-emp"
               } block text-white px-4 py-2 text-sm hover:${
-                DP.dp06
+                DP.dp25
               } hover:opacity-h-emp`}
               key={key}
               role='menuItem'

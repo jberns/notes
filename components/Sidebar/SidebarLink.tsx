@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { IPage, IProject, Note, Page, Project } from "../models/Project";
-import { uid } from "../utils";
-import { Dark, DP } from "./Dark";
-import { Plus } from "./Heroicons";
+import { IPage, IProject, Note, Page, Project } from "../../models/Project";
+import { uid } from "../../utils";
+import { Dark, DP } from "../Dark";
+import { Plus } from "../Heroicons";
 
 interface ISidebarLinkProps {
   icon: JSX.Element;
@@ -69,7 +69,7 @@ export function SidebarLink(props: ISidebarLinkProps) {
       <div className={`${leftMargin} w-full`}>
         <Link href={href}>
           <a
-            className={`flex text-white opacity-h-emp  items-center text-sm px-2 py-2 font-medium rounded-md`}
+            className={`flex text-white opacity-h-emp items-center text-sm px-2 py-2 font-medium rounded-md`}
           >
             {icon}
             <span className='ml-4'>{model.name}</span>

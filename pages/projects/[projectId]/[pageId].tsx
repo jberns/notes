@@ -2,13 +2,18 @@ import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  DroppableStateSnapshot,
+  DropResult,
+} from "react-beautiful-dnd";
 import { EditableBlock } from "../../../components/EditableBlockClass";
 import { SidebarLayout } from "../../../layouts/SidebarLayout";
-import { IPage, Note } from "../../../models/Project";
+import { IPage, IProject, Note } from "../../../models/Project";
+import { setCaretToEnd, uid } from "../../../utils";
 import type { Page } from "../../../utils/types";
-import { uid, setCaretToEnd } from "../../../utils";
 import { useMST } from "../../_app";
-import { SelectMenu } from "../../../components/SelectMenu";
 
 export interface INewBlock {
   text: string;
@@ -34,23 +39,20 @@ const NotesPage: Page = () => {
     currentBlock,
     setCurrentBlock,
   ] = useState<React.RefObject<HTMLInputElement> | null>();
+  const [previousBlock, setPreviousBlock] = useState<Element | null>();
 
   const { projectId, pageId } = router.query;
-  let projectDetails = null;
+  let projectDetails: IProject | undefined | null = null;
   let pageDetails: IPage | undefined | null = null;
 
-  // @ts-ignore
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
-  projectId
-    ? (projectDetails = store.projects.find(
-        (project) => project.id === projectId
-      ))
-    : null;
-  // @ts-ignore
-  pageId
-    ? (pageDetails = projectDetails?.pages.find((page) => page.id === pageId))
-    : null;
+  if (projectId)
+    projectDetails = store.projects.find((project) => project.id === projectId);
+
+  if (pageId) {
+    pageDetails = projectDetails?.pages.find((page) => page.id === pageId);
+  }
 
   const addBlock = (props: IAddBlock): void => {
     const { index, ref, newBlock } = props;
@@ -67,35 +69,39 @@ const NotesPage: Page = () => {
 
   const deleteBlock = (props: IDeleteBlock): void => {
     const { id, ref } = props;
-    const previousBlock = ref?.current?.previousElementSibling;
+    const previousBlock = selectPreviousElement(ref);
 
     if (previousBlock) {
       //Only delete if a previous block exists, otherwise the page can have no blocks
       store.deleteNote(id);
-      selectPreviousBlock(ref);
+      setPreviousBlock(previousBlock);
     }
   };
 
   const selectNextBlock = (
     ref: React.RefObject<HTMLInputElement> | null | undefined
   ) => {
-    const nextBlock = ref?.current?.nextElementSibling;
+    const nextBlock =
+      ref?.current?.parentElement?.nextElementSibling?.firstElementChild;
     if (nextBlock) {
-      //@ts-ignore
+      // @ts-ignore Focus is not included in element
       nextBlock?.focus();
       setCaretToEnd(nextBlock);
     }
   };
 
-  const selectPreviousBlock = (
+  const selectPreviousElement = (
     ref: React.RefObject<HTMLInputElement> | null | undefined
   ) => {
-    const previousBlock = ref?.current?.previousElementSibling;
+    return ref?.current?.parentElement?.previousElementSibling
+      ?.firstElementChild;
+  };
 
-    if (previousBlock) {
+  const selectPreviousBlock = (ref: Element | null | undefined) => {
+    if (ref) {
       // @ts-ignore Focus is not included in element
-      previousBlock.focus();
-      setCaretToEnd(previousBlock);
+      ref.focus();
+      setCaretToEnd(ref);
     }
   };
 
@@ -103,36 +109,82 @@ const NotesPage: Page = () => {
     selectNextBlock(currentBlock);
   }, [currentBlock]);
 
+  useEffect(() => {
+    selectPreviousBlock(previousBlock);
+  }, [previousBlock]);
+
+  const reorder = (page: IPage, startIndex: number, endIndex: number) => {
+    const result = Array.from(page.notes_ref);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  const onDragEnd = (result: DropResult) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    const blocks = reorder(
+      pageDetails!,
+      result.source.index,
+      result.destination.index
+    );
+
+    //Page must exist is an element is being dragged
+    pageDetails!.updateNoteRef(blocks);
+  };
+
+  const grid = 8;
+
+  const getListStyle = (
+    isDraggingOver: DroppableStateSnapshot["isDraggingOver"]
+  ) => ({
+    // background: isDraggingOver ? "" : "",
+  });
+
   return projectDetails && pageDetails ? (
     <div>
       <Head>
         <title>{projectDetails.name}</title>
       </Head>
       <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
-        <h1 className='text-white opacity--emp text-2xl font-semibold'>
+        <h1 className='text-blue-200 opacity-h-emp text-sm font-semibold'>
           {projectDetails.name} {">"} {pageDetails.name}
         </h1>
       </div>
       <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
-        {/* <!-- Replace with your content --> */}
         <div className='py-4 text-white opacity-l-emp'>
-          {pageDetails.notes_ref.map((note, key) => {
-            return (
-              note && (
-                <EditableBlock
-                  key={note.id}
-                  index={key}
-                  note={note}
-                  addBlock={addBlock}
-                  deleteBlock={deleteBlock}
-                  selectNextBlock={selectNextBlock}
-                  selectPreviousBlock={selectPreviousBlock}
-                />
-              )
-            );
-          })}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId='droppable'>
+              {(provided, snapshot) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  style={getListStyle(snapshot.isDraggingOver)}
+                >
+                  {pageDetails?.notes_ref.map((note, key) => {
+                    return (
+                      <EditableBlock
+                        key={note.id}
+                        index={key}
+                        note={note}
+                        addBlock={addBlock}
+                        deleteBlock={deleteBlock}
+                        selectNextBlock={selectNextBlock}
+                        selectPreviousElement={selectPreviousElement}
+                        selectPreviousBlock={selectPreviousBlock}
+                      />
+                    );
+                  })}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
-        {/* <!-- /End replace --> */}
       </div>
     </div>
   ) : (

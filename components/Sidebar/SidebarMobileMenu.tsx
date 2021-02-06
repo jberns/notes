@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { useMST } from "../pages/_app";
+import { useMST } from "../../pages/_app";
 
 export const SidebarMobileMenu = observer(() => {
   const store = useMST();

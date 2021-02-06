@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Dark, DP } from "../components/Dark";
 import { observer } from "mobx-react";
 
-import { Sidebar } from "../components/Sidebar";
+import { Sidebar } from "../components/Sidebar/Sidebar";
 import { ProfileMenu } from "../components/ProfileMenu";
 import { useMST } from "../pages/_app";
 
