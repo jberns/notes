@@ -8,7 +8,7 @@ export const SidebarProjectList = observer(() => {
 
   return (
     <div>
-      {Array.from(store.projects.values()).map((project) => (
+      {store.projects.map((project) => (
         //TODO add hover for active"
         <div key={project.id}>
           <SidebarLink
@@ -18,7 +18,7 @@ export const SidebarProjectList = observer(() => {
             model={project}
           />
 
-          {project?.pages ? Array.from(project.pages.values()).map((page) => (
+          {project?.pages ? Array.from(project.pages).map((page) => (
             <SidebarLink
               key={page.id}
               leftMargin='ml-10'

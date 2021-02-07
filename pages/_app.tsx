@@ -9,6 +9,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import { observer } from "mobx-react";
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
@@ -62,4 +63,4 @@ function MyApp({ Component, pageProps }: { Component: Page; pageProps: any }) {
   );
 }
 
-export default MyApp;
+export default observer(MyApp);

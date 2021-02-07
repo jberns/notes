@@ -1,8 +1,9 @@
+import { observer } from "mobx-react";
 import Link from "next/link";
 import { Project } from "../models/Project";
 import { useMST } from "../pages/_app";
 
-export function TempLink() {
+export const TempLink = observer(() => {
   const store = useMST();
 
   return (
@@ -57,8 +58,8 @@ export function TempLink() {
         </svg>
         <button
           onClick={() => {
-            const project = store.projects[1];
-            project ? project.changeName("I Changed temp link!") : null;
+            store.projects[0].changeName("Name4");
+            // project ? project.changeName("Name") : null;
           }}
         >
           Change Name
@@ -80,4 +81,4 @@ export function TempLink() {
       </a>
     </div>
   );
-}
+});

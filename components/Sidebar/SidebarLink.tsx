@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { IPage, IProject, Note, Page, Project } from "../../models/Project";
@@ -13,7 +14,7 @@ interface ISidebarLinkProps {
   children?: JSX.Element;
 }
 
-export function SidebarLink(props: ISidebarLinkProps) {
+export const SidebarLink = observer((props: ISidebarLinkProps) => {
   const { icon, href, model, children } = props;
   const router = useRouter();
 
@@ -77,4 +78,4 @@ export function SidebarLink(props: ISidebarLinkProps) {
       {Project.is(model) && addProject(model)}
     </Dark>
   );
-}
+});
