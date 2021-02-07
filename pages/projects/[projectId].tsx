@@ -15,11 +15,7 @@ const ProjectPage: Page = () => {
   // @ts-ignore
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
-  projectId
-    ? (projectDetails = store.projects.find(
-        (project) => project.id === projectId
-      ))
-    : null;
+  projectDetails = store.projects.find((project) => project.id === projectId);
 
   return projectDetails ? (
     <div>

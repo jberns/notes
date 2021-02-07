@@ -5,7 +5,6 @@ import { IRootStore, RootStore } from "../models/Project";
 
 const Home = () => {
   const store = useMST();
-  console.log(store);
 
   const LOCAL_STORAGE = "notes";
   let initialState = {};

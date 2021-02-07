@@ -5,29 +5,28 @@ import { SidebarLink } from "./SidebarLink";
 
 export const SidebarProjectList = observer(() => {
   const store = useMST();
-  console.log(store);
 
   return (
     <div>
       {Array.from(store.projects.values()).map((project) => (
         //TODO add hover for active"
-        <div>
-          <div className=''>
-            <SidebarLink
-              icon={Folder()}
-              href={`/projects/${project.id}`}
-              model={project}
-            />
-          </div>
+        <div key={project.id}>
+          <SidebarLink
+            key={project.id}
+            icon={Folder()}
+            href={`/projects/${project.id}`}
+            model={project}
+          />
 
-          {Array.from(project.pages.values()).map((page) => (
+          {project?.pages ? Array.from(project.pages.values()).map((page) => (
             <SidebarLink
+              key={page.id}
               leftMargin='ml-10'
               icon={DocumentText()}
               href={`/projects/${project.id}/${page.id}`}
               model={page}
             />
-          ))}
+          )): null}
         </div>
       ))}
     </div>

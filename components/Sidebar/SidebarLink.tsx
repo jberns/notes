@@ -17,8 +17,6 @@ export function SidebarLink(props: ISidebarLinkProps) {
   const { icon, href, model, children } = props;
   const router = useRouter();
 
-  console.log({ router: router.pathname, href: href });
-
   let dp = DP.dp01;
   let leftMargin = props.leftMargin || "";
   let nonActiveLink = `hover:${DP.dp04} hover:opacity-h-emp opacity-l-emp`;
@@ -68,12 +66,12 @@ export function SidebarLink(props: ISidebarLinkProps) {
     >
       <div className={`${leftMargin} w-full`}>
         <Link href={href}>
-          <a
+          <div
             className={`flex text-white opacity-h-emp items-center text-sm px-2 py-2 font-medium rounded-md`}
           >
             {icon}
             <span className='ml-4'>{model.name}</span>
-          </a>
+          </div>
         </Link>
       </div>
       {Project.is(model) && addProject(model)}

@@ -14,6 +14,9 @@ import { MSTContext } from "../pages/_app";
 import { getCaretCoordinates, setCaretToEnd } from "../utils";
 import { DP } from "./Dark";
 import { SelectMenu } from "./SelectMenu";
+import { Selector } from "./Heroicons";
+import { observer } from "mobx-react";
+import sanitizeHtml from "sanitize-html";
 
 export interface IContentEditable {
   key: string;
@@ -69,10 +72,10 @@ export class EditableBlock extends React.Component<
 
   updateText(e: ContentEditableEvent) {
     const { note } = this.props;
+    const sanitized = sanitizeHtml(e.target.value)
 
-    note.updateText(e.target.value);
-
-    this.setState({ html: e.target.value });
+    note.updateText(sanitized);
+    this.setState({ html: sanitized});
   }
 
   onKeyDownHandler(e: React.KeyboardEvent<HTMLDivElement>) {
@@ -90,7 +93,6 @@ export class EditableBlock extends React.Component<
 
     if (!selectMenuIsOpen) {
       if (e.key === "/") {
-        console.log("DETECTED KEYDOWN");
         this.setState({
           htmlBackup: html,
         });
@@ -183,6 +185,9 @@ export class EditableBlock extends React.Component<
       ...draggableStyle,
     });
 
+    // TODO 1. Add sanatize
+    // TODO 2. Create edit menu on highlight
+
     return (
       <>
         {selectMenuIsOpen && (
@@ -204,7 +209,7 @@ export class EditableBlock extends React.Component<
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
-                //@ts-ignore userSelect is not on style
+                //@ts-ignore userSelect is not on style as string properly
                 style={getItemStyle(
                   snapshot.isDragging,
                   provided.draggableProps.style
@@ -213,7 +218,7 @@ export class EditableBlock extends React.Component<
               >
                 <ContentEditable
                   id={note.id}
-                  className={`flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
+                  className={`text-white opacity-l-emp ml-2 flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
                   style={{ padding: "5px" }}
                   innerRef={this.contentEditable}
                   disabled={false} // use true to disable editing/ handle innerHTML change
@@ -223,8 +228,8 @@ export class EditableBlock extends React.Component<
                   onKeyDown={this.onKeyDownHandler}
                   onKeyUp={this.onKeyUpHandler}
                 />
-                <span className='ml-2 place-self-center opacity-0 group-hover:opacity-100'>
-                  :
+                <span className='text-white place-self-center opacity-0 group-hover:opacity-l-emp'>
+                  {Selector()}
                 </span>
               </div>
             )}

@@ -47,12 +47,9 @@ const NotesPage: Page = () => {
 
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
-  if (projectId)
     projectDetails = store.projects.find((project) => project.id === projectId);
 
-  if (pageId) {
     pageDetails = projectDetails?.pages.find((page) => page.id === pageId);
-  }
 
   const addBlock = (props: IAddBlock): void => {
     const { index, ref, newBlock } = props;
@@ -106,11 +103,14 @@ const NotesPage: Page = () => {
   };
 
   useEffect(() => {
+    //If not clearing out the current and previous blocks, they are the same between renders and then fail to update references
     selectNextBlock(currentBlock);
+    setPreviousBlock(null);
   }, [currentBlock]);
 
   useEffect(() => {
     selectPreviousBlock(previousBlock);
+    setCurrentBlock(null);
   }, [previousBlock]);
 
   const reorder = (page: IPage, startIndex: number, endIndex: number) => {
@@ -156,7 +156,7 @@ const NotesPage: Page = () => {
         </h1>
       </div>
       <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
-        <div className='py-4 text-white opacity-l-emp'>
+        <div className='py-4'>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId='droppable'>
               {(provided, snapshot) => (

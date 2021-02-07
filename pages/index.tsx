@@ -4,8 +4,6 @@ import { useMST } from "./_app";
 
 const Home: Page = () => {
   const store = useMST();
-  console.log(store);
-
   return (
     <div>
       <h1>This is the home page</h1>

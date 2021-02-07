@@ -4,7 +4,6 @@ import { useMST } from "./_app";
 
 const Profile: Page = () => {
   const store = useMST();
-  console.log(store);
 
   return (
     <div>
