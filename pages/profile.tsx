@@ -2,15 +2,16 @@ import { SidebarLayout } from "../layouts/SidebarLayout";
 import type { Page } from "../utils/types";
 import { useMST } from "./_app";
 
-const Home: Page = () => {
+const Profile: Page = () => {
   const store = useMST();
+
   return (
     <div>
-      <h1>This is the home page</h1>
+      <h1>This is the Profile page</h1>
     </div>
   );
 };
 
-Home.Layout = SidebarLayout;
+Profile.Layout = SidebarLayout;
 
-export default Home;
+export default Profile;

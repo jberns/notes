@@ -1,41 +1,31 @@
 import React from "react";
 
 export enum DP {
-  "dp00" = "bg-opacity-dp00",
-  "dp01" = "bg-opacity-dp01",
-  "dp02" = "bg-opacity-dp02",
-  "dp04" = "bg-opacity-dp04",
-  "dp06" = "bg-opacity-dp06",
-  "dp08" = "bg-opacity-dp08",
-  "dp12" = "bg-opacity-dp12",
-  "dp16" = "bg-opacity-dp16",
-  "dp25" = "bg-opacity-dp25",
-  "none" = "bg-opacity-none",
+  "dp00" = "bg-dark-dp01",
+  "dp01" = "bg-dark-dp01",
+  "dp02" = "bg-dark-dp02",
+  "dp03" = "bg-dark-dp03",
+  "dp04" = "bg-dark-dp04",
+  "dp06" = "bg-dark-dp06",
+  "dp08" = "bg-dark-dp08",
+  "dp12" = "bg-dark-dp12",
+  "dp16" = "bg-dark-dp16",
+  "dp25" = "bg-dark-dp25",
 }
 
 interface IDarkProps {
   children: React.ReactNode;
   className?: string;
-  containerClassName?: string;
   dp?: DP;
-  hover?: string;
+  role?: string;
 }
 
 export function Dark(props: IDarkProps) {
-  const { children, className, dp = DP.dp00, containerClassName } = props;
-  let bg = "bg-gray-primary";
-  let tint = "bg-blue-100";
-
-  if (dp === DP.none) {
-    bg = "";
-    tint = "";
-  }
+  const { children, className, dp = DP.dp00 } = props;
 
   return (
-    <div className={`${bg} w-full h-full ${containerClassName}`}>
-      <div className={`w-full h-full ${tint} ${dp} ${className}`}>
-        {children}
-      </div>
+    <div className={`${dp} ${className}`}>
+      {children}
     </div>
   );
 }

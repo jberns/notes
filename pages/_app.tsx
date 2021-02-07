@@ -1,12 +1,18 @@
+import { onSnapshot } from "mobx-state-tree";
 import React, { useContext } from "react";
-import "../styles/globals.css";
 import { IRootStore, RootStore } from "../models/Project";
-import { onSnapshot, getSnapshot, addMiddleware } from "mobx-state-tree";
-
-const LOCAL_STORAGE = "notes";
+import "../styles/globals.css";
+import type { Page } from "../utils/types";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
-const MSTContext = React.createContext<IRootStore>(null);
+// @ts-ignore
+export const MSTContext = React.createContext<IRootStore>(null);
 
 export const MSTProvider = MSTContext.Provider;
 
@@ -14,12 +20,16 @@ export function useMST() {
   const store = useContext(MSTContext);
   return store;
 }
+const LOCAL_STORAGE = "notes";
 
 let initialState = {};
 initialState = {
-  projects: {
-    1: { id: "1", name: "First Project" },
-    2: { id: "2", name: "Second Project" },
+  projects: [
+    { id: "1", name: "First Project" },
+    { id: "2", name: "Second Project" },
+  ],
+  navigation: {
+    isMobileSidebarOpen: false,
   },
 };
 
@@ -33,20 +43,21 @@ if (
   if (RootStore.is(json)) initialState = json;
 }
 
+// @ts-ignore
 let rootStore = RootStore.create(initialState);
 
 onSnapshot(rootStore, (snapshot) => {
   localStorage.setItem(LOCAL_STORAGE, JSON.stringify(snapshot));
 });
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: { Component: Page; pageProps: any }) {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
-  
+
   return (
     <MSTProvider value={rootStore}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
     </MSTProvider>
   );
 }
