@@ -36,8 +36,6 @@ const NotesPage: Page = () => {
   const store = useMST();
   const router = useRouter();
 
-  console.log(store.projects[0]);
-
   const [
     currentBlock,
     setCurrentBlock,
@@ -47,15 +45,12 @@ const NotesPage: Page = () => {
   const { projectId, pageId } = router.query;
   let projectDetails: IProject | undefined | null = null;
   let pageDetails: IPage | undefined | null = null;
-  let note: INote | undefined | null = null;
 
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
   projectDetails = store.projects.find((project) => project.id === projectId);
 
   pageDetails = projectDetails?.pages.find((page) => page.id === pageId);
-
-  note = store.notes.get("kkp12i53czo3qaqknvt");
 
   const addBlock = (props: IAddBlock): void => {
     const { index, ref, newBlock } = props;
@@ -84,8 +79,10 @@ const NotesPage: Page = () => {
   const selectNextBlock = (
     ref: React.RefObject<HTMLInputElement> | null | undefined
   ) => {
+    console.log("select next", currentBlock);
     const nextBlock =
       ref?.current?.parentElement?.nextElementSibling?.firstElementChild;
+      console.log("next", nextBlock);
     if (nextBlock) {
       // @ts-ignore Focus is not included in element
       nextBlock?.focus();
@@ -110,6 +107,7 @@ const NotesPage: Page = () => {
 
   useEffect(() => {
     //If not clearing out the current and previous blocks, they are the same between renders and then fail to update references
+    console.log("effect", currentBlock);
     selectNextBlock(currentBlock);
     setPreviousBlock(null);
   }, [currentBlock]);
@@ -151,7 +149,7 @@ const NotesPage: Page = () => {
     // background: isDraggingOver ? "" : "",
   });
 
-  return projectDetails && pageDetails && note ? (
+  return projectDetails && pageDetails ? (
     <div>
       <Head>
         <title>{projectDetails.name}</title>
@@ -162,52 +160,40 @@ const NotesPage: Page = () => {
         </h1>
       </div>
 
-      <button onClick={() => projectDetails?.changeName("Project 2")}>
-        Change Name
-      </button>
-
-      <button onClick={() => pageDetails?.updateName("Page 3")}>
-        Change Name
-      </button>
-
       <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
         <div className='py-4'>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId='droppable'>
               {(provided, snapshot) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={getListStyle(snapshot.isDraggingOver)}
-                >
-                  {pageDetails?.notes_ref.map((note, key) => {
-                    return (
-                      <Observer>
-                        {() => (
-                          <>
-                            <EditableBlock
-                              key={note.id}
-                              index={key}
-                              note={note}
-                              addBlock={addBlock}
-                              deleteBlock={deleteBlock}
-                              selectNextBlock={selectNextBlock}
-                              selectPreviousElement={selectPreviousElement}
-                              selectPreviousBlock={selectPreviousBlock}
-                            />
-                            {note.text}
-                            <button
-                              onClick={() => note.updateText("Workkkkk!")}
-                            >
-                              Update
-                            </button>
-                          </>
-                        )}
-                      </Observer>
-                    );
-                  })}
-                  {provided.placeholder}
-                </div>
+                <Observer>
+                  {() => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      style={getListStyle(snapshot.isDraggingOver)}
+                    >
+                      {pageDetails?.notes_ref.map((note, key) => {
+                        return (
+                          <Observer>
+                            {() => (
+                              <EditableBlock
+                                key={note.id}
+                                index={key}
+                                note={note}
+                                addBlock={addBlock}
+                                deleteBlock={deleteBlock}
+                                selectNextBlock={selectNextBlock}
+                                selectPreviousElement={selectPreviousElement}
+                                selectPreviousBlock={selectPreviousBlock}
+                              />
+                            )}
+                          </Observer>
+                        );
+                      })}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Observer>
               )}
             </Droppable>
           </DragDropContext>

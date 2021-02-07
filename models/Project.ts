@@ -5,6 +5,7 @@ export interface IRootStore extends Instance<typeof RootStore> { }
 export interface IProject extends Instance<typeof Project> { }
 export interface IPage extends Instance<typeof Page> { }
 export interface INote extends Instance<typeof Note> { }
+export interface IUser extends Instance<typeof User> { }
 
 export enum NoteType {
   note = "note",
@@ -21,7 +22,10 @@ export const Note = types.model({
   id: types.identifier,
   text: types.optional(types.string, ""),
   tag: types.optional(types.string, "p"),
-  type: types.optional(types.enumeration<NoteType>("NoteType", Object.values(NoteType)), NoteType.note)
+  type: types.optional(types.enumeration<NoteType>("NoteType", Object.values(NoteType)), NoteType.note),
+  createdOn: types.optional(types.Date, new Date()),
+  assignedTo: types.maybeNull(types.string)
+  // assignedTo: types.maybeNull(types.reference(User))
 }).actions(self => ({
   updateText(newText: string) {
     self.text = newText
@@ -31,6 +35,9 @@ export const Note = types.model({
   },
   updateType(newType: NoteType) {
     self.type = newType
+  },
+  updateAssignedTo(assignedTo: string) {
+    self.assignedTo = assignedTo
   }
 }))
 
@@ -67,6 +74,21 @@ export const Project = types.model({
   addPage(newPage: IPage) {
     self.pages.push(newPage)
   }
+})).views(self => ({
+  allTasks() {
+    const filteredTasks: INote[] = self.pages.reduce((tasks: INote[], page) => {
+      if (page.notes_ref) {
+        const onlyTasks = page.notes_ref.filter((note) => {
+          return note.type === NoteType.task
+        })
+
+        tasks.push(...onlyTasks)
+      }
+      return tasks
+    }, [])
+    return filteredTasks
+  }
+
 }))
 
 export const Navigation = types.model({
@@ -99,6 +121,14 @@ export const RootStore = types.model({
   },
   closeMobileSidebar() {
     self.navigation.changeMobileSidebarState(false)
+  }
+})).views(self => ({
+  allTaskSummary() {
+    const summary = self.projects.reduce((tasks: { name: string; count: number }[], project) => {
+      tasks.push({ name: project["name"], count: project.allTasks().length })
+      return tasks
+    }, [])
+    return summary
   }
 }))
 

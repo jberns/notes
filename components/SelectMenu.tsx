@@ -1,73 +1,82 @@
 import { matchSorter } from "match-sorter";
 import { useEffect, useState } from "react";
 import { DP } from "./Dark";
+import { NoteType } from "../models/Project";
 export interface ISelectMenuProps {
-  onSelect: (tag: string) => void;
+  onSelect: (tag: Tag) => void;
   position: { x: number; y: number };
   closeSelectMenuHandler: () => void;
+}
+
+export type Tag = {
+  id: string;
+  tag: string;
+  label: string;
+  type: NoteType;
 }
 
 export const SelectMenu = (props: ISelectMenuProps) => {
   const { onSelect, position, closeSelectMenuHandler } = props;
 
   const MENU_HEIGHT = 150;
-  const allowedTags = [
-    { id: "title", tag: "h1", label: "Title" },
-    { id: "heading", tag: "h2", label: "Heading" },
-    { id: "subheading", tag: "h3", label: "SubHeading" },
-    { id: "paragraph", tag: "p", label: "Paragraph" },
+  const allowedTags:Tag[] = [
+    { id: "title", tag: "h1", label: "Title", type: NoteType.note },
+    { id: "heading", tag: "h2", label: "Heading", type: NoteType.note },
+    { id: "subheading", tag: "h3", label: "SubHeading", type: NoteType.note },
+    { id: "paragraph", tag: "p", label: "Paragraph", type: NoteType.note },
+    { id: "task", tag: "p", label: "Task", type: NoteType.task },
   ];
 
   const [items, setItems] = useState(allowedTags);
   const [command, setCommand] = useState("");
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
-  
+
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
       switch (e.key) {
         case "Enter":
         case "Tab":
           e.preventDefault();
-          onSelect(items[selectedItemIndex].tag);
+          onSelect(items[selectedItemIndex]);
           break;
-  
+
         case "Backspace":
           let currentCommand = "";
-  
+
           setCommand((prevCommand) => {
             currentCommand = prevCommand;
             return prevCommand;
           });
-  
+
           if (!currentCommand) {
             closeSelectMenuHandler();
             break;
           }
-  
+
           setCommand((prevCommand) =>
             prevCommand.substring(0, prevCommand.length - 1)
           );
           break;
-  
+
         case "ArrowUp":
           e.preventDefault();
           setSelectedItemIndex((prevSelected) => {
             if (prevSelected <= 0) return 0;
-  
+
             return prevSelected - 1;
           });
           break;
-  
+
         case "ArrowDown":
           e.preventDefault();
           setSelectedItemIndex((prevSelected) => {
             const itemsLength = items.length;
             if (prevSelected >= itemsLength - 1) return itemsLength - 1;
-  
+
             return prevSelected + 1;
           });
           break;
-  
+
         default:
           if (e.key.length === 1)
             setCommand((prevCommand) => prevCommand + e.key);
@@ -111,7 +120,7 @@ export const SelectMenu = (props: ISelectMenuProps) => {
               key={key}
               role='menuItem'
               tabIndex={0}
-              onClick={() => onSelect(item.tag)}
+              onClick={() => onSelect(item)}
             >
               {item.label} - {item.tag}
             </div>

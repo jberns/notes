@@ -4,6 +4,8 @@ import { SidebarLayout } from "../../layouts/SidebarLayout";
 import type { Page } from "../../utils/types";
 import { useMST } from "../_app";
 import { BreadCrumb } from "../../components/BreadCrumb";
+import { observer } from "mobx-react";
+import { INote } from "../../models/Project";
 
 const ProjectPage: Page = () => {
   const store = useMST();
@@ -33,6 +35,15 @@ const ProjectPage: Page = () => {
         <div className='py-4 text-white opacity-l-emp'>
           <p>Project ID: {projectDetails.id}</p>
           <p>Project Name: {projectDetails.name}</p>
+          {projectDetails.allTasks().map((task: INote) => {
+            return (
+              <div className={`flex flex-inline`}>
+                <div className={`w-24`}>{task.text}</div>
+                <div className={`w-24`}>{task.assignedTo}</div>
+                <div className={`w-48`}>{task.createdOn.toDateString()}</div>
+              </div>
+            );
+          })}
         </div>
         {/* <!-- /End replace --> */}
       </div>
@@ -44,4 +55,4 @@ const ProjectPage: Page = () => {
 
 ProjectPage.Layout = SidebarLayout;
 
-export default ProjectPage;
+export default observer(ProjectPage);
