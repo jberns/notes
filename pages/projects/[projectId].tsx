@@ -25,12 +25,12 @@ const ProjectPage: Page = () => {
         <title>{projectDetails.name}</title>
       </Head>
 
-      <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
-        <h1 className='text-white opacity--emp text-2xl font-semibold'>
+      <div className='px-4 mx-auto pymax-w-7xl sm:px-6 md:px-8'>
+        <h1 className='text-2xl font-semibold text-white opacity--emp'>
           <BreadCrumb />
         </h1>
       </div>
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
+      <div className='px-4 mx-auto max-w-7xl sm:px-6 md:px-8'>
         {/* <!-- Replace with your content --> */}
         <div className='py-4 text-white opacity-l-emp'>
           <p>Project ID: {projectDetails.id}</p>

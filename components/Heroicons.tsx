@@ -1,7 +1,7 @@
 export function Folder() {
   return (
     <svg
-      className='h-6 w-6'
+      className='w-6 h-6'
       xmlns='http://www.w3.org/2000/svg'
       fill='none'
       viewBox='0 0 24 24'
@@ -21,7 +21,7 @@ export function Folder() {
 export function Plus() {
   return (
     <svg
-      className='h-6 w-6'
+      className='w-6 h-6'
       xmlns='http://www.w3.org/2000/svg'
       fill='none'
       viewBox='0 0 24 24'
@@ -40,7 +40,7 @@ export function Plus() {
 export function DocumentText() {
   return (
     <svg
-      className='h-6 w-6'
+      className='w-6 h-6'
       xmlns='http://www.w3.org/2000/svg'
       fill='none'
       viewBox='0 0 24 24'
@@ -56,7 +56,7 @@ export function DocumentText() {
   );
 }
 
-export const Selector = (className = "h-6 w-6") => (
+export const Selector = (className = "w-6 h-6") => (
   <svg
     className={className}
     xmlns='http://www.w3.org/2000/svg'

@@ -17,19 +17,19 @@ export const SidebarLayout = observer((props: any) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Dark dp={DP.dp04}>
-        <div className='h-screen flex overflow-hidden'>
+        <div className='flex h-screen overflow-hidden'>
           {/* <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. --> */}
           <Sidebar />
-          <div className='flex flex-col w-0 flex-1 overflow-hidden'>
-            <div className='relative z-10 flex-shrink-0 flex h-16 shadow'>
+          <div className='flex flex-col flex-1 w-0 overflow-hidden'>
+            <div className='relative z-10 flex flex-shrink-0 h-16 shadow'>
               <button
-                className='px-4 border-r border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden'
+                className='px-4 text-gray-500 border-r border-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden'
                 onClick={() => store.openMobileSidebar()}
               >
                 <span className='sr-only'>Open sidebar</span>
                 {/* <!-- Heroicon name: menu-alt-2 --> */}
                 <svg
-                  className='h-6 w-6'
+                  className='w-6 h-6'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
@@ -46,10 +46,10 @@ export const SidebarLayout = observer((props: any) => {
               </button>
               <Dark
                 dp={DP.dp02}
-                className='h-full flex-1 px-4 flex justify-between'
+                className='flex justify-between flex-1 h-full px-4'
               >
-                <div className='flex-1 flex'>
-                  <form className='w-full flex md:ml-0' action='#' method='GET'>
+                <div className='flex flex-1'>
+                  <form className='flex w-full md:ml-0' action='#' method='GET'>
                     <label htmlFor='search_field' className='sr-only'>
                       Search
                     </label>
@@ -57,7 +57,7 @@ export const SidebarLayout = observer((props: any) => {
                       <div className='absolute inset-y-0 left-0 flex items-center pointer-events-none'>
                         {/* <!-- Heroicon name: search --> */}
                         <svg
-                          className='h-5 w-5'
+                          className='w-5 h-5'
                           xmlns='http://www.w3.org/2000/svg'
                           viewBox='0 0 20 20'
                           fill='currentColor'
@@ -72,7 +72,7 @@ export const SidebarLayout = observer((props: any) => {
                       </div>
                       <input
                         id='search_field'
-                        className='bg-transparent block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-black focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm'
+                        className='block w-full h-full py-2 pl-8 pr-3 text-gray-900 placeholder-black bg-transparent border-transparent focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm'
                         placeholder='Search'
                         type='search'
                         name='search'
@@ -80,12 +80,12 @@ export const SidebarLayout = observer((props: any) => {
                     </div>
                   </form>
                 </div>
-                <div className='ml-4 flex items-center md:ml-6'>
-                  <button className='p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'>
+                <div className='flex items-center ml-4 md:ml-6'>
+                  <button className='p-1 text-gray-400 rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'>
                     <span className='sr-only'>View notifications</span>
                     {/* <!-- Heroicon name: bell --> */}
                     <svg
-                      className='h-6 w-6'
+                      className='w-6 h-6'
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
                       viewBox='0 0 24 24'
@@ -107,7 +107,7 @@ export const SidebarLayout = observer((props: any) => {
               </Dark>
             </div>
             <main
-              className='flex-1 relative overflow-y-auto focus:outline-none'
+              className='relative flex-1 overflow-y-auto focus:outline-none'
               tabIndex={0}
             >
               <div className='py-6'>{children}</div>

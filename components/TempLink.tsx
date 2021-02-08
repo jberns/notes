@@ -12,12 +12,12 @@ export const TempLink = observer(() => {
       <Link href='/'>
         <a
           href='#'
-          className='text-white opacity-l-emp group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+          className='flex items-center px-2 py-2 text-sm font-medium text-white rounded-md opacity-l-emp group'
         >
           {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
                       <!-- Heroicon name: home --> */}
           <svg
-            className='text-gray-300 mr-3 h-6 w-6'
+            className='w-6 h-6 mr-3 text-gray-300'
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
             viewBox='0 0 24 24'
@@ -37,12 +37,12 @@ export const TempLink = observer(() => {
 
       <a
         href='#'
-        className='text-white opacity-l-emp group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+        className='flex items-center px-2 py-2 text-sm font-medium text-white rounded-md opacity-l-emp group'
       >
         {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
                       <!-- Heroicon name: home --> */}
         <svg
-          className='text-gray-300 mr-3 h-6 w-6'
+          className='w-6 h-6 mr-3 text-gray-300'
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
           viewBox='0 0 24 24'

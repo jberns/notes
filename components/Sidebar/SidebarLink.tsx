@@ -52,7 +52,7 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
   const addProject = (model: IProject) => {
     return (
       <div
-        className={`cursor-pointer hover:opacity-100 opacity-l-emp text-white px-2 h-full`}
+        className="h-full px-2 text-white cursor-pointer hover:opacity-100 opacity-l-emp"
         onClick={() => createNewPage(model)}
       >
         <Plus />
@@ -68,7 +68,7 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
       <div className={`${leftMargin} w-full`}>
         <Link href={href}>
           <div
-            className={`flex text-white opacity-h-emp items-center text-sm px-2 py-2 font-medium rounded-md`}
+            className="flex items-center px-2 py-2 text-sm font-medium text-white rounded-md opacity-h-emp"
           >
             {icon}
             <span className='ml-4'>{model.name}</span>

@@ -154,13 +154,13 @@ const NotesPage: Page = () => {
       <Head>
         <title>{projectDetails.name}</title>
       </Head>
-      <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
-        <h1 className='text-blue-200 opacity-h-emp text-sm font-semibold'>
+      <div className='px-4 mx-auto pymax-w-7xl sm:px-6 md:px-8'>
+        <h1 className='text-sm font-semibold text-blue-200 opacity-h-emp'>
           {projectDetails.name} {">"} {pageDetails.name}
         </h1>
       </div>
 
-      <div className='pymax-w-7xl mx-auto px-4 sm:px-6 md:px-8'>
+      <div className='px-4 mx-auto pymax-w-7xl sm:px-6 md:px-8'>
         <div className='py-4'>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId='droppable'>

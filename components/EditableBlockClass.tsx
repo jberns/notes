@@ -229,7 +229,7 @@ export class EditableBlock extends React.Component<
                     <div className={`flex`}>
                       <ContentEditable
                         id={note.id}
-                        className={`text-white opacity-l-emp flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
+                        className={`opacity-l-emp text-white flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
                         style={{ padding: "5px" }}
                         innerRef={this.contentEditable}
                         disabled={false} // use true to disable editing/ handle innerHTML change
@@ -239,24 +239,24 @@ export class EditableBlock extends React.Component<
                         onKeyDown={this.onKeyDownHandler}
                         onKeyUp={this.onKeyUpHandler}
                       />
-                      <span className='text-white place-self-center opacity-0 group-hover:opacity-l-emp'>
+                      <span className='text-white opacity-0 place-self-center group-hover:opacity-l-emp'>
                         {Selector()}
                       </span>
                     </div>
                     {note.type == NoteType.task && (
                       <div
-                        className={`flex text-white cursor-auto`}
+                        className='flex text-white cursor-auto'
                         style={{ paddingBottom: "10px" }}
                       >
-                        <div className={`opacity-l-emp`}>{note.type}</div>
-                        <div className={`opacity-l-emp ml-6`}>
+                        <div className='opacity-l-emp'>{note.type}</div>
+                        <div className='ml-6 opacity-l-emp'>
                           {note.createdOn.toLocaleTimeString()}
                         </div>
-                        <div className={`opacity-l-emp ml-6`}>
+                        <div className='ml-6 opacity-l-emp'>
                           {note.assignedTo}
                         </div>
                         <button
-                          className={`opacity-l-emp ml-6`}
+                          className='ml-6 opacity-l-emp'
                           onClick={() => note.updateAssignedTo("Josh")}
                         >
                           Assign

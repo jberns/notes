@@ -6,7 +6,7 @@ export const SidebarMobileMenu = observer(() => {
 
   return (
     <div className='md:hidden'>
-      <div className='fixed inset-0 flex z-40'>
+      <div className='fixed inset-0 z-40 flex'>
         {/* <!--
                 Off-canvas menu overlay, show/hide based on off-canvas menu state.
 
@@ -30,16 +30,16 @@ export const SidebarMobileMenu = observer(() => {
                   From: "translate-x-0"
                   To: "-translate-x-full"
               --> */}
-        <div className='relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4'>
-          <div className='absolute top-0 right-0 -mr-12 pt-2'>
+        <div className='relative flex flex-col flex-1 w-full max-w-xs pt-5 pb-4'>
+          <div className='absolute top-0 right-0 pt-2 -mr-12'>
             <button
-              className='ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'
+              className='flex items-center justify-center w-10 h-10 ml-1 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'
               onClick={() => store.closeMobileSidebar()}
             >
               <span className='sr-only'>Close sidebar</span>
               {/* <!-- Heroicon name: x --> */}
               <svg
-                className='h-6 w-6 text-white'
+                className='w-6 h-6 text-white'
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
                 viewBox='0 0 24 24'
@@ -55,24 +55,24 @@ export const SidebarMobileMenu = observer(() => {
               </svg>
             </button>
           </div>
-          <div className='flex-shrink-0 flex items-center px-4'>
+          <div className='flex items-center flex-shrink-0 px-4'>
             <img
-              className='h-8 w-auto'
+              className='w-auto h-8'
               src='https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg'
               alt='Workflow'
             />
           </div>
-          <div className='mt-5 flex-1 h-0 overflow-y-auto'>
+          <div className='flex-1 h-0 mt-5 overflow-y-auto'>
             <nav className='px-2 space-y-1'>
               {/* <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" --> */}
               <a
                 href='#'
-                className='text-white group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                className='flex items-center px-2 py-2 text-base font-medium text-white rounded-md group'
               >
                 {/* <!-- Current: "text-gray-300", Default: "text-gray-400 group-hover:text-gray-300" -->
                       <!-- Heroicon name: home --> */}
                 <svg
-                  className='text-gray-300 mr-4 h-6 w-6'
+                  className='w-6 h-6 mr-4 text-gray-300'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
@@ -91,11 +91,11 @@ export const SidebarMobileMenu = observer(() => {
 
               <a
                 href='#'
-                className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                className='flex items-center px-2 py-2 text-base font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white group'
               >
                 {/* <!-- Heroicon name: users --> */}
                 <svg
-                  className='text-gray-400 group-hover:text-gray-300 mr-4 h-6 w-6'
+                  className='w-6 h-6 mr-4 text-gray-400 group-hover:text-gray-300'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
@@ -114,11 +114,11 @@ export const SidebarMobileMenu = observer(() => {
 
               <a
                 href='#'
-                className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                className='flex items-center px-2 py-2 text-base font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white group'
               >
                 {/* <!-- Heroicon name: folder --> */}
                 <svg
-                  className='text-gray-400 group-hover:text-gray-300 mr-4 h-6 w-6'
+                  className='w-6 h-6 mr-4 text-gray-400 group-hover:text-gray-300'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
@@ -137,11 +137,11 @@ export const SidebarMobileMenu = observer(() => {
 
               <a
                 href='#'
-                className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                className='flex items-center px-2 py-2 text-base font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white group'
               >
                 {/* <!-- Heroicon name: calendar --> */}
                 <svg
-                  className='text-gray-400 group-hover:text-gray-300 mr-4 h-6 w-6'
+                  className='w-6 h-6 mr-4 text-gray-400 group-hover:text-gray-300'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
@@ -160,11 +160,11 @@ export const SidebarMobileMenu = observer(() => {
 
               <a
                 href='#'
-                className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                className='flex items-center px-2 py-2 text-base font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white group'
               >
                 {/* <!-- Heroicon name: inbox --> */}
                 <svg
-                  className='text-gray-400 group-hover:text-gray-300 mr-4 h-6 w-6'
+                  className='w-6 h-6 mr-4 text-gray-400 group-hover:text-gray-300'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
@@ -183,11 +183,11 @@ export const SidebarMobileMenu = observer(() => {
 
               <a
                 href='#'
-                className='text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                className='flex items-center px-2 py-2 text-base font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white group'
               >
                 {/* <!-- Heroicon name: chart-bar --> */}
                 <svg
-                  className='text-gray-400 group-hover:text-gray-300 mr-4 h-6 w-6'
+                  className='w-6 h-6 mr-4 text-gray-400 group-hover:text-gray-300'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
