@@ -63,7 +63,7 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
   return (
     <Dark
       dp={dp}
-      className={`${nonActiveLink} flex inline-flex w-full items-center rounded-md group`}
+      className={`${nonActiveLink} flex w-full items-center rounded-md group`}
     >
       <div className={`${leftMargin} w-full`}>
         <Link href={href}>
