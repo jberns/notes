@@ -2,7 +2,7 @@ import { values } from "mobx";
 import { Observer, observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { ReactEventHandler, useEffect, useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -82,7 +82,7 @@ const NotesPage: Page = () => {
     console.log("select next", currentBlock);
     const nextBlock =
       ref?.current?.parentElement?.nextElementSibling?.firstElementChild;
-      console.log("next", nextBlock);
+    console.log("next", nextBlock);
     if (nextBlock) {
       // @ts-ignore Focus is not included in element
       nextBlock?.focus();
@@ -149,18 +149,30 @@ const NotesPage: Page = () => {
     // background: isDraggingOver ? "" : "",
   });
 
+  const onPageRename = (e: React.FormEvent<HTMLInputElement>) => {
+    pageDetails?.updateName(e.currentTarget.value);
+  };
+
   return projectDetails && pageDetails ? (
     <div>
       <Head>
         <title>{projectDetails.name}</title>
       </Head>
-      <div className='px-4 mx-auto pymax-w-7xl sm:px-6 md:px-8'>
-        <h1 className='text-sm font-semibold text-blue-200 opacity-h-emp'>
-          {projectDetails.name} {">"} {pageDetails.name}
-        </h1>
-      </div>
+      {/* GRADIENT */}
 
-      <div className='px-4 mx-auto pymax-w-7xl sm:px-6 md:px-8'>
+      <div className='absolute w-full h-48 bg-gradient-to-b from-purple-900 to-transparent'></div>
+
+      {/* BODY */}
+      <div className='px-4 mx-auto sm:px-6 md:px-8'>
+        <input
+          type='text'
+          name='title'
+          id='title'
+          value={pageDetails.name}
+          onChange={onPageRename}
+          className='w-full px-2 mt-12 -mx-2 text-5xl font-semibold text-white bg-transparent border-none outline-none opacity-h-emp focus:outline-none'
+        ></input>
+        
         <div className='py-4'>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId='droppable'>

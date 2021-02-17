@@ -20,7 +20,7 @@ export const Sidebar = observer(() => {
           <div className='flex flex-col flex-1 h-0'>
             <Dark dp={DP.dp01}>
               <div className='flex items-center flex-shrink-0 h-16 px-4'>
-                <span className='text-xl italic font-bold text-blue-200 opacity-h-emp'>
+                <span className='text-xl italic font-bold text-white opacity-h-emp'>
                   Project Notes
                 </span>
               </div>

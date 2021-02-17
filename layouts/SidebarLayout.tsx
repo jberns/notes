@@ -110,7 +110,7 @@ export const SidebarLayout = observer((props: any) => {
               className='relative flex-1 overflow-y-auto focus:outline-none'
               tabIndex={0}
             >
-              <div className='py-6'>{children}</div>
+              <div>{children}</div>
             </main>
           </div>
         </div>

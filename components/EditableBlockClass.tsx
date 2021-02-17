@@ -229,7 +229,7 @@ export class EditableBlock extends React.Component<
                     <div className={`flex`}>
                       <ContentEditable
                         id={note.id}
-                        className={`opacity-l-emp text-white flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
+                        className={`opacity-h-emp text-white flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
                         style={{ padding: "5px" }}
                         innerRef={this.contentEditable}
                         disabled={false} // use true to disable editing/ handle innerHTML change
