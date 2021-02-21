@@ -61,7 +61,7 @@ export const Page = types.model({
     //@ts-ignore
     self.notes_ref = newNoteRefArray
   },
-  updateName(newName: string) {
+  setName(newName: string) {
     self.name = newName;
   }
 }))
@@ -72,7 +72,7 @@ export const Project = types.model({
   icon: types.optional(types.string, ""),
   pages: types.optional(types.array(Page), [])
 }).actions(self => ({
-  changeName(newName: string) {
+  setName(newName: string) {
     self.name = newName
   },
   addPage(newPage: IPage) {

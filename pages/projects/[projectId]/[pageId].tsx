@@ -9,6 +9,8 @@ import {
   DroppableStateSnapshot,
   DropResult,
 } from "react-beautiful-dnd";
+import { Gradient } from "../../../components/Dashboard/Gradient";
+import { HeaderInput } from "../../../components/Dashboard/Header";
 import { EditableBlock } from "../../../components/EditableBlockClass";
 import { SidebarLayout } from "../../../layouts/SidebarLayout";
 import { INote, IPage, IProject, Note } from "../../../models/Project";
@@ -45,7 +47,7 @@ const NotesPage: Page = () => {
   projectDetails = store.projects.find((project) => project.id === projectId);
   pageDetails = projectDetails?.pages.find((page) => page.id === pageId);
 
-  const addBlock = ({index, newBlock}: IAddBlock): void => {
+  const addBlock = ({ index, newBlock }: IAddBlock): void => {
     const newId = uid();
     pageDetails?.addNoteRef(
       Note.create({ id: newId, text: newBlock.text, tag: newBlock.tag }),
@@ -65,7 +67,7 @@ const NotesPage: Page = () => {
     focusBlock(prevBlock);
   };
 
-  const deleteBlock = ({id, index}: IDeleteBlock): void => {
+  const deleteBlock = ({ id, index }: IDeleteBlock): void => {
     const prevBlock = pageDetails?.notes_ref[index - 1];
 
     if (prevBlock) {
@@ -122,29 +124,15 @@ const NotesPage: Page = () => {
     // background: isDraggingOver ? "" : "",
   });
 
-  const onPageRename = (e: React.FormEvent<HTMLInputElement>) => {
-    pageDetails?.updateName(e.currentTarget.value);
-  };
-
   return projectDetails && pageDetails ? (
     <div>
       <Head>
         <title>{projectDetails.name}</title>
       </Head>
-      {/* GRADIENT */}
 
-      <div className='absolute w-full h-48 bg-gradient-to-b from-purple-900 to-transparent'></div>
-
-      {/* BODY */}
+      <Gradient startColor='from-purple-900' />
       <div className='px-4 mx-auto sm:px-6 md:px-8'>
-        <input
-          type='text'
-          name='title'
-          id='title'
-          value={pageDetails.name}
-          onChange={onPageRename}
-          className='w-full px-2 mt-12 -mx-2 text-5xl font-semibold text-white bg-transparent border-none outline-none opacity-h-emp focus:outline-none'
-        ></input>
+        <HeaderInput page={pageDetails} />
 
         <div className='py-4'>
           <DragDropContext onDragEnd={onDragEnd}>

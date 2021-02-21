@@ -2,21 +2,18 @@ import { observer } from "mobx-react";
 import { SidebarLayout } from "../layouts/SidebarLayout";
 import type { Page } from "../utils/types";
 import { useMST } from "./_app";
+import {Gradient} from "../components/Dashboard/Gradient";
+import { HeaderFixed } from "../components/Dashboard/Header";
 
 const Home: Page = () => {
   const store = useMST();
 
   return (
     <div>
-      <div className='absolute w-full h-48 bg-gradient-to-b from-green-900 to-transparent'></div>
+      <Gradient startColor="from-green-900"/>
+      
+      <HeaderFixed title="All Projects Summary"/>
 
-      {/* BODY */}
-      <div className='px-4 mx-auto sm:px-6 md:px-8'>
-        <div
-          id='title'
-          className='w-full px-2 -mx-2 text-5xl font-semibold text-white bg-transparent border-none outline-none pt-14 opacity-h-emp focus:outline-none'
-        >All Projects Summary</div>
-      </div>
       <div>
         {store.projects.map((project) => {
           const { name } = project;
