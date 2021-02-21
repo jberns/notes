@@ -15,9 +15,10 @@ import { getCaretCoordinates, setCaretToEnd } from "../utils";
 import { DP } from "./Dark";
 import { SelectMenu } from "./SelectMenu";
 import { Selector } from "./Heroicons";
-import { Observer, observer } from "mobx-react";
+import { Observer } from "mobx-react";
 import sanitizeHtml from "sanitize-html";
 import { Tag } from "./SelectMenu";
+import { PAGE_CONTAINER } from "../utils/constants";
 
 export type IContentEditable = {
   key: string;
@@ -25,11 +26,8 @@ export type IContentEditable = {
   note: INote;
   addBlock: (props: IAddBlock) => void;
   deleteBlock: (props: IDeleteBlock) => void;
-  selectNextBlock: (ref: React.RefObject<HTMLInputElement>) => void;
-  selectPreviousElement: (
-    ref: React.RefObject<HTMLInputElement>
-  ) => Element | null | undefined;
-  selectPreviousBlock: (ref: Element | null | undefined) => void;
+  selectNextBlock: (index: number) => void;
+  selectPreviousBlock: (index: number) => void;
 };
 
 type ContentEditableState = {
@@ -92,7 +90,6 @@ export class EditableBlock extends React.Component<
       addBlock,
       deleteBlock,
       selectNextBlock,
-      selectPreviousElement,
       selectPreviousBlock,
     } = this.props;
 
@@ -110,25 +107,23 @@ export class EditableBlock extends React.Component<
 
         addBlock({
           index: index,
-          ref: this.contentEditable,
           newBlock: { text: "", tag: "p" },
         });
       }
 
       if (e.key === "Backspace" && !note.text) {
         e.preventDefault();
-        deleteBlock({ id: note.id, ref: this.contentEditable });
+        deleteBlock({ id: note.id, index: index });
       }
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        selectNextBlock(this.contentEditable);
+        selectNextBlock(index);
       }
 
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        const previousElement = selectPreviousElement(this.contentEditable);
-        selectPreviousBlock(previousElement);
+        selectPreviousBlock(index);
       }
     } else {
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -175,9 +170,14 @@ export class EditableBlock extends React.Component<
     const { note } = this.props;
     const { x, y } = getCaretCoordinates();
 
+    const pageElement = document.querySelector(`#${PAGE_CONTAINER}`);
+    const positionX = pageElement?.getBoundingClientRect().left || 0;
+    const positionY = pageElement?.getBoundingClientRect().top || 0;
+    const scrollY = pageElement?.scrollTop || 0;
+
     this.setState({
       selectMenuIsOpen: true,
-      selectMenuPosition: { x, y },
+      selectMenuPosition: { x: x - positionX, y: y + scrollY - positionY },
     });
   }
 
@@ -193,7 +193,6 @@ export class EditableBlock extends React.Component<
       ...draggableStyle,
     });
 
-    // TODO 1. Add sanatize
     // TODO 2. Create edit menu on highlight
 
     return (
@@ -215,7 +214,7 @@ export class EditableBlock extends React.Component<
               <Observer>
                 {() => (
                   <div
-                    id={note.id}
+                    id={`${note.id}-draggable`}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
@@ -247,11 +246,24 @@ export class EditableBlock extends React.Component<
 
                       <div className={`flex w-full`}>
                         <ContentEditable
-                          id={note.id}
-                          className={`${note.complete ? "opacity-l-emp line-through": "opacity-h-emp"} text-white flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
+                          id={`${note.id}-ce`}
+                          className={`
+                          ${
+                            note.complete
+                              ? "opacity-l-emp line-through"
+                              : "opacity-h-emp"
+                          }
+                          text-white whitespace-pre-wrap flex-1 cursor-auto 
+                          rounded-md 
+                          ${DP.dp06} 
+                          hover:${DP.dp16} 
+                          focus:${DP.dp25}
+                          hover:shadow-2xl 
+                          `}
                           style={{ padding: "5px" }}
                           innerRef={this.contentEditable}
-                          disabled={note.complete} // use true to disable editing/ handle innerHTML change
+                          disabled={false} // if it is disabled on note.complete then it cant be navigated with arrows
+                          // disabled={note.complete} // use true to disable editing/ handle innerHTML change
                           html={note.text}
                           tagName={note.tag}
                           onChange={this.updateText}

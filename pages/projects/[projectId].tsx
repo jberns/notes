@@ -73,7 +73,7 @@ const ProjectPage: Page = () => {
                     <tr>
                       <th
                         scope='col'
-                        className='px-6 py-3 text-xs font-medium tracking-wider text-left text-center text-white uppercase w-28 w-30 opacity-lemp'
+                        className='px-6 py-3 text-xs font-medium tracking-wider text-center text-white uppercase w-28 w-30 opacity-lemp'
                       >
                         Status
                       </th>

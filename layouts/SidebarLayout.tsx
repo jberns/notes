@@ -6,6 +6,8 @@ import { Sidebar } from "../components/Sidebar/Sidebar";
 import { ProfileMenu } from "../components/ProfileMenu";
 import { useMST } from "../pages/_app";
 
+import { PAGE_CONTAINER } from "../utils/constants";
+
 export const SidebarLayout = observer((props: any) => {
   const store = useMST();
   const { children } = props;
@@ -17,10 +19,10 @@ export const SidebarLayout = observer((props: any) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Dark dp={DP.dp04}>
-        <div className='flex h-screen overflow-hidden'>
+        <div className='flex h-screen'>
           {/* <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. --> */}
           <Sidebar />
-          <div className='flex flex-col flex-1 w-0 overflow-hidden'>
+          <div className='flex flex-col flex-1 w-0'>
             <div className='relative flex flex-shrink-0 h-16 shadow z-60'>
               <button
                 className='px-4 text-gray-500 border-r border-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden'
@@ -46,7 +48,7 @@ export const SidebarLayout = observer((props: any) => {
               </button>
               <Dark
                 dp={DP.dp02}
-                className='flex justify-between flex-1 h-full px-4'
+                className='flex justify-between flex-1 min-h-full px-4'
               >
                 <div className='flex flex-1'>
                   <form className='flex w-full md:ml-0' action='#' method='GET'>
@@ -72,7 +74,7 @@ export const SidebarLayout = observer((props: any) => {
                       </div>
                       <input
                         id='search_field'
-                        className='block w-full h-full py-2 pl-8 pr-3 text-gray-900 placeholder-black bg-transparent border-transparent focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm'
+                        className='block w-full min-h-full py-2 pl-8 pr-3 text-gray-900 placeholder-black bg-transparent border-transparent focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm'
                         placeholder='Search'
                         type='search'
                         name='search'
@@ -107,6 +109,7 @@ export const SidebarLayout = observer((props: any) => {
               </Dark>
             </div>
             <main
+              id={PAGE_CONTAINER}
               className='relative flex-1 overflow-y-auto focus:outline-none'
               tabIndex={0}
             >
