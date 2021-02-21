@@ -7,6 +7,7 @@ import { BreadCrumb } from "../../components/BreadCrumb";
 import { observer } from "mobx-react";
 import { INote, IProject } from "../../models/Project";
 import { DP } from "../../components/Dark";
+import { StatsCard } from "../../components/Dashboard/StatsCard";
 
 const ProjectPage: Page = () => {
   const store = useMST();
@@ -24,6 +25,10 @@ const ProjectPage: Page = () => {
     projectDetails?.changeName(e.currentTarget.value);
   };
 
+  const openTasks = projectDetails?.openTasks().length || 0;
+  const allTasks = projectDetails?.allTasks().length || 0 ;
+  const pctComplete = projectDetails?.pctComplete() || 0 ;
+
   return projectDetails ? (
     <div>
       <Head>
@@ -31,7 +36,7 @@ const ProjectPage: Page = () => {
       </Head>
 
       {/* BODY */}
-      <div className='absolute w-full h-48 bg-gradient-to-b from-purple-900 to-transparent'></div>
+      <div className='absolute w-full h-48 bg-gradient-to-b from-blue-900 to-transparent'></div>
 
       <div className='px-4 mx-auto sm:px-6 md:px-8'>
         <input
@@ -46,7 +51,23 @@ const ProjectPage: Page = () => {
         <div className='flex flex-col'>
           <div className='z-10 py-4 overflow-x-auto'>
             <div className='inline-block min-w-full align-middle sm:px-6 lg:px-8'>
-              <div className='overflow-hidden border-b border-gray-900 shadow sm:rounded-lg'>
+              <dl className='grid grid-cols-1 gap-5 mt-5 sm:grid-cols-3'>
+                <StatsCard
+                  title='Open Tasks'
+                  stat={openTasks}
+                />
+                <StatsCard
+                  title='All Tasks'
+                  stat={allTasks}
+                />
+
+                <StatsCard
+                  title='% Complete'
+                  stat={pctComplete}
+                  type="percent"
+                />
+              </dl>
+              <div className='mt-5 overflow-hidden border-b border-gray-900 shadow sm:rounded-lg'>
                 <table className='w-full divide-y divide-gray-900 table-fixed'>
                   <thead className={DP.dp12}>
                     <tr>
@@ -58,7 +79,7 @@ const ProjectPage: Page = () => {
                       </th>
                       <th
                         scope='col'
-                        className='w-1/3 px-6 py-3 text-xs font-medium tracking-wider text-left text-white uppercase opacity-lemp'
+                        className='w-1/2 px-6 py-3 text-xs font-medium tracking-wider text-left text-white uppercase opacity-lemp'
                       >
                         Description
                       </th>
@@ -82,13 +103,16 @@ const ProjectPage: Page = () => {
                   <tbody className={`divide-y divide-gray-900 ${DP.dp16}`}>
                     {projectDetails.allTasks().map((task: INote) => {
                       return (
-                        <tr>
+                        <tr key={task.id}>
                           <td className='text-sm font-medium text-white opacity-h-emp whitespace-nowrap'>
                             <label className='inline-flex w-full'>
                               <input
                                 type='checkbox'
                                 className='w-5 h-5 m-auto text-purple-600 bg-gray-200 rounded form-checkbox'
-                                
+                                checked={task.complete}
+                                onChange={(e) => {
+                                  task.updateStatus(!task.complete);
+                                }}
                               />
                             </label>
                           </td>

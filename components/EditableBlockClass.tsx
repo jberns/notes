@@ -226,29 +226,48 @@ export class EditableBlock extends React.Component<
                     )}
                     className={`mt-2 group`}
                   >
-                    <div className={`flex`}>
-                      <ContentEditable
-                        id={note.id}
-                        className={`opacity-h-emp text-white flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
-                        style={{ padding: "5px" }}
-                        innerRef={this.contentEditable}
-                        disabled={false} // use true to disable editing/ handle innerHTML change
-                        html={note.text}
-                        tagName={note.tag}
-                        onChange={this.updateText}
-                        onKeyDown={this.onKeyDownHandler}
-                        onKeyUp={this.onKeyUpHandler}
-                      />
-                      <span className='text-white opacity-0 place-self-center group-hover:opacity-l-emp'>
-                        {Selector()}
-                      </span>
+                    <div className='flex'>
+                      {note.type === NoteType.task && (
+                        <div
+                          className='z-10 mr-3 place-self-center'
+                          style={{ padding: "5px" }}
+                        >
+                          <label className='inline-flex'>
+                            <input
+                              type='checkbox'
+                              className='w-5 h-5 text-purple-600 bg-gray-200 rounded form-checkbox'
+                              checked={note.complete}
+                              onChange={(e) => {
+                                note.updateStatus(!note.complete);
+                              }}
+                            />
+                          </label>
+                        </div>
+                      )}
+
+                      <div className={`flex w-full`}>
+                        <ContentEditable
+                          id={note.id}
+                          className={`${note.complete ? "opacity-l-emp line-through": "opacity-h-emp"} text-white flex-1 cursor-auto ${DP.dp06} rounded-md hover:${DP.dp16} hover:shadow-2xl focus:${DP.dp25}`}
+                          style={{ padding: "5px" }}
+                          innerRef={this.contentEditable}
+                          disabled={note.complete} // use true to disable editing/ handle innerHTML change
+                          html={note.text}
+                          tagName={note.tag}
+                          onChange={this.updateText}
+                          onKeyDown={this.onKeyDownHandler}
+                          onKeyUp={this.onKeyUpHandler}
+                        />
+                        <span className='text-white opacity-0 place-self-center group-hover:opacity-l-emp'>
+                          {Selector()}
+                        </span>
+                      </div>
                     </div>
                     {note.type == NoteType.task && (
                       <div
-                        className='flex text-white cursor-auto'
+                        className='flex justify-end mr-6 text-xs text-white cursor-auto'
                         style={{ paddingBottom: "10px" }}
                       >
-                        <div className='opacity-l-emp'>{note.type}</div>
                         <div className='ml-6 opacity-l-emp'>
                           {note.createdOn.toLocaleTimeString()}
                         </div>

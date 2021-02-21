@@ -21,7 +21,7 @@ export const SidebarLayout = observer((props: any) => {
           {/* <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. --> */}
           <Sidebar />
           <div className='flex flex-col flex-1 w-0 overflow-hidden'>
-            <div className='relative z-10 flex flex-shrink-0 h-16 shadow'>
+            <div className='relative flex flex-shrink-0 h-16 shadow z-60'>
               <button
                 className='px-4 text-gray-500 border-r border-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden'
                 onClick={() => store.openMobileSidebar()}

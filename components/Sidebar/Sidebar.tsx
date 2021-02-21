@@ -15,7 +15,7 @@ export const Sidebar = observer(() => {
 
       {/* <!-- Static sidebar for desktop --> */}
       <div className='hidden md:flex md:flex-shrink-0'>
-        <div className='flex flex-col w-72'>
+        <div className='flex flex-col w-64'>
           {/* <!-- Sidebar component, swap this element with another sidebar if you like --> */}
           <div className='flex flex-col flex-1 h-0'>
             <Dark dp={DP.dp01}>
