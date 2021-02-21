@@ -34,7 +34,7 @@ export const ProfileMenu = () => {
                     --> */}
       {isMenuOpen && (
         <Dark
-          className='absolute right-0 w-48 py-1 mt-2 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5'
+          className='absolute right-0 z-50 w-48 py-1 mt-2 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5'
           role='menu'
           aria-orientation='vertical'
           aria-labelledby='user-menu'

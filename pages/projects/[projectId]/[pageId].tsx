@@ -186,7 +186,7 @@ const NotesPage: Page = () => {
                     >
                       {pageDetails?.notes_ref.map((note, key) => {
                         return (
-                          <Observer>
+                          <Observer key={note.id}>
                             {() => (
                               <EditableBlock
                                 key={note.id}

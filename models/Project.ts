@@ -23,6 +23,7 @@ export const Note = types.model({
   text: types.optional(types.string, ""),
   tag: types.optional(types.string, "p"),
   type: types.optional(types.enumeration<NoteType>("NoteType", Object.values(NoteType)), NoteType.note),
+  complete: types.optional(types.boolean, false),
   createdOn: types.optional(types.Date, new Date()),
   assignedTo: types.maybeNull(types.string)
   // assignedTo: types.maybeNull(types.reference(User))
@@ -38,6 +39,9 @@ export const Note = types.model({
   },
   updateAssignedTo(assignedTo: string) {
     self.assignedTo = assignedTo
+  },
+  updateStatus(newStatus: boolean) {
+    self.complete = newStatus
   }
 }))
 
@@ -87,8 +91,30 @@ export const Project = types.model({
       return tasks
     }, [])
     return filteredTasks
-  }
+  },
+  openTasks() {
+    const filteredTasks: INote[] = self.pages.reduce((tasks: INote[], page) => {
+      if (page.notes_ref) {
+        const onlyTasks = page.notes_ref.filter((note) => {
+          return note.type === NoteType.task && note.complete === false
+        })
 
+        tasks.push(...onlyTasks)
+      }
+      return tasks
+    }, [])
+    return filteredTasks
+  },
+  pctComplete() {
+    const all = this.allTasks().length || 0;
+    console.log(all);
+    const open = this.openTasks().length || 0;
+    if (all > 0) {
+      return (all - open) / all
+    }
+
+    return 0
+  }
 }))
 
 export const Navigation = types.model({
@@ -123,12 +149,5 @@ export const RootStore = types.model({
     self.navigation.changeMobileSidebarState(false)
   }
 })).views(self => ({
-  allTaskSummary() {
-    const summary = self.projects.reduce((tasks: { name: string; count: number }[], project) => {
-      tasks.push({ name: project["name"], count: project.allTasks().length })
-      return tasks
-    }, [])
-    return summary
-  }
 }))
 
