@@ -27,9 +27,9 @@ export const Sidebar = observer(() => {
             </Dark>
             <Dark
               dp={DP.dp01}
-              className='flex flex-col flex-1 h-full overflow-y-auto'
+              className='flex flex-col flex-1 min-h-full overflow-y-auto'
             >
-              <nav className='flex-1 h-full px-2 py-4 space-y-1'>
+              <nav className='flex-1 min-h-full px-2 py-4 space-y-1'>
                 <TempLink />
                 <SidebarProjectList />
               </nav>

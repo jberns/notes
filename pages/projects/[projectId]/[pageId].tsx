@@ -24,98 +24,73 @@ export interface INewBlock {
 //TODO Clean this up with IContentEditable Interface
 export interface IAddBlock {
   index: number;
-  ref: React.RefObject<HTMLInputElement> | undefined;
   newBlock: INewBlock;
 }
 export interface IDeleteBlock {
   id: string;
-  ref: React.RefObject<HTMLInputElement> | undefined;
+  index: number;
 }
 
 const NotesPage: Page = () => {
   const store = useMST();
   const router = useRouter();
-
-  const [
-    currentBlock,
-    setCurrentBlock,
-  ] = useState<React.RefObject<HTMLInputElement> | null>();
-  const [previousBlock, setPreviousBlock] = useState<Element | null>();
-
   const { projectId, pageId } = router.query;
-  let projectDetails: IProject | undefined | null = null;
-  let pageDetails: IPage | undefined | null = null;
+
+  const [selectBlock, setSelectBlock] = useState<String>();
 
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
+  let projectDetails: IProject | undefined | null = null;
+  let pageDetails: IPage | undefined | null = null;
   projectDetails = store.projects.find((project) => project.id === projectId);
-
   pageDetails = projectDetails?.pages.find((page) => page.id === pageId);
 
-  const addBlock = (props: IAddBlock): void => {
-    const { index, ref, newBlock } = props;
+  const addBlock = ({index, newBlock}: IAddBlock): void => {
     const newId = uid();
     pageDetails?.addNoteRef(
       Note.create({ id: newId, text: newBlock.text, tag: newBlock.tag }),
       index
     );
 
-    if (ref) {
-      setCurrentBlock(ref);
-    }
+    setSelectBlock(newId);
   };
 
-  const deleteBlock = (props: IDeleteBlock): void => {
-    const { id, ref } = props;
-    const previousBlock = selectPreviousElement(ref);
+  const selectNextBlock = (index: number) => {
+    const nextBlock = pageDetails?.notes_ref[index + 1];
+    focusBlock(nextBlock);
+  };
 
-    if (previousBlock) {
+  const selectPreviousBlock = (index: number) => {
+    const prevBlock = pageDetails?.notes_ref[index - 1];
+    focusBlock(prevBlock);
+  };
+
+  const deleteBlock = ({id, index}: IDeleteBlock): void => {
+    const prevBlock = pageDetails?.notes_ref[index - 1];
+
+    if (prevBlock) {
       //Only delete if a previous block exists, otherwise the page can have no blocks
       store.deleteNote(id);
-      setPreviousBlock(previousBlock);
+      focusBlock(prevBlock);
     }
   };
 
-  const selectNextBlock = (
-    ref: React.RefObject<HTMLInputElement> | null | undefined
-  ) => {
-    console.log("select next", currentBlock);
-    const nextBlock =
-      ref?.current?.parentElement?.nextElementSibling?.firstElementChild;
-    console.log("next", nextBlock);
-    if (nextBlock) {
-      // @ts-ignore Focus is not included in element
-      nextBlock?.focus();
-      setCaretToEnd(nextBlock);
-    }
-  };
-
-  const selectPreviousElement = (
-    ref: React.RefObject<HTMLInputElement> | null | undefined
-  ) => {
-    return ref?.current?.parentElement?.previousElementSibling
-      ?.firstElementChild;
-  };
-
-  const selectPreviousBlock = (ref: Element | null | undefined) => {
-    if (ref) {
-      // @ts-ignore Focus is not included in element
-      ref.focus();
-      setCaretToEnd(ref);
+  const focusBlock = (note: INote | undefined) => {
+    if (note) {
+      const block = document.querySelector(`#${note.id}-ce`);
+      if (block) {
+        //@ts-ignore for .focus() not existing on Element
+        block?.focus();
+        setCaretToEnd(block);
+      }
     }
   };
 
   useEffect(() => {
-    //If not clearing out the current and previous blocks, they are the same between renders and then fail to update references
-    console.log("effect", currentBlock);
-    selectNextBlock(currentBlock);
-    setPreviousBlock(null);
-  }, [currentBlock]);
-
-  useEffect(() => {
-    selectPreviousBlock(previousBlock);
-    setCurrentBlock(null);
-  }, [previousBlock]);
+    const block = document.querySelector(`#${selectBlock}-ce`);
+    //@ts-ignore for .focus() not existing on Element
+    block?.focus();
+  }, [selectBlock]);
 
   const reorder = (page: IPage, startIndex: number, endIndex: number) => {
     const result = Array.from(page.notes_ref);
@@ -140,8 +115,6 @@ const NotesPage: Page = () => {
     //Page must exist is an element is being dragged
     pageDetails!.updateNoteRef(blocks);
   };
-
-  const grid = 8;
 
   const getListStyle = (
     isDraggingOver: DroppableStateSnapshot["isDraggingOver"]
@@ -172,7 +145,7 @@ const NotesPage: Page = () => {
           onChange={onPageRename}
           className='w-full px-2 mt-12 -mx-2 text-5xl font-semibold text-white bg-transparent border-none outline-none opacity-h-emp focus:outline-none'
         ></input>
-        
+
         <div className='py-4'>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId='droppable'>
@@ -184,18 +157,17 @@ const NotesPage: Page = () => {
                       ref={provided.innerRef}
                       style={getListStyle(snapshot.isDraggingOver)}
                     >
-                      {pageDetails?.notes_ref.map((note, key) => {
+                      {pageDetails?.notes_ref.map((note, index) => {
                         return (
                           <Observer key={note.id}>
                             {() => (
                               <EditableBlock
                                 key={note.id}
-                                index={key}
+                                index={index}
                                 note={note}
                                 addBlock={addBlock}
                                 deleteBlock={deleteBlock}
                                 selectNextBlock={selectNextBlock}
-                                selectPreviousElement={selectPreviousElement}
                                 selectPreviousBlock={selectPreviousBlock}
                               />
                             )}

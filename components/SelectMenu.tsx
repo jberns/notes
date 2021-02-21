@@ -99,7 +99,7 @@ export const SelectMenu = (props: ISelectMenuProps) => {
 
   return (
     <div
-      className={`${DP.dp08} absolute z-10 shadow-lg -ml-72 -mt-6 w-48 rounded-md py-1`}
+      className={`${DP.dp08} absolute z-10 shadow-lg w-48 rounded-md py-1`}
       style={{ top: position.y, left: position.x }}
       role='menu'
       aria-orientation='vertical'

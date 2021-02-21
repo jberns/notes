@@ -52,7 +52,7 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
   const addProject = (model: IProject) => {
     return (
       <div
-        className="h-full pr-2 text-white cursor-pointer hover:opacity-100 opacity-l-emp"
+        className="min-h-full pr-2 text-white cursor-pointer hover:opacity-100 opacity-l-emp"
         onClick={() => createNewPage(model)}
       >
         <Plus />
