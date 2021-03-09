@@ -128,7 +128,8 @@ export const Navigation = types.model({
 export const RootStore = types.model({
   projects: types.array(Project),
   notes: types.map(Note),
-  navigation: Navigation
+  navigation: Navigation,
+  copiedNote: types.maybeNull(types.safeReference(Note, { acceptsUndefined: false })),
 }).actions(self => ({
   addProject(project: IProject) {
     self.projects.push(project)
@@ -147,6 +148,9 @@ export const RootStore = types.model({
   },
   closeMobileSidebar() {
     self.navigation.changeMobileSidebarState(false)
+  },
+  setCopiedNote(note: INote) {
+    self.copiedNote = note
   }
 })).views(self => ({
 }))

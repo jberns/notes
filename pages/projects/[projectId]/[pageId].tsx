@@ -28,6 +28,11 @@ export interface IAddBlock {
   index: number;
   newBlock: INewBlock;
 }
+
+export interface IPasteBlockReference {
+  index: number;
+  referenceBlock: INote;
+}
 export interface IDeleteBlock {
   id: string;
   index: number;
@@ -55,6 +60,23 @@ const NotesPage: Page = () => {
     );
 
     setSelectBlock(newId);
+  };
+
+  const pasteBlockReference = ({
+    index,
+    referenceBlock,
+  }: IPasteBlockReference): void => {
+    //! If you attempt to add the same block to the same page - React loses track of the objects due to duplicated keys 
+    //! Potential solution:  
+    if (!pageDetails?.notes_ref.includes(referenceBlock)) {
+      pageDetails?.addNoteRef(referenceBlock, index);
+
+      setSelectBlock(referenceBlock.id);
+    } else {
+      // TODO Create error modal when keys are duplicated 
+      console.log("Can't add same not to this page")
+    }
+
   };
 
   const selectNextBlock = (index: number) => {
@@ -154,6 +176,7 @@ const NotesPage: Page = () => {
                                 index={index}
                                 note={note}
                                 addBlock={addBlock}
+                                pasteBlockReference={pasteBlockReference}
                                 deleteBlock={deleteBlock}
                                 selectNextBlock={selectNextBlock}
                                 selectPreviousBlock={selectPreviousBlock}

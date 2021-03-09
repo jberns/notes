@@ -1,3 +1,4 @@
+import { Observer } from "mobx-react";
 import React from "react";
 import {
   Draggable,
@@ -5,26 +6,27 @@ import {
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
+import sanitizeHtml from "sanitize-html";
 import { INote, IRootStore, NoteType } from "../models/Project";
 import {
   IAddBlock,
+  IPasteBlockReference,
   IDeleteBlock,
 } from "../pages/projects/[projectId]/[pageId]";
 import { MSTContext } from "../pages/_app";
 import { getCaretCoordinates, setCaretToEnd } from "../utils";
-import { DP } from "./Dark";
-import { SelectMenu } from "./SelectMenu";
-import { Selector } from "./Heroicons";
-import { Observer } from "mobx-react";
-import sanitizeHtml from "sanitize-html";
-import { Tag } from "./SelectMenu";
 import { PAGE_CONTAINER } from "../utils/constants";
+import { ContextMenu, ContextTag } from "./ContextMenu";
+import { DP } from "./Dark";
+import { Selector } from "./Heroicons";
+import { SelectMenu, Tag } from "./SelectMenu";
 
 export type IContentEditable = {
   key: string;
   index: number;
   note: INote;
   addBlock: (props: IAddBlock) => void;
+  pasteBlockReference: (props: IPasteBlockReference) => void;
   deleteBlock: (props: IDeleteBlock) => void;
   selectNextBlock: (index: number) => void;
   selectPreviousBlock: (index: number) => void;
@@ -33,10 +35,12 @@ export type IContentEditable = {
 type ContentEditableState = {
   store: IRootStore;
   html: string;
-  selectMenuIsOpen: boolean;
-  previousKey: string;
-  selectMenuPosition: { x: number; y: number };
   htmlBackup: string;
+  previousKey: string;
+  selectMenuIsOpen: boolean;
+  selectMenuPosition: { x: number; y: number };
+  contextMenuIsOpen: boolean;
+  contextMenuPosition: { x: number; y: number };
 };
 
 export class EditableBlock extends React.Component<
@@ -49,18 +53,23 @@ export class EditableBlock extends React.Component<
     this.updateText = this.updateText.bind(this);
     this.onKeyDownHandler = this.onKeyDownHandler.bind(this);
     this.onKeyUpHandler = this.onKeyUpHandler.bind(this);
-    this.openSelectMenuHandler = this.openSelectMenuHandler.bind(this);
     this.tagSelectionHandler = this.tagSelectionHandler.bind(this);
+    this.contextSelectionHandler = this.contextSelectionHandler.bind(this);
+    this.openSelectMenuHandler = this.openSelectMenuHandler.bind(this);
     this.closeSelectMenuHandler = this.closeSelectMenuHandler.bind(this);
+    this.openContextMenuHandler = this.openContextMenuHandler.bind(this);
+    this.closeContextMenuHandler = this.closeContextMenuHandler.bind(this);
 
     this.state = {
       //@ts-ignore will load in component did mount
       store: {},
       html: "",
       htmlBackup: "",
-      selectMenuIsOpen: false,
       previousKey: "",
+      selectMenuIsOpen: false,
       selectMenuPosition: { x: 0, y: 0 },
+      contextMenuIsOpen: false,
+      contextMenuPosition: { x: 0, y: 0 },
     };
   }
 
@@ -73,6 +82,15 @@ export class EditableBlock extends React.Component<
       html: this.props.note.text,
       htmlBackup: this.props.note.text,
     });
+
+    // document.addEventListener("contextmenu", (event) => {
+    //   event.preventDefault();
+    //   // console.log(event)
+    // });
+  }
+
+  componentWillUnmount() {
+    // document.removeEventListener("contextmenu");
   }
 
   updateText(e: ContentEditableEvent) {
@@ -138,16 +156,14 @@ export class EditableBlock extends React.Component<
     if (e.key === "/") {
       this.openSelectMenuHandler();
     }
+
+    if (e.key === "Escape") {
+      this.closeSelectMenuHandler("none");
+      this.closeContextMenuHandler();
+    }
+
+    console.log(e.key);
   }
-
-  closeSelectMenuHandler = () => {
-    this.contentEditable.current?.focus();
-
-    this.setState({
-      selectMenuIsOpen: false,
-      htmlBackup: "",
-    });
-  };
 
   tagSelectionHandler = (tag: Tag) => {
     const { note } = this.props;
@@ -158,7 +174,7 @@ export class EditableBlock extends React.Component<
     note.updateText(htmlBackup);
 
     this.setState({ html: htmlBackup }, () => {
-      this.closeSelectMenuHandler();
+      this.closeSelectMenuHandler("none");
       this.contentEditable.current?.focus();
       if (this.contentEditable.current) {
         setCaretToEnd(this.contentEditable.current);
@@ -166,7 +182,35 @@ export class EditableBlock extends React.Component<
     });
   };
 
+  contextSelectionHandler = (
+    action: ContextTag,
+    index: number,
+    note: INote
+  ) => {
+    const { store } = this.state;
+
+    const { pasteBlockReference } = this.props;
+    if (action.id === "copy") {
+      store.setCopiedNote(note);
+    }
+
+    if (action.id === "paste") {
+      const { copiedNote } = store;
+
+      if (copiedNote) {
+        pasteBlockReference({
+          index: index,
+          referenceBlock: copiedNote,
+        });
+      }
+    }
+
+    console.log(note);
+  };
+
   openSelectMenuHandler() {
+    this.closeContextMenuHandler();
+
     const { note } = this.props;
     const { x, y } = getCaretCoordinates();
 
@@ -175,15 +219,69 @@ export class EditableBlock extends React.Component<
     const positionY = pageElement?.getBoundingClientRect().top || 0;
     const scrollY = pageElement?.scrollTop || 0;
 
+    setTimeout(() => {
+      document.addEventListener(
+        "click",
+        () => this.closeSelectMenuHandler("blur"),
+        false
+      );
+    }, 100);
+
     this.setState({
       selectMenuIsOpen: true,
       selectMenuPosition: { x: x - positionX, y: y + scrollY - positionY },
     });
   }
 
+  closeSelectMenuHandler = (action: "none" | "blur") => {
+    if (action !== "blur") {
+      this.contentEditable.current?.focus();
+    }
+
+    this.setState({
+      selectMenuIsOpen: false,
+      htmlBackup: "",
+    });
+  };
+
+  openContextMenuHandler(e: React.MouseEvent) {
+    e.preventDefault();
+    this.closeSelectMenuHandler("blur");
+
+    const x = e.clientX;
+    const y = e.clientY;
+
+    const pageElement = document.querySelector(`#${PAGE_CONTAINER}`);
+    const positionX = pageElement?.getBoundingClientRect().left || 0;
+    const positionY = pageElement?.getBoundingClientRect().top || 0;
+    const scrollY = pageElement?.scrollTop || 0;
+
+    setTimeout(() => {
+      document.addEventListener("click", this.closeContextMenuHandler, false);
+    }, 100);
+
+    this.setState({
+      contextMenuIsOpen: true,
+      contextMenuPosition: { x: x - positionX, y: y + scrollY - positionY },
+    });
+  }
+
+  closeContextMenuHandler = () => {
+    // this.contentEditable.current?.focus();
+
+    this.setState({
+      contextMenuIsOpen: false,
+    });
+  };
+
   render = () => {
     const { note } = this.props;
-    const { selectMenuIsOpen, selectMenuPosition } = this.state;
+    const {
+      selectMenuIsOpen,
+      selectMenuPosition,
+      contextMenuIsOpen,
+      contextMenuPosition,
+    } = this.state;
 
     const getItemStyle = (
       isDragging: DraggableStateSnapshot["isDragging"],
@@ -201,9 +299,24 @@ export class EditableBlock extends React.Component<
           <SelectMenu
             position={selectMenuPosition}
             onSelect={this.tagSelectionHandler}
-            closeSelectMenuHandler={this.closeSelectMenuHandler}
+            closeMenuHandler={() => this.closeSelectMenuHandler("none")}
           />
         )}
+
+        {contextMenuIsOpen && (
+          <ContextMenu
+            position={contextMenuPosition}
+            onSelect={(action) =>
+              this.contextSelectionHandler(
+                action,
+                this.props.index,
+                this.props.note
+              )
+            }
+            closeMenuHandler={() => this.closeSelectMenuHandler}
+          />
+        )}
+
         {note && (
           <Draggable
             key={note.id}
@@ -224,6 +337,12 @@ export class EditableBlock extends React.Component<
                       provided.draggableProps.style
                     )}
                     className={`mt-2 group`}
+                    onContextMenu={this.openContextMenuHandler}
+                    // onBlur={(e) => {
+                    //! Can't use onBlur handler because it closes the menu before an action is fired
+                    //   this.closeContextMenuHandler();
+                    //   this.closeSelectMenuHandler("blur");
+                    // }}
                   >
                     <div className='flex'>
                       {note.type === NoteType.task && (
@@ -255,7 +374,7 @@ export class EditableBlock extends React.Component<
                           }
                           text-white whitespace-pre-wrap flex-1 cursor-auto 
                           rounded-md 
-                          ${DP.dp06} 
+                          ${note.type == NoteType.task ? `${DP.dp06} ` : ""}
                           hover:${DP.dp16} 
                           focus:${DP.dp25}
                           hover:shadow-2xl 
