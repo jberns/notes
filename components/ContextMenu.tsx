@@ -1,5 +1,3 @@
-import { matchSorter } from "match-sorter";
-import { useEffect, useState } from "react";
 import { DP } from "./Dark";
 
 export interface ISelectMenuProps {

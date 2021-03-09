@@ -233,17 +233,6 @@ export class EditableBlock extends React.Component<
     });
   }
 
-  closeSelectMenuHandler = (action: "none" | "blur") => {
-    if (action !== "blur") {
-      this.contentEditable.current?.focus();
-    }
-
-    this.setState({
-      selectMenuIsOpen: false,
-      htmlBackup: "",
-    });
-  };
-
   openContextMenuHandler(e: React.MouseEvent) {
     e.preventDefault();
     this.closeSelectMenuHandler("blur");
@@ -265,6 +254,17 @@ export class EditableBlock extends React.Component<
       contextMenuPosition: { x: x - positionX, y: y + scrollY - positionY },
     });
   }
+
+  closeSelectMenuHandler = (action: "none" | "blur") => {
+    if (action !== "blur") {
+      this.contentEditable.current?.focus();
+    }
+
+    this.setState({
+      selectMenuIsOpen: false,
+      htmlBackup: "",
+    });
+  };
 
   closeContextMenuHandler = () => {
     // this.contentEditable.current?.focus();
@@ -289,6 +289,7 @@ export class EditableBlock extends React.Component<
     ) => ({
       userSelect: "none",
       ...draggableStyle,
+      marginTop: "10px"
     });
 
     // TODO 2. Create edit menu on highlight
@@ -336,7 +337,7 @@ export class EditableBlock extends React.Component<
                       snapshot.isDragging,
                       provided.draggableProps.style
                     )}
-                    className={`mt-2 group`}
+                    className="group"
                     onContextMenu={this.openContextMenuHandler}
                     // onBlur={(e) => {
                     //! Can't use onBlur handler because it closes the menu before an action is fired

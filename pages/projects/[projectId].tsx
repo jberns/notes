@@ -43,7 +43,7 @@ const ProjectPage: Page = () => {
 
         <div className='flex flex-col'>
           <div className='z-10 py-4 overflow-x-auto'>
-            <div className='inline-block min-w-full align-middle sm:px-6 lg:px-8'>
+            <div className='inline-block min-w-full align-middle'>
               <StatsCardGrid>
                 <StatsCard
                   title='Open Tasks'
