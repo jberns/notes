@@ -41,7 +41,7 @@ if (
   const json: IRootStore = JSON.parse(
     localStorage.getItem(LOCAL_STORAGE) || "{}"
   );
-  if (RootStore.is(json)) initialState = json;
+  if (!RootStore.is(json)) initialState = json;
 }
 
 // @ts-ignore
