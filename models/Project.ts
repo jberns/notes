@@ -49,7 +49,7 @@ export const Note = types.model({
 export const Block = types.model({
   id: types.identifier,
   // content: types.safeReference(Note, { acceptsUndefined: false })
-  content: types.string
+  content: types.reference(Note)
 }).actions(self => ({}))
 
 export const Page = types.model({
@@ -63,7 +63,7 @@ export const Page = types.model({
   addNote(newNote: INote) {
     getParentOfType(self, RootStore).addNote(newNote)
   },
-  addBlockRef(newBlock: IBlock, key: number) {
+  addBlockRef(newBlock:IBlock, key: number) {
     getParentOfType(self, RootStore).addBlock(newBlock)
     self.blocks_ref.splice(key + 1, 0, newBlock)
   },

@@ -13,7 +13,14 @@ import { Gradient } from "../../../components/Dashboard/Gradient";
 import { HeaderInput } from "../../../components/Dashboard/Header";
 import { EditableBlock } from "../../../components/EditableBlockClass";
 import { SidebarLayout } from "../../../layouts/SidebarLayout";
-import { IBlock, INote, IPage, IProject, Note, Block } from "../../../models/Project";
+import {
+  IBlock,
+  INote,
+  IPage,
+  IProject,
+  Note,
+  Block,
+} from "../../../models/Project";
 import { setCaretToEnd, uid } from "../../../utils";
 import type { Page } from "../../../utils/types";
 import { useMST } from "../../_app";
@@ -31,7 +38,7 @@ export interface IAddBlock {
 
 export interface IPasteBlockReference {
   index: number;
-  referenceBlock: IBlock;
+  referenceContent: INote;
 }
 export interface IDeleteBlock {
   id: string;
@@ -55,28 +62,35 @@ const NotesPage: Page = () => {
   const addBlock = ({ index, newBlock }: IAddBlock): void => {
     const newIdBlock = "blk_" + uid();
     const newIdNote = "note_" + uid();
-    pageDetails?.addBlockRef(
-      Block.create({id: newIdBlock, content: newIdNote }),
-      // Note.create({ id: newIdNote, text: newBlock.text, tag: newBlock.tag }),
-      index
-    );
+
+    if (pageDetails) {
+      pageDetails.addNote(
+        Note.create({ id: newIdNote, text: newBlock.text, tag: newBlock.tag })
+      );
+
+      pageDetails.addBlockRef(
+        Block.create({ id: newIdBlock, content: newIdNote }),
+        index
+      );
+    }
 
     setSelectBlock(newIdBlock);
   };
 
   const pasteBlockReference = ({
     index,
-    referenceBlock,
+    referenceContent,
   }: IPasteBlockReference): void => {
     //! If you attempt to add the same block to the same page - React loses track of the objects due to duplicated keys
     //! Potential solution:
-    if (pageDetails){
+    if (pageDetails) {
       const newIdBlock = "blk_" + uid();
-      pageDetails.addBlockRef({id: newIdBlock, content: referenceBlock.content}, referenceBlock.content, index);
-
+      pageDetails.addBlockRef(
+        Block.create({ id: newIdBlock, content: referenceContent.id }),
+        index
+      );
+      setSelectBlock(newIdBlock);
     }
-
-      setSelectBlock(referenceBlock.id);
   };
 
   const selectNextBlock = (index: number) => {
@@ -176,7 +190,7 @@ const NotesPage: Page = () => {
                               <EditableBlock
                                 key={block.id}
                                 index={index}
-                                note={block.content}
+                                block={block}
                                 addBlock={addBlock}
                                 pasteBlockReference={pasteBlockReference}
                                 deleteBlock={deleteBlock}

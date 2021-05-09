@@ -39,12 +39,6 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
     const newIdBlock = "blk_" + uid();
     const newIdNote = "note_" + uid();
 
-    const defaultNote = Note.create({
-      id: newIdNote,
-      text: "👋 Hey there!!",
-      tag: "p",
-    });
-    
     const pageId = Math.floor(Math.random() * 100).toString();
 
     project.addPage(
@@ -55,10 +49,20 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
     );
 
     const page = project.pages.find((page) => page.id === pageId);
+    
+    const defaultNote = Note.create({
+      id: newIdNote,
+      text: "👋 Hey there!!",
+      tag: "p",
+    });
+
+    const defaultBlock = Block.create({
+      id: newIdBlock,
+      content: defaultNote.id
+    })
+    
     page?.addNote(defaultNote);
-    page?.addBlockRef({ id: newIdBlock, content: "New Block"}, 0);
-    
-    
+    page?.addBlockRef(defaultBlock, 0);
   };
 
   const addProject = (model: IProject) => {
