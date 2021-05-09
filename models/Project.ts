@@ -4,6 +4,7 @@ import { uid } from "../utils";
 export interface IRootStore extends Instance<typeof RootStore> { }
 export interface IProject extends Instance<typeof Project> { }
 export interface IPage extends Instance<typeof Page> { }
+export interface IBlock extends Instance<typeof Block> { }
 export interface INote extends Instance<typeof Note> { }
 export interface IUser extends Instance<typeof User> { }
 
@@ -45,21 +46,30 @@ export const Note = types.model({
   }
 }))
 
+export const Block = types.model({
+  id: types.identifier,
+  // content: types.safeReference(Note, { acceptsUndefined: false })
+  content: types.reference(Note)
+}).actions(self => ({}))
+
 export const Page = types.model({
   id: types.identifier,
   name: types.string,
   icon: types.optional(types.string, ""),
   // notes_ref: types.optional(types.array(types.late(() => types.reference(Note))), []),
-  notes_ref: types.optional(types.array(types.safeReference(Note, { acceptsUndefined: false })), []),
+  blocks_ref: types.optional(types.array(types.safeReference(Block, { acceptsUndefined: false })), []),
 
 }).actions(self => ({
-  addNoteRef(newNote: INote, key: number) {
+  addNote(newNote: INote) {
     getParentOfType(self, RootStore).addNote(newNote)
-    self.notes_ref.splice(key + 1, 0, newNote)
   },
-  updateNoteRef(newNoteRefArray: INote[]) {
+  addBlockRef(newBlock:IBlock, key: number) {
+    getParentOfType(self, RootStore).addBlock(newBlock)
+    self.blocks_ref.splice(key + 1, 0, newBlock)
+  },
+  updateBlockRef(newBlocksRefArray: IBlock[]) {
     //@ts-ignore
-    self.notes_ref = newNoteRefArray
+    self.blocks_ref = newBlocksRefArray
   },
   setName(newName: string) {
     self.name = newName;
@@ -80,10 +90,10 @@ export const Project = types.model({
   }
 })).views(self => ({
   allTasks() {
-    const filteredTasks: INote[] = self.pages.reduce((tasks: INote[], page) => {
-      if (page.notes_ref) {
-        const onlyTasks = page.notes_ref.filter((note) => {
-          return note.type === NoteType.task
+    const filteredTasks: IBlock[] = self.pages.reduce((tasks: IBlock[], page) => {
+      if (page.blocks_ref) {
+        const onlyTasks = page.blocks_ref.filter((block) => {
+          return block.content.type === NoteType.task
         })
 
         tasks.push(...onlyTasks)
@@ -93,10 +103,10 @@ export const Project = types.model({
     return filteredTasks
   },
   openTasks() {
-    const filteredTasks: INote[] = self.pages.reduce((tasks: INote[], page) => {
-      if (page.notes_ref) {
-        const onlyTasks = page.notes_ref.filter((note) => {
-          return note.type === NoteType.task && note.complete === false
+    const filteredTasks: IBlock[] = self.pages.reduce((tasks: IBlock[], page) => {
+      if (page.blocks_ref) {
+        const onlyTasks = page.blocks_ref.filter((block) => {
+          return block.content.type === NoteType.task && block.content.complete === false
         })
 
         tasks.push(...onlyTasks)
@@ -127,11 +137,16 @@ export const Navigation = types.model({
 
 export const RootStore = types.model({
   projects: types.array(Project),
+  blocks: types.map(Block),
   notes: types.map(Note),
-  navigation: Navigation
+  navigation: Navigation,
+  copiedNote: types.maybeNull(types.safeReference(Note, { acceptsUndefined: false })),
 }).actions(self => ({
   addProject(project: IProject) {
     self.projects.push(project)
+  },
+  addBlock(block: IBlock) {
+    self.blocks.put(block)
   },
   addNote(note: INote) {
     self.notes.put(note)
@@ -147,6 +162,9 @@ export const RootStore = types.model({
   },
   closeMobileSidebar() {
     self.navigation.changeMobileSidebarState(false)
+  },
+  setCopiedNote(note: INote) {
+    self.copiedNote = note
   }
 })).views(self => ({
 }))

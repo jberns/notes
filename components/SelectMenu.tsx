@@ -5,7 +5,7 @@ import { NoteType } from "../models/Project";
 export interface ISelectMenuProps {
   onSelect: (tag: Tag) => void;
   position: { x: number; y: number };
-  closeSelectMenuHandler: () => void;
+  closeMenuHandler: () => void;
 }
 
 export type Tag = {
@@ -16,7 +16,7 @@ export type Tag = {
 }
 
 export const SelectMenu = (props: ISelectMenuProps) => {
-  const { onSelect, position, closeSelectMenuHandler } = props;
+  const { onSelect, position, closeMenuHandler } = props;
 
   const MENU_HEIGHT = 150;
   const allowedTags:Tag[] = [
@@ -49,7 +49,7 @@ export const SelectMenu = (props: ISelectMenuProps) => {
           });
 
           if (!currentCommand) {
-            closeSelectMenuHandler();
+            closeMenuHandler();
             break;
           }
 

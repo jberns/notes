@@ -13,7 +13,14 @@ import { Gradient } from "../../../components/Dashboard/Gradient";
 import { HeaderInput } from "../../../components/Dashboard/Header";
 import { EditableBlock } from "../../../components/EditableBlockClass";
 import { SidebarLayout } from "../../../layouts/SidebarLayout";
-import { INote, IPage, IProject, Note } from "../../../models/Project";
+import {
+  IBlock,
+  INote,
+  IPage,
+  IProject,
+  Note,
+  Block,
+} from "../../../models/Project";
 import { setCaretToEnd, uid } from "../../../utils";
 import type { Page } from "../../../utils/types";
 import { useMST } from "../../_app";
@@ -27,6 +34,11 @@ export interface INewBlock {
 export interface IAddBlock {
   index: number;
   newBlock: INewBlock;
+}
+
+export interface IPasteBlockReference {
+  index: number;
+  referenceContent: INote;
 }
 export interface IDeleteBlock {
   id: string;
@@ -48,27 +60,49 @@ const NotesPage: Page = () => {
   pageDetails = projectDetails?.pages.find((page) => page.id === pageId);
 
   const addBlock = ({ index, newBlock }: IAddBlock): void => {
-    const newId = uid();
-    pageDetails?.addNoteRef(
-      Note.create({ id: newId, text: newBlock.text, tag: newBlock.tag }),
-      index
-    );
+    const newIdBlock = "blk_" + uid();
+    const newIdNote = "note_" + uid();
 
-    setSelectBlock(newId);
+    if (pageDetails) {
+      pageDetails.addNote(
+        Note.create({ id: newIdNote, text: newBlock.text, tag: newBlock.tag })
+      );
+
+      pageDetails.addBlockRef(
+        Block.create({ id: newIdBlock, content: newIdNote }),
+        index
+      );
+    }
+
+    setSelectBlock(newIdBlock);
+  };
+
+  const pasteBlockReference = ({
+    index,
+    referenceContent,
+  }: IPasteBlockReference): void => {
+    if (pageDetails) {
+      const newIdBlock = "blk_" + uid();
+      pageDetails.addBlockRef(
+        Block.create({ id: newIdBlock, content: referenceContent.id }),
+        index
+      );
+      setSelectBlock(newIdBlock);
+    }
   };
 
   const selectNextBlock = (index: number) => {
-    const nextBlock = pageDetails?.notes_ref[index + 1];
+    const nextBlock = pageDetails?.blocks_ref[index + 1];
     focusBlock(nextBlock);
   };
 
   const selectPreviousBlock = (index: number) => {
-    const prevBlock = pageDetails?.notes_ref[index - 1];
+    const prevBlock = pageDetails?.blocks_ref[index - 1];
     focusBlock(prevBlock);
   };
 
   const deleteBlock = ({ id, index }: IDeleteBlock): void => {
-    const prevBlock = pageDetails?.notes_ref[index - 1];
+    const prevBlock = pageDetails?.blocks_ref[index - 1];
 
     if (prevBlock) {
       //Only delete if a previous block exists, otherwise the page can have no blocks
@@ -77,13 +111,13 @@ const NotesPage: Page = () => {
     }
   };
 
-  const focusBlock = (note: INote | undefined) => {
-    if (note) {
-      const block = document.querySelector(`#${note.id}-ce`);
-      if (block) {
+  const focusBlock = (block: IBlock | undefined) => {
+    if (block) {
+      const target = document.querySelector(`#${block.id}-ce`);
+      if (target) {
         //@ts-ignore for .focus() not existing on Element
-        block?.focus();
-        setCaretToEnd(block);
+        target?.focus();
+        setCaretToEnd(target);
       }
     }
   };
@@ -95,7 +129,7 @@ const NotesPage: Page = () => {
   }, [selectBlock]);
 
   const reorder = (page: IPage, startIndex: number, endIndex: number) => {
-    const result = Array.from(page.notes_ref);
+    const result = Array.from(page.blocks_ref);
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
 
@@ -115,7 +149,7 @@ const NotesPage: Page = () => {
     );
 
     //Page must exist is an element is being dragged
-    pageDetails!.updateNoteRef(blocks);
+    pageDetails!.updateBlockRef(blocks);
   };
 
   const getListStyle = (
@@ -123,6 +157,8 @@ const NotesPage: Page = () => {
   ) => ({
     // background: isDraggingOver ? "" : "",
   });
+
+  console.log(store);
 
   return projectDetails && pageDetails ? (
     <div>
@@ -145,15 +181,16 @@ const NotesPage: Page = () => {
                       ref={provided.innerRef}
                       style={getListStyle(snapshot.isDraggingOver)}
                     >
-                      {pageDetails?.notes_ref.map((note, index) => {
+                      {pageDetails?.blocks_ref.map((block, index) => {
                         return (
-                          <Observer key={note.id}>
+                          <Observer key={block.id}>
                             {() => (
                               <EditableBlock
-                                key={note.id}
+                                key={block.id}
                                 index={index}
-                                note={note}
+                                block={block}
                                 addBlock={addBlock}
+                                pasteBlockReference={pasteBlockReference}
                                 deleteBlock={deleteBlock}
                                 selectNextBlock={selectNextBlock}
                                 selectPreviousBlock={selectPreviousBlock}

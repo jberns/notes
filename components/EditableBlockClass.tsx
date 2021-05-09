@@ -1,3 +1,4 @@
+import { Observer } from "mobx-react";
 import React from "react";
 import {
   Draggable,
@@ -5,26 +6,27 @@ import {
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
-import { INote, IRootStore, NoteType } from "../models/Project";
+import sanitizeHtml from "sanitize-html";
+import { IBlock, INote, IRootStore, NoteType } from "../models/Project";
 import {
   IAddBlock,
+  IPasteBlockReference,
   IDeleteBlock,
 } from "../pages/projects/[projectId]/[pageId]";
 import { MSTContext } from "../pages/_app";
 import { getCaretCoordinates, setCaretToEnd } from "../utils";
-import { DP } from "./Dark";
-import { SelectMenu } from "./SelectMenu";
-import { Selector } from "./Heroicons";
-import { Observer } from "mobx-react";
-import sanitizeHtml from "sanitize-html";
-import { Tag } from "./SelectMenu";
 import { PAGE_CONTAINER } from "../utils/constants";
+import { ContextMenu, ContextTag } from "./ContextMenu";
+import { DP } from "./Dark";
+import { Selector } from "./Heroicons";
+import { SelectMenu, Tag } from "./SelectMenu";
 
 export type IContentEditable = {
   key: string;
   index: number;
-  note: INote;
+  block: IBlock;
   addBlock: (props: IAddBlock) => void;
+  pasteBlockReference: (props: IPasteBlockReference) => void;
   deleteBlock: (props: IDeleteBlock) => void;
   selectNextBlock: (index: number) => void;
   selectPreviousBlock: (index: number) => void;
@@ -33,10 +35,12 @@ export type IContentEditable = {
 type ContentEditableState = {
   store: IRootStore;
   html: string;
-  selectMenuIsOpen: boolean;
-  previousKey: string;
-  selectMenuPosition: { x: number; y: number };
   htmlBackup: string;
+  previousKey: string;
+  selectMenuIsOpen: boolean;
+  selectMenuPosition: { x: number; y: number };
+  contextMenuIsOpen: boolean;
+  contextMenuPosition: { x: number; y: number };
 };
 
 export class EditableBlock extends React.Component<
@@ -49,18 +53,23 @@ export class EditableBlock extends React.Component<
     this.updateText = this.updateText.bind(this);
     this.onKeyDownHandler = this.onKeyDownHandler.bind(this);
     this.onKeyUpHandler = this.onKeyUpHandler.bind(this);
-    this.openSelectMenuHandler = this.openSelectMenuHandler.bind(this);
     this.tagSelectionHandler = this.tagSelectionHandler.bind(this);
+    this.contextSelectionHandler = this.contextSelectionHandler.bind(this);
+    this.openSelectMenuHandler = this.openSelectMenuHandler.bind(this);
     this.closeSelectMenuHandler = this.closeSelectMenuHandler.bind(this);
+    this.openContextMenuHandler = this.openContextMenuHandler.bind(this);
+    this.closeContextMenuHandler = this.closeContextMenuHandler.bind(this);
 
     this.state = {
       //@ts-ignore will load in component did mount
       store: {},
       html: "",
       htmlBackup: "",
-      selectMenuIsOpen: false,
       previousKey: "",
+      selectMenuIsOpen: false,
       selectMenuPosition: { x: 0, y: 0 },
+      contextMenuIsOpen: false,
+      contextMenuPosition: { x: 0, y: 0 },
     };
   }
 
@@ -70,28 +79,38 @@ export class EditableBlock extends React.Component<
   componentDidMount() {
     this.setState({
       store: this.context,
-      html: this.props.note.text,
-      htmlBackup: this.props.note.text,
+      html: this.props.block.content.text,
+      htmlBackup: this.props.block.content.text,
     });
+
+    // document.addEventListener("contextmenu", (event) => {
+    //   event.preventDefault();
+    //   // console.log(event)
+    // });
+  }
+
+  componentWillUnmount() {
+    // document.removeEventListener("contextmenu");
   }
 
   updateText(e: ContentEditableEvent) {
-    const { note } = this.props;
+    const { content } = this.props.block;
     const sanitized = sanitizeHtml(e.target.value);
 
-    note.updateText(sanitized);
+    content.updateText(sanitized);
     this.setState({ html: sanitized });
   }
 
   onKeyDownHandler(e: React.KeyboardEvent<HTMLDivElement>) {
     const {
-      note,
+      block,
       index,
       addBlock,
       deleteBlock,
       selectNextBlock,
       selectPreviousBlock,
     } = this.props;
+    const { content } = block;
 
     const { selectMenuIsOpen, html } = this.state;
 
@@ -111,9 +130,9 @@ export class EditableBlock extends React.Component<
         });
       }
 
-      if (e.key === "Backspace" && !note.text) {
+      if (e.key === "Backspace" && !content.text) {
         e.preventDefault();
-        deleteBlock({ id: note.id, index: index });
+        deleteBlock({ id: block.id, index: index });
       }
 
       if (e.key === "ArrowDown") {
@@ -138,27 +157,25 @@ export class EditableBlock extends React.Component<
     if (e.key === "/") {
       this.openSelectMenuHandler();
     }
+
+    if (e.key === "Escape") {
+      this.closeSelectMenuHandler("none");
+      this.closeContextMenuHandler();
+    }
+
+    console.log(e.key);
   }
 
-  closeSelectMenuHandler = () => {
-    this.contentEditable.current?.focus();
-
-    this.setState({
-      selectMenuIsOpen: false,
-      htmlBackup: "",
-    });
-  };
-
   tagSelectionHandler = (tag: Tag) => {
-    const { note } = this.props;
+    const { content } = this.props.block;
     const { htmlBackup } = this.state;
 
-    note.updateTag(tag.tag);
-    note.updateType(tag.type);
-    note.updateText(htmlBackup);
+    content.updateTag(tag.tag);
+    content.updateType(tag.type);
+    content.updateText(htmlBackup);
 
     this.setState({ html: htmlBackup }, () => {
-      this.closeSelectMenuHandler();
+      this.closeSelectMenuHandler("none");
       this.contentEditable.current?.focus();
       if (this.contentEditable.current) {
         setCaretToEnd(this.contentEditable.current);
@@ -166,8 +183,36 @@ export class EditableBlock extends React.Component<
     });
   };
 
+  contextSelectionHandler = (
+    action: ContextTag,
+    index: number,
+    note: INote
+  ) => {
+    const { store } = this.state;
+
+    const { pasteBlockReference } = this.props;
+    if (action.id === "copy") {
+      store.setCopiedNote(note);
+    }
+
+    if (action.id === "paste") {
+      const { copiedNote } = store;
+
+      if (copiedNote) {
+        pasteBlockReference({
+          index: index,
+          referenceContent: copiedNote,
+        });
+      }
+    }
+
+    console.log(note);
+  };
+
   openSelectMenuHandler() {
-    const { note } = this.props;
+    this.closeContextMenuHandler();
+
+    const { content } = this.props.block;
     const { x, y } = getCaretCoordinates();
 
     const pageElement = document.querySelector(`#${PAGE_CONTAINER}`);
@@ -175,15 +220,70 @@ export class EditableBlock extends React.Component<
     const positionY = pageElement?.getBoundingClientRect().top || 0;
     const scrollY = pageElement?.scrollTop || 0;
 
+    setTimeout(() => {
+      document.addEventListener(
+        "click",
+        () => this.closeSelectMenuHandler("blur"),
+        false
+      );
+    }, 100);
+
     this.setState({
       selectMenuIsOpen: true,
       selectMenuPosition: { x: x - positionX, y: y + scrollY - positionY },
     });
   }
 
+  openContextMenuHandler(e: React.MouseEvent) {
+    e.preventDefault();
+    this.closeSelectMenuHandler("blur");
+
+    const x = e.clientX;
+    const y = e.clientY;
+
+    const pageElement = document.querySelector(`#${PAGE_CONTAINER}`);
+    const positionX = pageElement?.getBoundingClientRect().left || 0;
+    const positionY = pageElement?.getBoundingClientRect().top || 0;
+    const scrollY = pageElement?.scrollTop || 0;
+
+    setTimeout(() => {
+      document.addEventListener("click", this.closeContextMenuHandler, false);
+    }, 100);
+
+    this.setState({
+      contextMenuIsOpen: true,
+      contextMenuPosition: { x: x - positionX, y: y + scrollY - positionY },
+    });
+  }
+
+  closeSelectMenuHandler = (action: "none" | "blur") => {
+    if (action !== "blur") {
+      this.contentEditable.current?.focus();
+    }
+
+    this.setState({
+      selectMenuIsOpen: false,
+      htmlBackup: "",
+    });
+  };
+
+  closeContextMenuHandler = () => {
+    // this.contentEditable.current?.focus();
+
+    this.setState({
+      contextMenuIsOpen: false,
+    });
+  };
+
   render = () => {
-    const { note } = this.props;
-    const { selectMenuIsOpen, selectMenuPosition } = this.state;
+    const { block } = this.props;
+    const { content } = block;
+    const {
+      selectMenuIsOpen,
+      selectMenuPosition,
+      contextMenuIsOpen,
+      contextMenuPosition,
+    } = this.state;
 
     const getItemStyle = (
       isDragging: DraggableStateSnapshot["isDragging"],
@@ -191,6 +291,7 @@ export class EditableBlock extends React.Component<
     ) => ({
       userSelect: "none",
       ...draggableStyle,
+      marginTop: "10px",
     });
 
     // TODO 2. Create edit menu on highlight
@@ -201,20 +302,35 @@ export class EditableBlock extends React.Component<
           <SelectMenu
             position={selectMenuPosition}
             onSelect={this.tagSelectionHandler}
-            closeSelectMenuHandler={this.closeSelectMenuHandler}
+            closeMenuHandler={() => this.closeSelectMenuHandler("none")}
           />
         )}
-        {note && (
+
+        {contextMenuIsOpen && (
+          <ContextMenu
+            position={contextMenuPosition}
+            onSelect={(action) =>
+              this.contextSelectionHandler(
+                action,
+                this.props.index,
+                this.props.block.content
+              )
+            }
+            closeMenuHandler={() => this.closeSelectMenuHandler}
+          />
+        )}
+
+        {content && (
           <Draggable
-            key={note.id}
-            draggableId={note.id}
+            key={block.id}
+            draggableId={block.id}
             index={this.props.index}
           >
             {(provided, snapshot) => (
               <Observer>
                 {() => (
                   <div
-                    id={`${note.id}-draggable`}
+                    id={`${block.id}-draggable`}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
@@ -223,10 +339,16 @@ export class EditableBlock extends React.Component<
                       snapshot.isDragging,
                       provided.draggableProps.style
                     )}
-                    className={`mt-2 group`}
+                    className='group'
+                    onContextMenu={this.openContextMenuHandler}
+                    // onBlur={(e) => {
+                    //! Can't use onBlur handler because it closes the menu before an action is fired
+                    //   this.closeContextMenuHandler();
+                    //   this.closeSelectMenuHandler("blur");
+                    // }}
                   >
                     <div className='flex'>
-                      {note.type === NoteType.task && (
+                      {content.type === NoteType.task && (
                         <div
                           className='z-10 mr-3 place-self-center'
                           style={{ padding: "5px" }}
@@ -235,9 +357,9 @@ export class EditableBlock extends React.Component<
                             <input
                               type='checkbox'
                               className='w-5 h-5 text-purple-600 bg-gray-200 rounded form-checkbox'
-                              checked={note.complete}
+                              checked={content.complete}
                               onChange={(e) => {
-                                note.updateStatus(!note.complete);
+                                content.updateStatus(!content.complete);
                               }}
                             />
                           </label>
@@ -246,16 +368,16 @@ export class EditableBlock extends React.Component<
 
                       <div className={`flex w-full`}>
                         <ContentEditable
-                          id={`${note.id}-ce`}
+                          id={`${block.id}-ce`}
                           className={`
                           ${
-                            note.complete
+                            content.complete
                               ? "opacity-l-emp line-through"
                               : "opacity-h-emp"
                           }
                           text-white whitespace-pre-wrap flex-1 cursor-auto 
                           rounded-md 
-                          ${DP.dp06} 
+                          ${content.type == NoteType.task ? `${DP.dp06} ` : ""}
                           hover:${DP.dp16} 
                           focus:${DP.dp25}
                           hover:shadow-2xl 
@@ -264,8 +386,8 @@ export class EditableBlock extends React.Component<
                           innerRef={this.contentEditable}
                           disabled={false} // if it is disabled on note.complete then it cant be navigated with arrows
                           // disabled={note.complete} // use true to disable editing/ handle innerHTML change
-                          html={note.text}
-                          tagName={note.tag}
+                          html={content.text}
+                          tagName={content.tag}
                           onChange={this.updateText}
                           onKeyDown={this.onKeyDownHandler}
                           onKeyUp={this.onKeyUpHandler}
@@ -275,20 +397,20 @@ export class EditableBlock extends React.Component<
                         </span>
                       </div>
                     </div>
-                    {note.type == NoteType.task && (
+                    {content.type == NoteType.task && (
                       <div
                         className='flex justify-end mr-6 text-xs text-white cursor-auto'
                         style={{ paddingBottom: "10px" }}
                       >
                         <div className='ml-6 opacity-l-emp'>
-                          {note.createdOn.toLocaleTimeString()}
+                          {content.createdOn.toLocaleTimeString()}
                         </div>
                         <div className='ml-6 opacity-l-emp'>
-                          {note.assignedTo}
+                          {content.assignedTo}
                         </div>
                         <button
                           className='ml-6 opacity-l-emp'
-                          onClick={() => note.updateAssignedTo("Josh")}
+                          onClick={() => content.updateAssignedTo("Josh")}
                         >
                           Assign
                         </button>
