@@ -81,8 +81,6 @@ const NotesPage: Page = () => {
     index,
     referenceContent,
   }: IPasteBlockReference): void => {
-    //! If you attempt to add the same block to the same page - React loses track of the objects due to duplicated keys
-    //! Potential solution:
     if (pageDetails) {
       const newIdBlock = "blk_" + uid();
       pageDetails.addBlockRef(
