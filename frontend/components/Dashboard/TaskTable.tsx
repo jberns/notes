@@ -1,5 +1,5 @@
 import { DP } from "../Dark";
-import { IProject, INote } from "../../models/Project";
+import { IProject, INote, IBlock } from "../../models/Project";
 
 interface ITaskTableProps {
   project: IProject;
@@ -41,29 +41,30 @@ export const TaskTable = ({ project }: ITaskTableProps) => {
           </tr>
         </thead>
         <tbody className={`divide-y divide-gray-900 ${DP.dp16}`}>
-          {project.allTasks().map((task: INote) => {
+          {project.allTasks().map((block: IBlock) => {
+            const { content } = block;
             return (
-              <tr key={task.id}>
+              <tr key={block.id}>
                 <td className='text-sm font-medium text-white opacity-h-emp whitespace-nowrap'>
                   <label className='inline-flex w-full'>
                     <input
                       type='checkbox'
                       className='w-5 h-5 m-auto text-purple-600 bg-gray-200 rounded form-checkbox'
-                      checked={task.complete}
+                      checked={content.complete}
                       onChange={(e) => {
-                        task.updateStatus(!task.complete);
+                        content.updateStatus(!content.complete);
                       }}
                     />
                   </label>
                 </td>
                 <td className='px-6 py-4 text-sm text-white opacity-h-emp'>
-                  {task.text}
+                  {content.text}
                 </td>
                 <td className='px-6 py-4 text-sm text-white opacity-h-emp whitespace-nowrap'>
-                  {task.assignedTo}
+                  {content.assignedTo}
                 </td>
                 <td className='px-6 py-4 text-sm text-white opacity-h-emp whitespace-nowrap'>
-                  {task.createdOn.toDateString()}
+                  {content.createdOn.toDateString()}
                 </td>
                 <td className='px-6 py-4 text-sm font-medium text-right'>
                   <a href='#' className='text-indigo-600 hover:text-indigo-900'>
