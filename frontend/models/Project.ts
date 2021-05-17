@@ -14,6 +14,25 @@ export enum NoteType {
 
 }
 
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+
+const client = new ApolloClient({
+  uri: 'http://localhost:4000',
+  cache: new InMemoryCache()
+});
+
+const ALL_POSTS = gql`
+  query ALL_POSTS {
+    allPosts {
+      title
+    }
+  }
+`;
+
+client
+  .query({ query: ALL_POSTS })
+  .then(result => console.log(result));
+
 export const User = types.model({
   id: types.identifier,
   username: types.string,
@@ -63,7 +82,7 @@ export const Page = types.model({
   addNote(newNote: INote) {
     getParentOfType(self, RootStore).addNote(newNote)
   },
-  addBlockRef(newBlock:IBlock, key: number) {
+  addBlockRef(newBlock: IBlock, key: number) {
     getParentOfType(self, RootStore).addBlock(newBlock)
     self.blocks_ref.splice(key + 1, 0, newBlock)
   },
