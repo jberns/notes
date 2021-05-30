@@ -4,6 +4,7 @@ import type { Page } from "../utils/types";
 import { useMST } from "./_app";
 import {Gradient} from "../components/Dashboard/Gradient";
 import { HeaderFixed } from "../components/Dashboard/Header";
+import {useQuery, gql} from "@apollo/client"
 
 const Home: Page = () => {
   const store = useMST();

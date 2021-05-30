@@ -11,27 +11,26 @@ export interface IUser extends Instance<typeof User> { }
 export enum NoteType {
   note = "note",
   task = "task",
-
 }
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
-const client = new ApolloClient({
-  uri: 'http://localhost:4000',
-  cache: new InMemoryCache()
-});
+// const client = new ApolloClient({
+//   uri: 'http://localhost:4000',
+//   cache: new InMemoryCache()
+// });
 
-const ALL_POSTS = gql`
-  query ALL_POSTS {
-    allPosts {
-      title
-    }
-  }
-`;
+// const ALL_POSTS = gql`
+//   query ALL_POSTS {
+//     allPosts {
+//       title
+//     }
+//   }
+// `;
 
-client
-  .query({ query: ALL_POSTS })
-  .then(result => console.log(result));
+// client
+//   .query({ query: ALL_POSTS })
+//   .then(result => console.log(result));
 
 export const User = types.model({
   id: types.identifier,

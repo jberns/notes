@@ -1,6 +1,19 @@
 overwrite: true
-schema: "http://localhost:4000"
+schema: "../backend/src/index.ts"
 generates:
-  src/generated/graphql.tsx:
+  ../backend/src/types/resolvers-types.ts:
     plugins:
-      - "typescript"
+      - typescript
+      - typescript-operations
+      - typescript-resolvers
+    config:
+      # contextType: '../backend/src/context#Context'
+      enumsAsTypes: true
+  src/generated/graphql.tsx:
+    documents: ./src/queries/*.tsx
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true

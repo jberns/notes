@@ -10,6 +10,8 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { observer } from "mobx-react";
+import { ApolloProvider } from "@apollo/client/react";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
@@ -53,13 +55,19 @@ onSnapshot(rootStore, (snapshot) => {
 
 function MyApp({ Component, pageProps }: { Component: Page; pageProps: any }) {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
-
+  const client = new ApolloClient({
+    uri: 'http://localhost:4000',
+    cache: new InMemoryCache()
+  });
+  
   return (
-    <MSTProvider value={rootStore}>
+    <ApolloProvider client={client}>
+      <MSTProvider value={rootStore}>
         <Layout>
           <Component {...pageProps} />
         </Layout>
-    </MSTProvider>
+      </MSTProvider>
+    </ApolloProvider>
   );
 }
 
