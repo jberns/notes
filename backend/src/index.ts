@@ -136,6 +136,8 @@ export const resolvers: Resolvers = {
       })
     },
     getAllUsers: (_parent, _args, context: Context) => {
+      const userId = getUserId(context);
+      console.log(userId);
       return context.prisma.user.findMany()
     },
 
@@ -217,7 +219,9 @@ const schema = makeExecutableSchema({
   typeDefs,
 })
 
-const server = new ApolloServer({ schema, context: createContext });
+//TODO UPDATE ALLOWED ORIGINS
+const server = new ApolloServer({ schema, context: createContext, cors: { origin: "http://localhost:3000", credentials: true } });
+
 
 server.listen().then(({ url }) => {
   console.log(`🚀 Server ready at ${url}`);
