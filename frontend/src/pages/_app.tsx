@@ -12,6 +12,9 @@ import {
 import { observer } from "mobx-react";
 import { ApolloProvider } from "@apollo/client/react";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import withData from "../utils/withData";
+import { NextPage, NextPageContext } from "next";
+import { AppContext, AppProps } from "next/app";
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
@@ -53,15 +56,19 @@ onSnapshot(rootStore, (snapshot) => {
   localStorage.setItem(LOCAL_STORAGE, JSON.stringify(snapshot));
 });
 
-function MyApp({ Component, pageProps }: { Component: Page; pageProps: any }) {
+function MyApp({
+  Component,
+  pageProps,
+  apollo,
+}: {
+  Component: Page;
+  pageProps: any;
+  apollo: any;
+}) {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
-  const client = new ApolloClient({
-    uri: 'http://localhost:4000',
-    cache: new InMemoryCache()
-  });
-  
+
   return (
-    <ApolloProvider client={client}>
+    <ApolloProvider client={apollo}>
       <MSTProvider value={rootStore}>
         <Layout>
           <Component {...pageProps} />
@@ -71,4 +78,22 @@ function MyApp({ Component, pageProps }: { Component: Page; pageProps: any }) {
   );
 }
 
-export default observer(MyApp);
+MyApp.getInitialProps = async function ({
+  Component,
+  ctx,
+}: {
+  Component: NextPage;
+  ctx: NextPageContext;
+}) {
+  let pageProps = {};
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+  }
+
+  //@ts-ignore
+  pageProps.query = ctx.query;
+  return pageProps;
+};
+
+//@ts-ignore
+export default withData(MyApp);

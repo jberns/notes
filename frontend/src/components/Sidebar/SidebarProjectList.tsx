@@ -3,7 +3,7 @@ import { useMST } from "../../pages/_app";
 import { DocumentText, Folder } from "../Heroicons";
 import { SidebarLink } from "./SidebarLink";
 import { useQuery, gql } from "@apollo/client";
-import { useAll_ProjectsQuery } from "../../src/generated/graphql";
+import { useAll_ProjectsQuery } from "../../generated/graphql";
 
 export const SidebarProjectList = observer(() => {
   const store = useMST();
@@ -39,7 +39,7 @@ export const SidebarProjectList = observer(() => {
       ))}
       <div className="text-white">
         {console.log(data)}
-        {data?.findAllProjects?.map((project) => {
+        {data?.getAllProjects?.map((project) => {
           return project?.name;
         })}
       </div>

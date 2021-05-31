@@ -10,7 +10,9 @@ generates:
       # contextType: '../backend/src/context#Context'
       enumsAsTypes: true
   src/generated/graphql.tsx:
-    documents: ./src/queries/*.tsx
+    documents:
+      - ./src/queries/*.tsx
+      - ./src/mutations/*.tsx
     plugins:
       - typescript
       - typescript-operations

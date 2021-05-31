@@ -13,3 +13,13 @@ export const ALL_PROJECTS = gql`
     }
   }
 `;
+
+export const CURRENT_USER = gql`
+  query ME {
+    me {
+      id
+      email
+      name
+    }
+  }
+`;

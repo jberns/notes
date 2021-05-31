@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Dark, DP } from "./Dark";
 import { ProfileMenuLink } from "./ProfileMenuLink";
+import { useUser } from "./User";
 
 export const ProfileMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const user = useUser();
+  console.log(user);
 
   return (
     <div className='relative ml-3'>
