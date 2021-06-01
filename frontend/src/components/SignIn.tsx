@@ -1,6 +1,6 @@
 import { SyntheticEvent } from "react";
 import { useLoginMutation } from "../generated/graphql";
-import { CURRENT_USER } from "../queries/projects";
+import { ME } from "../queries/projects";
 import useForm from "../utils/useForm";
 
 export function SignIn() {
@@ -19,7 +19,7 @@ export function SignIn() {
 
   const [loginMutation, { data, error, loading }] = useLoginMutation({
     variables: { email: inputs.email, password: inputs.password },
-    refetchQueries: [{ query: CURRENT_USER }],
+    refetchQueries: [{ query: ME }],
   });
 
   async function handleSubmit(e: SyntheticEvent) {

@@ -1,15 +1,19 @@
-import { ApolloServer, gql } from "apollo-server"
+import { ApolloServer, CorsOptions, gql, makeExecutableSchema } from "apollo-server-express"
 import { Context, createContext } from './context'
-import { makeExecutableSchema } from 'apollo-server'
 import { DateTimeResolver } from 'graphql-scalars'
+const express = require("express")
+const cors = require("cors")
+const cookieParser = require("cookie-parser")
 
-
-import { QueryResolvers, MutationResolvers, User } from "./types/resolvers-types"
+import { verify } from "jsonwebtoken"
+import { QueryResolvers, MutationResolvers, User } from "./@types/resolvers-types"
 import { APP_SECRET, getUserId } from "./utils"
+
 
 import { hash, compare } from "bcryptjs";
 import { sign } from "jsonwebtoken"
 import { Role } from ".prisma/client"
+import { Request, Response } from "express"
 
 interface Resolvers {
   Query: QueryResolvers
@@ -121,7 +125,7 @@ const typeDefs = gql`
 export const resolvers: Resolvers = {
   Query: {
     me: (_parent, _args, context: Context) => {
-      const userId = getUserId(context)
+      const userId = context.req.userId
       return context.prisma.user.findUnique({
         where: {
           id: String(userId)
@@ -182,8 +186,21 @@ export const resolvers: Resolvers = {
         throw new Error('Invalid Password')
       }
 
+      const token = sign({ userId: user.id }, APP_SECRET);
+      // 4. Set the JWT as a cookie on the response
+
+      const resetTime = 3600000; //1 hour
+      const maxAge = 1000 * 60 * 60 * 24 * 365; //365 days
+
+      console.log(context.res.cookie);
+
+      context.res.cookie('token', token, {
+        httpOnly: true,
+        maxAge, // 1 year cookie
+      });
+
       return {
-        token: sign({ userId: user.id }, APP_SECRET),
+        token: token,
         user
       }
 
@@ -213,16 +230,57 @@ export const resolvers: Resolvers = {
   }
 }
 
-const schema = makeExecutableSchema({
-  //@ts-ignore
-  resolvers,
-  typeDefs,
-})
+async function startApolloServer() {
+  interface Token {
+    userId: string
+  }
 
-//TODO UPDATE ALLOWED ORIGINS
-const server = new ApolloServer({ schema, context: createContext, cors: { origin: "http://localhost:3000", credentials: true } });
+  const app = express();
 
+  const corsOptions: CorsOptions = {
+    origin: "http://localhost:3000",
+    credentials: true,
+  }
 
-server.listen().then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
-});
+  app.use(cors(corsOptions))
+  app.use(cookieParser())
+  app.use((req: Request, res: Response, next: any) => {
+    const { token } = req.cookies;
+    if (token) {
+      const { userId } = verify(token, APP_SECRET) as Token;
+      //Put the userId onto future requests
+      req.userId = userId;
+    }
+    next();
+  })
+
+  const schema = makeExecutableSchema({
+    //@ts-ignore
+    resolvers,
+    typeDefs,
+  })
+
+  //TODO UPDATE ALLOWED ORIGINS
+  const server = new ApolloServer(
+    {
+      schema,
+      context: createContext,
+    });
+
+  await server.start()
+
+  server.applyMiddleware({ app, cors: corsOptions })
+
+  app.use((req: Request, res: Response) => {
+    res.status(200);
+    res.send('Hello!');
+    res.end();
+  })
+
+  await new Promise(resolve => app.listen({ port: 4000 }, resolve));
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  return { server, app };
+
+}
+
+startApolloServer();

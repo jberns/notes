@@ -10,6 +10,7 @@ export const ProfileMenu = () => {
 
   return (
     <div className='relative ml-3'>
+      <div className='text-white'>{user ? "Log out" : "Log in"}</div>
       <div>
         <button
           className='flex items-center max-w-xs text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'

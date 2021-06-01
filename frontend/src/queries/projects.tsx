@@ -14,7 +14,7 @@ export const ALL_PROJECTS = gql`
   }
 `;
 
-export const CURRENT_USER = gql`
+export const ME = gql`
   query ME {
     me {
       id

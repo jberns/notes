@@ -3,7 +3,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "lib": ["esnext"],
-    "strict": true, 
+    "strict": true,
     "noImplicitAny": true
   },
   "include": ["src/**/*"]
