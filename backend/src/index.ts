@@ -1,28 +1,37 @@
-import { ApolloServer, CorsOptions, gql, makeExecutableSchema } from "apollo-server-express"
-import { Context, createContext } from './context'
-import { DateTimeResolver } from 'graphql-scalars'
-const express = require("express")
-const cors = require("cors")
-const cookieParser = require("cookie-parser")
+import {
+  ApolloServer,
+  CorsOptions,
+  gql,
+  makeExecutableSchema,
+} from 'apollo-server-express';
+import { Context, createContext } from './context';
+import { DateTimeResolver } from 'graphql-scalars';
 
-import { verify } from "jsonwebtoken"
-import { QueryResolvers, MutationResolvers, User } from "./@types/resolvers-types"
-import { APP_SECRET, getUserId } from "./utils"
+import { verify } from 'jsonwebtoken';
+import {
+  QueryResolvers,
+  MutationResolvers,
+  User,
+} from './@types/resolvers-types';
+import { APP_SECRET, getUserId } from './utils';
 
+import { hash, compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
+import { Role } from '.prisma/client';
+import { Request, Response } from 'express';
 
-import { hash, compare } from "bcryptjs";
-import { sign } from "jsonwebtoken"
-import { Role } from ".prisma/client"
-import { Request, Response } from "express"
+const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 interface Resolvers {
-  Query: QueryResolvers
-  Mutation: MutationResolvers
+  Query: QueryResolvers;
+  Mutation: MutationResolvers;
 }
 
 const typeDefs = gql`
   enum NoteType {
-    Note,
+    Note
     Task
   }
 
@@ -43,8 +52,8 @@ const typeDefs = gql`
     # projectTeam: [Project]!
     role: Role!
     # profile: Profile
-    createdAt: DateTime  
-    updatedAt: DateTime  
+    createdAt: DateTime
+    updatedAt: DateTime
   }
 
   type AuthPayload {
@@ -101,21 +110,20 @@ const typeDefs = gql`
   #GET
   type Query {
     me: User
-    
+
     getUser(id: ID!): User
     getAllUsers: [User]
 
     getProject(id: ID!): Project!
     getAllProjects: [Project]
     getAllProjectsByUser(userId: ID!): [Project]
-
   }
 
   #CREATE UPDATE, DELETE
   type Mutation {
-    signup(name:String!, email:String!, password:String!): AuthPayload!
-    login(email:String!, password: String!): AuthPayload!
-    updateUser(id: ID!, name:String!, email:String!): User!
+    signup(name: String!, email: String!, password: String!): AuthPayload!
+    login(email: String!, password: String!): AuthPayload!
+    updateUser(id: ID!, name: String!, email: String!): User!
     createProject: Project!
   }
 
@@ -125,65 +133,68 @@ const typeDefs = gql`
 export const resolvers: Resolvers = {
   Query: {
     me: (_parent, _args, context: Context) => {
-      const userId = context.req.userId
+      const userId = context.req.userId;
       return context.prisma.user.findUnique({
         where: {
-          id: String(userId)
-        }
-      })
+          id: String(userId),
+        },
+      });
     },
     getUser: (_parent, args, context: Context) => {
       return context.prisma.user.findUnique({
         where: {
-          id: args.id
-        }
-      })
+          id: args.id,
+        },
+      });
     },
     getAllUsers: (_parent, _args, context: Context) => {
       const userId = getUserId(context);
       console.log(userId);
-      return context.prisma.user.findMany()
+      return context.prisma.user.findMany();
     },
 
     getAllProjects: (_parent, _args, context: Context) => {
       return context.prisma.project.findMany({
-        include: { owner: true }
-      })
-    }
+        include: { owner: true },
+      });
+    },
   },
 
   Mutation: {
     signup: async (_parent, args, context: Context) => {
-      const hashedPassword: string = await hash(args.password, 10)
+      const hashedPassword: string = await hash(args.password, 10);
       const user = await context.prisma.user.create({
         data: {
           name: args.name,
           email: args.email,
           password: hashedPassword,
-          role: Role.Base
-        }
-      })
+          role: Role.Base,
+        },
+      });
 
       return {
         token: sign({ userId: user.id }, APP_SECRET),
-        user
-      }
+        user,
+      };
     },
     login: async (_parent, args, context: Context) => {
       const user = await context.prisma.user.findUnique({
         where: {
-          email: args.email
-        }
-      })
+          email: args.email,
+        },
+      });
 
       if (!user) {
-        throw new Error(`No user found for email: ${args.email}`)
+        throw new Error(`No user found for email: ${args.email}`);
       }
 
-      const passwordValid: boolean = await compare(args.password, user.password)
+      const passwordValid: boolean = await compare(
+        args.password,
+        user.password,
+      );
 
       if (!passwordValid) {
-        throw new Error('Invalid Password')
+        throw new Error('Invalid Password');
       }
 
       const token = sign({ userId: user.id }, APP_SECRET);
@@ -201,49 +212,48 @@ export const resolvers: Resolvers = {
 
       return {
         token: token,
-        user
-      }
-
+        user,
+      };
     },
     updateUser: (_parent, args, context: Context) => {
       return context.prisma.user.update({
         where: {
-          id: args.id
+          id: args.id,
         },
         data: {
           name: args.name,
-          email: args.email
-        }
-      })
+          email: args.email,
+        },
+      });
     },
     createProject: (_parent, _args, context: Context) => {
       return context.prisma.project.create({
         data: {
-          name: "New Project",
+          name: 'New Project',
           owner: {
-            connect: { email: "alice@prisma.io" }
-          }
+            connect: { email: 'alice@prisma.io' },
+          },
         },
-        include: { owner: true }
-      })
+        include: { owner: true },
+      });
     },
-  }
-}
+  },
+};
 
 async function startApolloServer() {
   interface Token {
-    userId: string
+    userId: string;
   }
 
   const app = express();
 
   const corsOptions: CorsOptions = {
-    origin: "http://localhost:3000",
+    origin: 'http://localhost:3000',
     credentials: true,
-  }
+  };
 
-  app.use(cors(corsOptions))
-  app.use(cookieParser())
+  app.use(cors(corsOptions));
+  app.use(cookieParser());
   app.use((req: Request, res: Response, next: any) => {
     const { token } = req.cookies;
     if (token) {
@@ -252,35 +262,33 @@ async function startApolloServer() {
       req.userId = userId;
     }
     next();
-  })
+  });
 
   const schema = makeExecutableSchema({
     //@ts-ignore
     resolvers,
     typeDefs,
-  })
+  });
 
   //TODO UPDATE ALLOWED ORIGINS
-  const server = new ApolloServer(
-    {
-      schema,
-      context: createContext,
-    });
+  const server = new ApolloServer({
+    schema,
+    context: createContext,
+  });
 
-  await server.start()
+  await server.start();
 
-  server.applyMiddleware({ app, cors: corsOptions })
+  server.applyMiddleware({ app, cors: corsOptions });
 
   app.use((req: Request, res: Response) => {
     res.status(200);
     res.send('Hello!');
     res.end();
-  })
+  });
 
-  await new Promise(resolve => app.listen({ port: 4000 }, resolve));
+  await new Promise((resolve) => app.listen({ port: 4000 }, resolve));
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
   return { server, app };
-
 }
 
 startApolloServer();
