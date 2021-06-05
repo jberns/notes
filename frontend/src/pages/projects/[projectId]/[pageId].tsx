@@ -1,18 +1,18 @@
-import { values } from "mobx";
-import { Observer, observer } from "mobx-react";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { ReactEventHandler, useEffect, useState } from "react";
+import { values } from 'mobx';
+import { Observer, observer } from 'mobx-react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { ReactEventHandler, useEffect, useState } from 'react';
 import {
   DragDropContext,
   Droppable,
   DroppableStateSnapshot,
   DropResult,
-} from "react-beautiful-dnd";
-import { Gradient } from "../../../components/Dashboard/Gradient";
-import { HeaderInput } from "../../../components/Dashboard/Header";
-import { EditableBlock } from "../../../components/EditableBlockClass";
-import { SidebarLayout } from "../../../layouts/SidebarLayout";
+} from 'react-beautiful-dnd';
+import { Gradient } from '../../../components/Dashboard/Gradient';
+import { HeaderInput } from '../../../components/Dashboard/Header';
+import { EditableBlock } from '../../../components/EditableBlockClass';
+import { SidebarLayout } from '../../../layouts/SidebarLayout';
 import {
   IBlock,
   INote,
@@ -20,10 +20,10 @@ import {
   IProject,
   Note,
   Block,
-} from "../../../models/Project";
-import { setCaretToEnd, uid } from "../../../utils";
-import type { Page } from "../../../utils/types";
-import { useMST } from "../../_app";
+} from '../../../models/Project';
+import { setCaretToEnd, uid } from '../../../utils';
+import type { Page } from '../../../utils/types';
+import { useMST } from '../../_app';
 
 export interface INewBlock {
   text: string;
@@ -60,17 +60,17 @@ const NotesPage: Page = () => {
   pageDetails = projectDetails?.pages.find((page) => page.id === pageId);
 
   const addBlock = ({ index, newBlock }: IAddBlock): void => {
-    const newIdBlock = "blk_" + uid();
-    const newIdNote = "note_" + uid();
+    const newIdBlock = 'blk_' + uid();
+    const newIdNote = 'note_' + uid();
 
     if (pageDetails) {
       pageDetails.addNote(
-        Note.create({ id: newIdNote, text: newBlock.text, tag: newBlock.tag })
+        Note.create({ id: newIdNote, text: newBlock.text, tag: newBlock.tag }),
       );
 
       pageDetails.addBlockRef(
         Block.create({ id: newIdBlock, content: newIdNote }),
-        index
+        index,
       );
     }
 
@@ -82,10 +82,10 @@ const NotesPage: Page = () => {
     referenceContent,
   }: IPasteBlockReference): void => {
     if (pageDetails) {
-      const newIdBlock = "blk_" + uid();
+      const newIdBlock = 'blk_' + uid();
       pageDetails.addBlockRef(
         Block.create({ id: newIdBlock, content: referenceContent.id }),
-        index
+        index,
       );
       setSelectBlock(newIdBlock);
     }
@@ -145,7 +145,7 @@ const NotesPage: Page = () => {
     const blocks = reorder(
       pageDetails!,
       result.source.index,
-      result.destination.index
+      result.destination.index,
     );
 
     //Page must exist is an element is being dragged
@@ -153,7 +153,7 @@ const NotesPage: Page = () => {
   };
 
   const getListStyle = (
-    isDraggingOver: DroppableStateSnapshot["isDraggingOver"]
+    isDraggingOver: DroppableStateSnapshot['isDraggingOver'],
   ) => ({
     // background: isDraggingOver ? "" : "",
   });
@@ -166,13 +166,13 @@ const NotesPage: Page = () => {
         <title>{projectDetails.name}</title>
       </Head>
 
-      <Gradient startColor='from-purple-900' />
-      <div className='px-4 mx-auto sm:px-6 md:px-8'>
+      <Gradient startColor="from-purple-900" />
+      <div className="px-4 mx-auto sm:px-6 md:px-8">
         <HeaderInput page={pageDetails} />
 
-        <div className='py-4'>
+        <div className="py-4">
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId='droppable'>
+            <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <Observer>
                   {() => (

@@ -18,7 +18,7 @@ import { APP_SECRET, getUserId } from './utils';
 import { hash, compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { Role } from '.prisma/client';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 const express = require('express');
 const cors = require('cors');
@@ -107,6 +107,10 @@ const typeDefs = gql`
     updatedAt: DateTime
   }
 
+  type ResponseMessage {
+    message: String!
+  }
+
   #GET
   type Query {
     me: User
@@ -123,6 +127,7 @@ const typeDefs = gql`
   type Mutation {
     signup(name: String!, email: String!, password: String!): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
+    logout: ResponseMessage!
     updateUser(id: ID!, name: String!, email: String!): User!
     createProject: Project!
   }
@@ -215,6 +220,10 @@ export const resolvers: Resolvers = {
         user,
       };
     },
+    logout: (_parent, _args, context: Context) => {
+      context.res.clearCookie('token');
+      return { message: 'Logged out' };
+    },
     updateUser: (_parent, args, context: Context) => {
       return context.prisma.user.update({
         where: {
@@ -254,7 +263,7 @@ async function startApolloServer() {
 
   app.use(cors(corsOptions));
   app.use(cookieParser());
-  app.use((req: Request, res: Response, next: any) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     const { token } = req.cookies;
     if (token) {
       const { userId } = verify(token, APP_SECRET) as Token;
@@ -280,15 +289,17 @@ async function startApolloServer() {
 
   server.applyMiddleware({ app, cors: corsOptions });
 
-  app.use((req: Request, res: Response) => {
-    res.status(200);
-    res.send('Hello!');
-    res.end();
-  });
+  // app.use((req: Request, res: Response) => {
+  //   res.status(200);
+  //   res.send('Hello!');
+  //   res.end();
+  // });
 
   await new Promise((resolve) => app.listen({ port: 4000 }, resolve));
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
   return { server, app };
 }
 
-startApolloServer();
+startApolloServer().catch((err) => {
+  console.error(err);
+});

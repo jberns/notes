@@ -35,6 +35,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   signup: AuthPayload;
   login: AuthPayload;
+  logout: ResponseMessage;
   updateUser: User;
   createProject: Project;
 };
@@ -124,6 +125,11 @@ export type QueryGetProjectArgs = {
 
 export type QueryGetAllProjectsByUserArgs = {
   userId: Scalars['ID'];
+};
+
+export type ResponseMessage = {
+  __typename?: 'ResponseMessage';
+  message: Scalars['String'];
 };
 
 export enum Role {

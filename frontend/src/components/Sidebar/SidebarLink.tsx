@@ -1,6 +1,6 @@
-import { observer } from "mobx-react";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import { observer } from 'mobx-react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import {
   IBlock,
   Block,
@@ -9,10 +9,10 @@ import {
   Note,
   Page,
   Project,
-} from "../../models/Project";
-import { uid } from "../../utils";
-import { Dark, DP } from "../Dark";
-import { Plus } from "../Heroicons";
+} from '../../models/Project';
+import { uid } from '../../utils';
+import { Dark, DP } from '../Dark';
+import { Plus } from '../Heroicons';
 
 interface ISidebarLinkProps {
   icon: JSX.Element;
@@ -27,17 +27,17 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
   const router = useRouter();
 
   let dp = DP.dp01;
-  let leftMargin = props.leftMargin || "";
+  let leftMargin = props.leftMargin || '';
   let nonActiveLink = `hover:${DP.dp04} hover:opacity-h-emp opacity-l-emp`;
 
   if (router.asPath === href) {
     dp = DP.dp08;
-    nonActiveLink = "";
+    nonActiveLink = '';
   }
 
   const createNewPage = (project: IProject) => {
-    const newIdBlock = "blk_" + uid();
-    const newIdNote = "note_" + uid();
+    const newIdBlock = 'blk_' + uid();
+    const newIdNote = 'note_' + uid();
 
     const pageId = Math.floor(Math.random() * 100).toString();
 
@@ -45,22 +45,22 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
       Page.create({
         id: pageId,
         name: `New Page - ${pageId}`,
-      })
+      }),
     );
 
     const page = project.pages.find((page) => page.id === pageId);
-    
+
     const defaultNote = Note.create({
       id: newIdNote,
-      text: "👋 Hey there!!",
-      tag: "p",
+      text: '👋 Hey there!!',
+      tag: 'p',
     });
 
     const defaultBlock = Block.create({
       id: newIdBlock,
-      content: defaultNote.id
-    })
-    
+      content: defaultNote.id,
+    });
+
     page?.addNote(defaultNote);
     page?.addBlockRef(defaultBlock, 0);
   };
@@ -68,7 +68,7 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
   const addProject = (model: IProject) => {
     return (
       <div
-        className='min-h-full pr-2 text-white cursor-pointer hover:opacity-100 opacity-l-emp'
+        className="min-h-full pr-2 text-white cursor-pointer hover:opacity-100 opacity-l-emp"
         onClick={() => createNewPage(model)}
       >
         <Plus />
@@ -83,9 +83,9 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
     >
       <div className={`${leftMargin} w-full`}>
         <Link href={href}>
-          <div className='flex items-center px-2 py-1 text-xs font-medium text-white rounded-md cursor-pointer opacity-h-emp'>
+          <div className="flex items-center px-2 py-1 text-xs font-medium text-white rounded-md cursor-pointer opacity-h-emp">
             {icon}
-            <span className='ml-4'>{model.name}</span>
+            <span className="ml-4">{model.name}</span>
           </div>
         </Link>
       </div>

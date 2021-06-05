@@ -34,6 +34,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   signup: AuthPayload;
   login: AuthPayload;
+  logout: ResponseMessage;
   updateUser: User;
   createProject: Project;
 };
@@ -122,6 +123,11 @@ export type QueryGetProjectArgs = {
 
 export type QueryGetAllProjectsByUserArgs = {
   userId: Scalars['ID'];
+};
+
+export type ResponseMessage = {
+  __typename?: 'ResponseMessage';
+  message: Scalars['String'];
 };
 
 export type Role =
@@ -230,6 +236,7 @@ export type ResolversTypes = {
   Page: ResolverTypeWrapper<Page>;
   Project: ResolverTypeWrapper<Project>;
   Query: ResolverTypeWrapper<{}>;
+  ResponseMessage: ResolverTypeWrapper<ResponseMessage>;
   Role: Role;
   User: ResolverTypeWrapper<User>;
 };
@@ -247,6 +254,7 @@ export type ResolversParentTypes = {
   Page: Page;
   Project: Project;
   Query: {};
+  ResponseMessage: ResponseMessage;
   User: User;
 };
 
@@ -272,6 +280,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   signup?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'name' | 'email' | 'password'>>;
   login?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
+  logout?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'id' | 'name' | 'email'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType>;
 };
@@ -322,6 +331,11 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getAllProjectsByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryGetAllProjectsByUserArgs, 'userId'>>;
 };
 
+export type ResponseMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -341,6 +355,7 @@ export type Resolvers<ContextType = any> = {
   Page?: PageResolvers<ContextType>;
   Project?: ProjectResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  ResponseMessage?: ResponseMessageResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 
