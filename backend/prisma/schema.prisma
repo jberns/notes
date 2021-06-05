@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// ! After updating the schema must run the following commands:
+
+// npx prisma migrate dev --name init
+// npx prisma generate
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum NoteType {
+  Note
+  Task
+}
+
+enum Role {
+  Admin
+  Base
+  Premium
+  Enterprise
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  name      String?
+  icon      String?
+  pages     Page[]
+  team      User[]   @relation("ProjectTeam")
+  owner     User     @relation("ProjectOwner", fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Page {
+  id          String   @id @default(uuid())
+  name        String?
+  icon        String?
+  blocksArray String?
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  content   Note     @relation(fields: [noteId], references: [id])
+  noteId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Note {
+  id         String   @id @default(uuid())
+  text       String?
+  tag        String?
+  type       NoteType @default(Note)
+  creator    User     @relation("Creator", fields: [creatorId], references: [id])
+  creatorId  String
+  assigned   User?    @relation("Assigned", fields: [assignedId], references: [id])
+  assignedId String
+  complete   Boolean  @default(false)
+  block      Block[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  creatorNotes  Note[]    @relation("Creator")
+  assignedNotes Note[]    @relation("Assigned")
+  profile       Profile?
+  projectOwner  Project[] @relation("ProjectOwner")
+  projectTeam   Project[] @relation("ProjectTeam")
+  role          Role      @default(Base)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  bio       String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

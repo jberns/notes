@@ -1,0 +1,21 @@
+overwrite: true
+schema: '../backend/src/index.ts'
+generates:
+  ../backend/src/@types/resolvers-types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-resolvers
+    config:
+      # contextType: '../backend/src/context#Context'
+      enumsAsTypes: true
+  src/generated/graphql.tsx:
+    documents:
+      - ./src/queries/*.tsx
+      - ./src/mutations/*.tsx
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true
