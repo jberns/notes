@@ -12,6 +12,7 @@ import {
   QueryResolvers,
   MutationResolvers,
   User,
+  ChatMessage,
 } from './@types/resolvers-types';
 import { APP_SECRET, getUserId } from './utils';
 
@@ -24,12 +25,21 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
+
+const messages:ChatMessage[] = [];
+
 interface Resolvers {
   Query: QueryResolvers;
   Mutation: MutationResolvers;
 }
 
 const typeDefs = gql`
+  type ChatMessage {
+    id: ID!
+    user: String!
+    content: String!
+  }
+  
   enum NoteType {
     Note
     Task
@@ -113,6 +123,8 @@ const typeDefs = gql`
 
   #GET
   type Query {
+    messages: [ChatMessage!]
+  
     me: User
 
     getUser(id: ID!): User
@@ -125,6 +137,7 @@ const typeDefs = gql`
 
   #CREATE UPDATE, DELETE
   type Mutation {
+    postMessage(user: String!, content:String!): ID!
     signup(name: String!, email: String!, password: String!): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
     logout: ResponseMessage!
@@ -137,6 +150,7 @@ const typeDefs = gql`
 
 export const resolvers: Resolvers = {
   Query: {
+    messages: () => {return messages},
     me: (_parent, _args, context: Context) => {
       const userId = context.req.userId;
       return context.prisma.user.findUnique({
@@ -166,6 +180,14 @@ export const resolvers: Resolvers = {
   },
 
   Mutation: {
+    postMessage: (_parent, args) => {
+      const {user, content} = args;
+      const id = messages.length.toString();
+      messages.push({
+        id, user, content
+      })
+      return id;
+    },
     signup: async (_parent, args, context: Context) => {
       const hashedPassword: string = await hash(args.password, 10);
       const user = await context.prisma.user.create({

@@ -29,14 +29,28 @@ export type Block = {
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
 
+export type ChatMessage = {
+  __typename?: 'ChatMessage';
+  id: Scalars['ID'];
+  user: Scalars['String'];
+  content: Scalars['String'];
+};
+
 
 export type Mutation = {
   __typename?: 'Mutation';
+  postMessage: Scalars['ID'];
   signup: AuthPayload;
   login: AuthPayload;
   logout: ResponseMessage;
   updateUser: User;
   createProject: Project;
+};
+
+
+export type MutationPostMessageArgs = {
+  user: Scalars['String'];
+  content: Scalars['String'];
 };
 
 
@@ -102,6 +116,7 @@ export type Project = {
 
 export type Query = {
   __typename?: 'Query';
+  messages?: Maybe<Array<ChatMessage>>;
   me?: Maybe<User>;
   getUser?: Maybe<User>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
@@ -228,6 +243,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   Block: ResolverTypeWrapper<Block>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
+  ChatMessage: ResolverTypeWrapper<ChatMessage>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   Mutation: ResolverTypeWrapper<{}>;
   Note: ResolverTypeWrapper<Note>;
@@ -247,6 +263,7 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   Block: Block;
   ID: Scalars['ID'];
+  ChatMessage: ChatMessage;
   DateTime: Scalars['DateTime'];
   Mutation: {};
   Note: Note;
@@ -273,11 +290,19 @@ export type BlockResolvers<ContextType = any, ParentType extends ResolversParent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ChatMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatMessage'] = ResolversParentTypes['ChatMessage']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  postMessage?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationPostMessageArgs, 'user' | 'content'>>;
   signup?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'name' | 'email' | 'password'>>;
   login?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
   logout?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
@@ -323,6 +348,7 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  messages?: Resolver<Maybe<Array<ResolversTypes['ChatMessage']>>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
   getAllUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
@@ -349,6 +375,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type Resolvers<ContextType = any> = {
   AuthPayload?: AuthPayloadResolvers<ContextType>;
   Block?: BlockResolvers<ContextType>;
+  ChatMessage?: ChatMessageResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Note?: NoteResolvers<ContextType>;
