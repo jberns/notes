@@ -30,14 +30,28 @@ export type Block = {
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
 
+export type ChatMessage = {
+  __typename?: 'ChatMessage';
+  id: Scalars['ID'];
+  user: Scalars['String'];
+  content: Scalars['String'];
+};
+
 
 export type Mutation = {
   __typename?: 'Mutation';
+  postMessage: Scalars['ID'];
   signup: AuthPayload;
   login: AuthPayload;
   logout: ResponseMessage;
   updateUser: User;
   createProject: Project;
+};
+
+
+export type MutationPostMessageArgs = {
+  user: Scalars['String'];
+  content: Scalars['String'];
 };
 
 
@@ -104,6 +118,7 @@ export type Project = {
 
 export type Query = {
   __typename?: 'Query';
+  messages?: Maybe<Array<ChatMessage>>;
   me?: Maybe<User>;
   getUser?: Maybe<User>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;

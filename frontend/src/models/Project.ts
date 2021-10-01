@@ -119,7 +119,7 @@ export const Project = types.model({
     console.log(all);
     const open = this.openTasks().length || 0;
     if (all > 0) {
-      return (all - open) / all
+    return (all - open) / all
     }
 
     return 0
