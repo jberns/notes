@@ -13,6 +13,8 @@ import { endpoint, prodEndpoint } from './constants';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 
+//! Web Socket Link Setup with SSR https://github.com/apollographql/subscriptions-transport-ws/issues/333
+
 const httpLink = new HttpLink({
   uri: 'http://localhost:4000/graphql',
 });
