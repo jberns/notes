@@ -1,9 +1,9 @@
-import {
-  ApolloServer,
-  CorsOptions,
-  gql,
-  makeExecutableSchema,
-} from 'apollo-server-express';
+import { ApolloServer, CorsOptions, gql } from 'apollo-server-express';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { createServer } from 'http';
+import { execute, subscribe } from 'graphql';
+
 import { Context, createContext } from './context';
 import { DateTimeResolver } from 'graphql-scalars';
 
@@ -21,12 +21,20 @@ import { sign } from 'jsonwebtoken';
 import { Role } from '.prisma/client';
 import { NextFunction, Request, Response } from 'express';
 
+import { PubSub } from 'graphql-subscriptions';
+
+const pubsub = new PubSub();
+
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
+const messages: ChatMessage[] = [];
 
-const messages:ChatMessage[] = [];
+//@ts-ignore
+const subscribers = [];
+//@ts-ignore
+const onMessagesUpdates = (fn) => subscribers.push(fn);
 
 interface Resolvers {
   Query: QueryResolvers;
@@ -39,7 +47,7 @@ const typeDefs = gql`
     user: String!
     content: String!
   }
-  
+
   enum NoteType {
     Note
     Task
@@ -124,7 +132,7 @@ const typeDefs = gql`
   #GET
   type Query {
     messages: [ChatMessage!]
-  
+
     me: User
 
     getUser(id: ID!): User
@@ -137,7 +145,7 @@ const typeDefs = gql`
 
   #CREATE UPDATE, DELETE
   type Mutation {
-    postMessage(user: String!, content:String!): ID!
+    postMessage(user: String!, content: String!): ID!
     signup(name: String!, email: String!, password: String!): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
     logout: ResponseMessage!
@@ -145,12 +153,18 @@ const typeDefs = gql`
     createProject: Project!
   }
 
+  type Subscription {
+    messages: [ChatMessage!]
+  }
+
   scalar DateTime
 `;
 
 export const resolvers: Resolvers = {
   Query: {
-    messages: () => {return messages},
+    messages: () => {
+      return messages;
+    },
     me: (_parent, _args, context: Context) => {
       const userId = context.req.userId;
       return context.prisma.user.findUnique({
@@ -181,11 +195,17 @@ export const resolvers: Resolvers = {
 
   Mutation: {
     postMessage: (_parent, args) => {
-      const {user, content} = args;
+      const { user, content } = args;
       const id = messages.length.toString();
       messages.push({
-        id, user, content
-      })
+        id,
+        user,
+        content,
+      });
+      //@ts-ignore
+      subscribers.forEach((fn) => {
+        fn();
+      });
       return id;
     },
     signup: async (_parent, args, context: Context) => {
@@ -269,6 +289,24 @@ export const resolvers: Resolvers = {
       });
     },
   },
+
+  //@ts-ignore
+  Subscription: {
+    messages: {
+      //@ts-ignore
+      subscribe: (parent, args) => {
+        const channel = Math.random().toString(36).slice(2, 15);
+        onMessagesUpdates(() =>
+          pubsub.publish(channel, { messages: messages }),
+        );
+        setTimeout(
+          () => pubsub.publish(channel, { messages: messages }),
+          0,
+        );
+        return pubsub.asyncIterator(channel);
+      },
+    },
+  },
 };
 
 async function startApolloServer() {
@@ -295,6 +333,8 @@ async function startApolloServer() {
     next();
   });
 
+  const httpServer = createServer(app);
+
   const schema = makeExecutableSchema({
     //@ts-ignore
     resolvers,
@@ -305,10 +345,33 @@ async function startApolloServer() {
   const server = new ApolloServer({
     schema,
     context: createContext,
+    plugins: [
+      {
+        //@ts-ignore
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              subscriptionServer.close();
+            },
+          };
+        },
+      },
+    ],
   });
 
-  await server.start();
+  const subscriptionServer = SubscriptionServer.create(
+    {
+      schema,
+      execute,
+      subscribe,
+    },
+    {
+      server: httpServer,
+      path: server.graphqlPath,
+    },
+  );
 
+  await server.start();
   server.applyMiddleware({ app, cors: corsOptions });
 
   // app.use((req: Request, res: Response) => {
@@ -317,8 +380,11 @@ async function startApolloServer() {
   //   res.end();
   // });
 
-  await new Promise((resolve) => app.listen({ port: 4000 }, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  httpServer.listen({ port: 4000 }, () =>
+    console.log(
+      `🚀 Server ready at http://localhost:4000${server.graphqlPath}`,
+    ),
+  );
   return { server, app };
 }
 

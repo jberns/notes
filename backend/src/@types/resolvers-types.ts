@@ -151,6 +151,11 @@ export type Role =
   | 'Premium'
   | 'Enterprise';
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  messages?: Maybe<Array<ChatMessage>>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
@@ -254,6 +259,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   ResponseMessage: ResolverTypeWrapper<ResponseMessage>;
   Role: Role;
+  Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
 };
 
@@ -272,6 +278,7 @@ export type ResolversParentTypes = {
   Project: Project;
   Query: {};
   ResponseMessage: ResponseMessage;
+  Subscription: {};
   User: User;
 };
 
@@ -362,6 +369,10 @@ export type ResponseMessageResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  messages?: SubscriptionResolver<Maybe<Array<ResolversTypes['ChatMessage']>>, "messages", ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -383,6 +394,7 @@ export type Resolvers<ContextType = any> = {
   Project?: ProjectResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   ResponseMessage?: ResponseMessageResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

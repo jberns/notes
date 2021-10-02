@@ -1,7 +1,7 @@
 import { SidebarLayout } from '../layouts/SidebarLayout';
 import type { Page } from '../utils/types';
 import React from 'react';
-import { useQuery, gql, useMutation } from '@apollo/client';
+import { useQuery, gql, useMutation, useSubscription } from '@apollo/client';
 import { ChatMessage } from '../generated/graphql';
 
 const GET_MESSAGES = gql`
@@ -14,22 +14,37 @@ const GET_MESSAGES = gql`
   }
 `;
 
+const GET_MESSAGES_SUBSCRIPTION = gql`
+  subscription {
+    messages {
+      id
+      user
+      content
+    }
+  }
+`;
+
 const POST_MESSAGE = gql`
   mutation ($user: String!, $content: String!) {
     postMessage(user: $user, content: $content)
   }
 `;
 
-const Messages = ({ user }: { user: string }) => {
-  const { data } = useQuery(GET_MESSAGES);
-
-  if (!data) {
+const Messages = ({
+  user,
+  messages,
+}: {
+  user: string;
+  messages: ChatMessage[];
+}) => {
+  // const { data } = useQuery(GET_MESSAGES);
+  if (!messages) {
     return null;
   }
 
   return (
     <div>
-      {data.messages.map(({ id, user: messageUser, content }: ChatMessage) => (
+      {messages.map(({ id, user: messageUser, content }: ChatMessage) => (
         <div
           key={id}
           className="pb-2"
@@ -61,6 +76,9 @@ const Chat: Page = () => {
   const [state, setState] = React.useState({ user: 'Jack', content: '' });
   const [postMessage] = useMutation(POST_MESSAGE);
 
+  const { data } = useSubscription(GET_MESSAGES_SUBSCRIPTION);
+  console.log({ data });
+
   const onSend = () => {
     if (state.content.length > 0) {
       postMessage({
@@ -76,7 +94,7 @@ const Chat: Page = () => {
   return (
     <div className="flex justify-center py-10 mx-10 rounded-lg">
       <div className="flex-none w-full p-10 text-white bg-gray-900 rounded-lg shadow-md">
-        <Messages user={state.user} />
+        <Messages user={state.user} messages={data?.messages} />
         <div className="grid w-full grid-cols-12 mt-10 space-x-5">
           <input
             type="User"

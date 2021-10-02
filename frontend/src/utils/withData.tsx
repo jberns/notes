@@ -1,9 +1,44 @@
-import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  HttpLink,
+  InMemoryCache,
+  split,
+} from '@apollo/client';
 import { onError } from '@apollo/link-error';
 import { getDataFromTree } from '@apollo/client/react/ssr';
 import { createUploadLink } from 'apollo-upload-client';
 import withApollo from 'next-with-apollo';
 import { endpoint, prodEndpoint } from './constants';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { getMainDefinition } from '@apollo/client/utilities';
+
+const httpLink = new HttpLink({
+  uri: 'http://localhost:4000/graphql',
+});
+
+const wsLink = process.browser
+  ? new WebSocketLink({
+      uri: 'ws://localhost:4000/graphql',
+      options: {
+        reconnect: true,
+      },
+    })
+  : null;
+
+const splitLink = wsLink
+  ? split(
+      ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+          definition.kind === 'OperationDefinition' &&
+          definition.operation === 'subscription'
+        );
+      },
+      wsLink,
+      httpLink,
+    )
+  : httpLink;
 
 function createClient({
   headers,
@@ -28,13 +63,14 @@ function createClient({
           );
         }
       }),
-      // this uses apollo-link-http under the hood, so all the options here come from that package
-      createUploadLink({
-        uri: process.env.NODE_ENV === 'development' ? endpoint : prodEndpoint,
-        credentials: 'include',
-        // pass the headers along from this request. This enables SSR with logged in state
-        headers,
-      }),
+      // // this uses apollo-link-http under the hood, so all the options here come from that package
+      // createUploadLink({
+      //   uri: process.env.NODE_ENV === 'development' ? endpoint : prodEndpoint,
+      //   credentials: 'include',
+      //   // pass the headers along from this request. This enables SSR with logged in state
+      //   headers,
+      // }),
+      splitLink,
     ]),
     cache: new InMemoryCache({
       typePolicies: {

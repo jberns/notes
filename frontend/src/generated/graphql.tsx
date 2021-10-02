@@ -154,6 +154,11 @@ export enum Role {
   Enterprise = 'Enterprise'
 }
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  messages?: Maybe<Array<ChatMessage>>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
