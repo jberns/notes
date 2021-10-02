@@ -1,5 +1,5 @@
 overwrite: true
-schema: '../backend/src/index.ts'
+schema: '../backend/src/graphql/typedefs.ts'
 generates:
   ../backend/src/@types/resolvers-types.ts:
     plugins:
@@ -9,6 +9,8 @@ generates:
     config:
       # contextType: '../backend/src/context#Context'
       enumsAsTypes: true
+      useIndexSignature: true
+      noSchemaStitching: true
   src/generated/graphql.tsx:
     documents:
       - ./src/queries/*.tsx

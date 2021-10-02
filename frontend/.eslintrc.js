@@ -1,5 +1,7 @@
 module.exports = {
+  plugins: ['prettier'],
   extends: [
+    'next/core-web-vitals',
     'react-app',
     'plugin:react-hooks/recommended',
     'plugin:prettier/recommended',
