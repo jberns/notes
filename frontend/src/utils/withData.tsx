@@ -9,38 +9,47 @@ import { onError } from '@apollo/link-error';
 import { getDataFromTree } from '@apollo/client/react/ssr';
 import { createUploadLink } from 'apollo-upload-client';
 import withApollo from 'next-with-apollo';
-import { endpoint, prodEndpoint } from './constants';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
+import head from 'next/head';
 
 //! Web Socket Link Setup with SSR https://github.com/apollographql/subscriptions-transport-ws/issues/333
 
-const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/graphql',
-});
+const isDev = process.env.NODE_ENV === 'development';
+export const endpoint = isDev
+  ? process.env.NEXT_PUBLIC_ENDPOINT
+  : process.env.NEXT_PUBLIC_PROD_ENDPOINT;
+
+const httpLink = (headers: any) =>
+  new HttpLink({
+    uri: `http://${endpoint}`,
+    credentials: 'include',
+    headers,
+  });
 
 const wsLink = process.browser
   ? new WebSocketLink({
-      uri: 'ws://localhost:4000/graphql',
+      uri: `ws://${endpoint}`,
       options: {
         reconnect: true,
       },
     })
   : null;
 
-const splitLink = wsLink
-  ? split(
-      ({ query }) => {
-        const definition = getMainDefinition(query);
-        return (
-          definition.kind === 'OperationDefinition' &&
-          definition.operation === 'subscription'
-        );
-      },
-      wsLink,
-      httpLink,
-    )
-  : httpLink;
+const splitLink = (headers: any) =>
+  wsLink
+    ? split(
+        ({ query }) => {
+          const definition = getMainDefinition(query);
+          return (
+            definition.kind === 'OperationDefinition' &&
+            definition.operation === 'subscription'
+          );
+        },
+        wsLink,
+        httpLink(headers),
+      )
+    : httpLink(headers);
 
 function createClient({
   headers,
@@ -72,7 +81,7 @@ function createClient({
       //   // pass the headers along from this request. This enables SSR with logged in state
       //   headers,
       // }),
-      splitLink,
+      splitLink(headers),
     ]),
     cache: new InMemoryCache({
       typePolicies: {
@@ -84,7 +93,7 @@ function createClient({
         },
       },
     }).restore(initialState || {}),
-    connectToDevTools: process.env.NODE_ENV === 'development',
+    connectToDevTools: isDev,
   });
 }
 

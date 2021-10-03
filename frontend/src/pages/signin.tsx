@@ -1,11 +1,13 @@
-import { SignIn } from "../components/SignIn";
+import { Login } from '../components/Login';
+import { Register } from '../components/Register';
 
-const SignInPage = () => {
+const LoginPage = () => {
   return (
     <div>
-      <SignIn />
+      <Login />
+      <Register />
     </div>
   );
 };
 
-export default SignInPage;
+export default LoginPage;

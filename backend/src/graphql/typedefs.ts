@@ -105,10 +105,10 @@ export const typeDefs = gql`
   #CREATE UPDATE, DELETE
   type Mutation {
     postMessage(user: String!, content: String!): ID!
-    signup(name: String!, email: String!, password: String!): AuthPayload!
-    login(email: String!, password: String!): AuthPayload!
-    logout: ResponseMessage!
-    updateUser(id: ID!, name: String!, email: String!): User!
+    UserSignup(name: String, email: String!, password: String!): AuthPayload!
+    UserLogin(email: String!, password: String!): AuthPayload!
+    UserLogout: ResponseMessage!
+    UserUpdate(id: ID!, name: String!, email: String!): User!
     createProject: Project!
   }
 

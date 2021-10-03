@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const ALL_PROJECTS = gql`
   query ALL_PROJECTS {
@@ -17,6 +17,16 @@ export const ALL_PROJECTS = gql`
 export const ME = gql`
   query ME {
     me {
+      id
+      email
+      name
+    }
+  }
+`;
+
+export const GET_ALL_USERS = gql`
+  query GET_ALL_USERS {
+    getAllUsers {
       id
       email
       name

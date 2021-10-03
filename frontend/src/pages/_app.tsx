@@ -6,6 +6,7 @@ import type { Page } from '../utils/types';
 import { ApolloProvider } from '@apollo/client/react';
 import withData from '../utils/withData';
 import { NextPage, NextPageContext } from 'next';
+import { SessionProvider } from 'next-auth/react';
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
@@ -62,11 +63,13 @@ function MyApp({
 
   return (
     <ApolloProvider client={apollo}>
-      <MSTProvider value={rootStore}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </MSTProvider>
+      <SessionProvider session={pageProps?.session}>
+        <MSTProvider value={rootStore}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </MSTProvider>
+      </SessionProvider>
     </ApolloProvider>
   );
 }

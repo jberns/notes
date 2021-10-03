@@ -13,8 +13,7 @@ generates:
       noSchemaStitching: true
   src/generated/graphql.tsx:
     documents:
-      - ./src/queries/*.tsx
-      - ./src/mutations/*.tsx
+      - ./src/graphql/*.tsx
     plugins:
       - typescript
       - typescript-operations

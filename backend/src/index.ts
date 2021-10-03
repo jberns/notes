@@ -25,6 +25,7 @@ async function startApolloServer() {
     'http://localhost:3000',
     'https://studio.apollographql.com',
   ];
+
   const corsOptions: CorsOptions = {
     origin: function (origin, callback) {
       if (!origin || whitelist.indexOf(origin) !== -1) {
@@ -39,12 +40,12 @@ async function startApolloServer() {
   app.use(cors(corsOptions));
   app.use(cookieParser());
   app.use((req: Request, res: Response, next: NextFunction) => {
-    const { token } = req.cookies;
-    if (token) {
-      const { userId } = verify(token, APP_SECRET) as Token;
-      //Put the userId onto future requests
-      req.userId = userId;
-    }
+    // const { token } = req.cookies;
+    // if (token) {
+    //   const { userId } = verify(token, APP_SECRET) as Token;
+    //   //Put the userId onto future requests
+    //   req.userId = userId;
+    // }
     next();
   });
 
@@ -59,7 +60,9 @@ async function startApolloServer() {
   //TODO UPDATE ALLOWED ORIGINS
   const server = new ApolloServer({
     schema,
-    context: createContext,
+    context: async ({ req, res }) => {
+      return createContext(req, res);
+    },
     plugins: [
       {
         //@ts-ignore
@@ -87,6 +90,7 @@ async function startApolloServer() {
   );
 
   await server.start();
+
   server.applyMiddleware({ app, cors: corsOptions });
 
   // app.use((req: Request, res: Response) => {

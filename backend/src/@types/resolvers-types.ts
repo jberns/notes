@@ -40,10 +40,10 @@ export type ChatMessage = {
 export type Mutation = {
   __typename?: 'Mutation';
   postMessage: Scalars['ID'];
-  signup: AuthPayload;
-  login: AuthPayload;
-  logout: ResponseMessage;
-  updateUser: User;
+  UserSignup: AuthPayload;
+  UserLogin: AuthPayload;
+  UserLogout: ResponseMessage;
+  UserUpdate: User;
   createProject: Project;
 };
 
@@ -54,20 +54,20 @@ export type MutationPostMessageArgs = {
 };
 
 
-export type MutationSignupArgs = {
-  name: Scalars['String'];
+export type MutationUserSignupArgs = {
+  name?: Maybe<Scalars['String']>;
   email: Scalars['String'];
   password: Scalars['String'];
 };
 
 
-export type MutationLoginArgs = {
+export type MutationUserLoginArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
 };
 
 
-export type MutationUpdateUserArgs = {
+export type MutationUserUpdateArgs = {
   id: Scalars['ID'];
   name: Scalars['String'];
   email: Scalars['String'];
@@ -171,7 +171,11 @@ export type ResolversObject<TObject> = WithIndex<TObject>;
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs>;
+
+export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -298,10 +302,10 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   postMessage?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationPostMessageArgs, 'user' | 'content'>>;
-  signup?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'name' | 'email' | 'password'>>;
-  login?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
-  logout?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
-  updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'id' | 'name' | 'email'>>;
+  UserSignup?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationUserSignupArgs, 'email' | 'password'>>;
+  UserLogin?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationUserLoginArgs, 'email' | 'password'>>;
+  UserLogout?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
+  UserUpdate?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUserUpdateArgs, 'id' | 'name' | 'email'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType>;
 }>;
 

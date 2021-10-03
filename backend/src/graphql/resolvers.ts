@@ -34,14 +34,14 @@ export const resolvers: Resolvers = {
     messages: () => {
       return messages;
     },
-    me: (_parent, _args, context: Context) => {
-      const userId = context.req.userId;
-      return context.prisma.user.findUnique({
-        where: {
-          id: String(userId),
-        },
-      });
-    },
+    // me: (_parent, _args, context: Context) => {
+    //   const userId = context.req.userId;
+    //   return context.prisma.user.findUnique({
+    //     where: {
+    //       id: String(userId),
+    //     },
+    //   });
+    // },
     getUser: (_parent, args, context: Context) => {
       return context.prisma.user.findUnique({
         where: {
@@ -50,8 +50,8 @@ export const resolvers: Resolvers = {
       });
     },
     getAllUsers: (_parent, _args, context: Context) => {
-      const userId = getUserId(context);
-      console.log(userId);
+      // const userId = getUserId(context);
+      // console.log({ userId });
       return context.prisma.user.findMany();
     },
 
@@ -77,7 +77,7 @@ export const resolvers: Resolvers = {
       });
       return id;
     },
-    signup: async (_parent, args, context: Context) => {
+    UserSignup: async (_parent, args, context: Context) => {
       const hashedPassword: string = await hash(args.password, 10);
       const user = await context.prisma.user.create({
         data: {
@@ -93,14 +93,15 @@ export const resolvers: Resolvers = {
         user,
       };
     },
-    login: async (_parent, args, context: Context) => {
+    UserLogin: async (_parent, args, context: Context) => {
       const user = await context.prisma.user.findUnique({
         where: {
           email: args.email,
         },
       });
 
-      if (!user) {
+      //Password will be blank if the user is using OAuth
+      if (!user || !user.password) {
         throw new Error(`No user found for email: ${args.email}`);
       }
 
@@ -118,9 +119,7 @@ export const resolvers: Resolvers = {
 
       const resetTime = 3600000; //1 hour
       const maxAge = 1000 * 60 * 60 * 24 * 365; //365 days
-
-      console.log(context.res.cookie);
-
+      // console.log(context.res);
       context.res.cookie('token', token, {
         httpOnly: true,
         maxAge, // 1 year cookie
@@ -131,11 +130,11 @@ export const resolvers: Resolvers = {
         user,
       };
     },
-    logout: (_parent, _args, context: Context) => {
+    UserLogout: (_parent, _args, context: Context) => {
       context.res.clearCookie('token');
       return { message: 'Logged out' };
     },
-    updateUser: (_parent, args, context: Context) => {
+    UserUpdate: (_parent, args, context: Context) => {
       return context.prisma.user.update({
         where: {
           id: args.id,
