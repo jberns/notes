@@ -3,7 +3,7 @@ import {
   useUser_LoginMutation,
   useUser_SignupMutation,
 } from '../generated/graphql';
-import { ME } from '../queries/projects';
+import { ME } from '../graphql/queries';
 import useForm from '../utils/useForm';
 
 export function Register() {

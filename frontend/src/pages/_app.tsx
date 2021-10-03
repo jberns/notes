@@ -62,15 +62,15 @@ function MyApp({
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
 
   return (
-    <ApolloProvider client={apollo}>
-      <SessionProvider session={pageProps?.session}>
+    <SessionProvider session={pageProps?.session}>
+      <ApolloProvider client={apollo}>
         <MSTProvider value={rootStore}>
           <Layout>
             <Component {...pageProps} />
           </Layout>
         </MSTProvider>
-      </SessionProvider>
-    </ApolloProvider>
+      </ApolloProvider>
+    </SessionProvider>
   );
 }
 

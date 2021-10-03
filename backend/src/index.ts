@@ -4,21 +4,19 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { createServer } from 'http';
 import { execute, subscribe } from 'graphql';
 import { createContext } from './context';
-import { verify } from 'jsonwebtoken';
-import { APP_SECRET } from './utils';
 import { NextFunction, Request, Response } from 'express';
 
 import { typeDefs, resolvers } from './graphql';
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 async function startApolloServer() {
-  interface Token {
-    userId: string;
-  }
-
   const app = express();
 
   const whitelist = [

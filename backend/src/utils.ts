@@ -2,7 +2,7 @@ import { verify } from 'jsonwebtoken';
 import { Context } from './context';
 
 // TODO - CREATE NEW APP SECRET IN ENV FILE
-export const APP_SECRET = 'appsecret321';
+export const APP_SECRET = process.env.APP_SECRET;
 
 interface Token {
   userId: string;
@@ -17,15 +17,15 @@ export function getUserId(context: Context): string | null {
     : 'next-auth.session-token';
 
   const token = req.cookies[cookieName];
-  if (token) {
+  console.log(token);
+
+  if (token && APP_SECRET) {
     const verifiedToken = verify(token, APP_SECRET) as Token;
-    console.log({ token });
-    console.log('verified:', verifiedToken);
     return verifiedToken && String(verifiedToken.userId);
   }
 
   const authHeader = context.req.get('Authorization');
-  if (authHeader) {
+  if (authHeader && APP_SECRET) {
     const token = authHeader.replace('Bearer ', '');
     const verifiedToken = verify(token, APP_SECRET) as Token;
     return verifiedToken && String(verifiedToken.userId);

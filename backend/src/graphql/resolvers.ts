@@ -50,8 +50,8 @@ export const resolvers: Resolvers = {
       });
     },
     getAllUsers: (_parent, _args, context: Context) => {
-      // const userId = getUserId(context);
-      // console.log({ userId });
+      const userId = getUserId(context);
+      console.log({ userId });
       return context.prisma.user.findMany();
     },
 
@@ -88,10 +88,14 @@ export const resolvers: Resolvers = {
         },
       });
 
-      return {
-        token: sign({ userId: user.id }, APP_SECRET),
-        user,
-      };
+      if (APP_SECRET) {
+        return {
+          token: sign({ userId: user.id }, APP_SECRET),
+          user,
+        };
+      } else {
+        throw new Error('Unable to generate token');
+      }
     },
     UserLogin: async (_parent, args, context: Context) => {
       const user = await context.prisma.user.findUnique({
@@ -105,6 +109,10 @@ export const resolvers: Resolvers = {
         throw new Error(`No user found for email: ${args.email}`);
       }
 
+      if (!args.password) {
+        throw new Error('Password Required');
+      }
+
       const passwordValid: boolean = await compare(
         args.password,
         user.password,
@@ -112,6 +120,10 @@ export const resolvers: Resolvers = {
 
       if (!passwordValid) {
         throw new Error('Invalid Password');
+      }
+
+      if (!APP_SECRET) {
+        throw new Error('Unable to generate token');
       }
 
       const token = sign({ userId: user.id }, APP_SECRET);

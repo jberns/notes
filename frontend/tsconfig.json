@@ -18,7 +18,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/components/EditableBlock2.js"
+    "src/components/EditableBlock2.js",
+    "src/pages/api/auth/[...nextauth].js"
   ],
   "exclude": ["node_modules"]
 }
