@@ -1,7 +1,7 @@
 import React from 'react';
 
 export enum DP {
-  'dp00' = 'bg-dark-dp01',
+  'dp00' = 'bg-dark-dp00',
   'dp01' = 'bg-dark-dp01',
   'dp02' = 'bg-dark-dp02',
   'dp03' = 'bg-dark-dp03',
@@ -12,6 +12,19 @@ export enum DP {
   'dp16' = 'bg-dark-dp16',
   'dp25' = 'bg-dark-dp25',
 }
+
+// export enum DP {
+//   'dp00' = 'bg-gray-900',
+//   'dp01' = 'bg-gray-800',
+//   'dp02' = 'bg-gray-700',
+//   'dp03' = 'bg-gray-600',
+//   'dp04' = 'bg-gray-500',
+//   'dp06' = 'bg-gray-400',
+//   'dp08' = 'bg-gray-300',
+//   'dp12' = 'bg-gray-200',
+//   'dp16' = 'bg-gray-100',
+//   'dp25' = 'bg-gray-50',
+// }
 
 interface IDarkProps {
   children: React.ReactNode;

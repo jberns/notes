@@ -5,17 +5,28 @@ import Document, {
   NextScript,
   DocumentContext,
 } from 'next/document';
-class MyDocument extends Document {
+import { extractCritical } from '@emotion/server';
+import 'twin.macro';
+export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
-    return { ...initialProps };
+    const page = await ctx.renderPage();
+    const styles = extractCritical(page.html);
+    return { ...initialProps, ...page, ...styles };
   }
 
   render() {
     return (
-      <Html>
-        <Head />
-        <body className="min-h-vh bg-gray-primary">
+      <Html lang="en">
+        <Head>
+          <style
+            //@ts-ignore
+            data-emotion-css={this.props.ids.join(' ')}
+            //@ts-ignore
+            dangerouslySetInnerHTML={{ __html: this.props.css }}
+          />
+        </Head>
+        <body>
           <Main />
           <NextScript />
         </body>
@@ -23,5 +34,3 @@ class MyDocument extends Document {
     );
   }
 }
-
-export default MyDocument;

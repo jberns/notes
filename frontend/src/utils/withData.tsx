@@ -81,10 +81,7 @@ function createClient({ ctx, headers, initialState }: InitApolloOptions<any>) {
     cache: new InMemoryCache({
       typePolicies: {
         Query: {
-          fields: {
-            // TODO: We will add this together!
-            // allProducts: paginationField(),
-          },
+          fields: {},
         },
       },
     }).restore(initialState || {}),

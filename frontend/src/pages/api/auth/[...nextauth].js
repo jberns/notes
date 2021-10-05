@@ -74,7 +74,7 @@ export default NextAuth({
         });
 
         const { user } = userData.data.UserLogin;
-        user.extra = 'Hello World';
+
         if (user) {
           return user;
         }

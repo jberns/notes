@@ -1,4 +1,3 @@
-import { ReactComponentElement } from 'react';
 import { DP } from '../Dark';
 
 interface IStatsCardProps {
