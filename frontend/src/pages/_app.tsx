@@ -7,6 +7,7 @@ import { ApolloProvider } from '@apollo/client/react';
 import withData from '../utils/withData';
 import { NextPage, NextPageContext } from 'next';
 import { SessionProvider } from 'next-auth/react';
+import { GlobalStyles } from 'twin.macro';
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
@@ -18,6 +19,7 @@ export function useMST() {
   const store = useContext(MSTContext);
   return store;
 }
+// TODO:  Remove MOBX State tree and this initial state
 const LOCAL_STORAGE = 'notes';
 
 let initialState = {};
@@ -65,6 +67,7 @@ function MyApp({
     <SessionProvider session={pageProps?.session}>
       <ApolloProvider client={apollo}>
         <MSTProvider value={rootStore}>
+          <GlobalStyles />
           <Layout>
             <Component {...pageProps} />
           </Layout>

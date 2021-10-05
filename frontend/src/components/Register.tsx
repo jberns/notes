@@ -1,9 +1,5 @@
 import { SyntheticEvent } from 'react';
-import {
-  useUser_LoginMutation,
-  useUser_SignupMutation,
-} from '../generated/graphql';
-import { ME } from '../graphql/queries';
+import { useUser_SignupMutation } from '../generated/graphql';
 import useForm from '../utils/useForm';
 
 export function Register() {

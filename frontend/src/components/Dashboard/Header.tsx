@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { IPage, IProject } from '../../models/Project';
-
+import 'twin.macro';
 interface IProjectHeaderInputProps {
   page: IProject | IPage;
 }
@@ -21,17 +21,17 @@ export const HeaderInput = observer(({ page }: IProjectHeaderInputProps) => {
       id="title"
       value={page.name}
       onChange={onNameChange}
-      className="w-full px-2 mt-12 -mx-2 text-5xl font-semibold text-white bg-transparent border-none outline-none opacity-h-emp focus:outline-none"
+      tw="bg-transparent w-full px-2 mt-12 -mx-2 text-5xl font-semibold text-white border-none !ring-purple-400 !border-0 !outline-none opacity-h-emp focus:outline-none"
     ></input>
   );
 });
 
 export const HeaderFixed = ({ title }: IProjectHeaderFixedProps) => {
   return (
-    <div className="px-4 mx-auto sm:px-6 md:px-8">
+    <div tw="px-4 mx-auto sm:px-6 md:px-8">
       <div
         id="title"
-        className="w-full px-2 -mx-2 text-5xl font-semibold text-white bg-transparent border-none outline-none pt-14 opacity-h-emp focus:outline-none"
+        tw="w-full px-2 -mx-2 text-5xl font-semibold text-white bg-transparent border-none outline-none pt-14 opacity-h-emp focus:outline-none"
       >
         {title}
       </div>

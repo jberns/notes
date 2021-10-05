@@ -26,12 +26,12 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
   const { icon, href, model, children } = props;
   const router = useRouter();
 
-  let dp = DP.dp01;
+  let dp = DP.dp00;
   let leftMargin = props.leftMargin || '';
   let nonActiveLink = `hover:${DP.dp04} hover:opacity-h-emp opacity-l-emp`;
 
   if (router.asPath === href) {
-    dp = DP.dp08;
+    dp = DP.dp01;
     nonActiveLink = '';
   }
 
@@ -82,7 +82,7 @@ export const SidebarLink = observer((props: ISidebarLinkProps) => {
       className={`${nonActiveLink} flex w-full items-center rounded-md group`}
     >
       <div className={`${leftMargin} w-full`}>
-        <Link href={href}>
+        <Link href={href} passHref>
           <div className="flex items-center px-2 py-1 text-xs font-medium text-white rounded-md cursor-pointer opacity-h-emp">
             {icon}
             <span className="ml-4">{model.name}</span>

@@ -1,4 +1,4 @@
-import { useMeQuery } from "../generated/graphql";
+import { useMeQuery } from '../generated/graphql';
 
 export function useUser() {
   const { data } = useMeQuery();

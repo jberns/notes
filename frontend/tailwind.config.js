@@ -1,5 +1,6 @@
 module.exports = {
-  purge: ['./pages/**/*.tsx', './components/**/*.tsx', './layouts/**/*.tsx'],
+  mode: 'jit',
+  purge: ['./src/**/*.{js,jsx,ts,tsx,vue}'],
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
