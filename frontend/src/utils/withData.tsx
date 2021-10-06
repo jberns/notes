@@ -85,7 +85,6 @@ const splitLink = (headers: IncomingHttpHeaders | undefined) =>
     : uploadLink(headers);
 
 function createClient({ ctx, headers, initialState }: InitApolloOptions<any>) {
-  console.log({ initialState });
   return new ApolloClient({
     link: ApolloLink.from([
       authMiddleware,

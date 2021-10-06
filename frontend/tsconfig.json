@@ -19,7 +19,7 @@
     "**/*.ts",
     "**/*.tsx",
     "src/components/EditableBlock2.js",
-    "src/pages/api/auth/[...nextauth].ts",
+    "src/pages/api/auth/[...nextauth].js",
     "src/pages/_document.js"
   ],
   "exclude": ["node_modules"]
