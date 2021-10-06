@@ -2,7 +2,6 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 
 export function Login() {
   const { data: session } = useSession();
-  console.log(session);
 
   if (session) {
     return (
@@ -15,7 +14,13 @@ export function Login() {
   return (
     <>
       Not signed in <br />
-      <button onClick={() => signIn()}>Sign in</button>
+      <button
+        onClick={() =>
+          signIn(undefined, { callbackUrl: 'http://localhost:3000/settings' })
+        }
+      >
+        Sign in
+      </button>
     </>
   );
 }
