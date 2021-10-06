@@ -1,4 +1,11 @@
-import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  gql,
+  InMemoryCache,
+  makeVar,
+  split,
+} from '@apollo/client';
 import { onError } from '@apollo/link-error';
 import { getDataFromTree } from '@apollo/client/react/ssr';
 import { createUploadLink } from 'apollo-upload-client';
@@ -9,29 +16,47 @@ import { IncomingHttpHeaders } from 'http';
 
 //! Web Socket Link Setup with SSR https://github.com/apollographql/subscriptions-transport-ws/issues/333
 
+export const typeDefs = gql`
+  extend type Query {
+    loggedInToken: String
+  }
+`;
+
+const READ_TOKEN = gql`
+  query READ_TOKEN {
+    loggedInToken @client
+  }
+`;
+
 const isDev = process.env.NODE_ENV === 'development';
 export const endpoint = isDev
   ? process.env.NEXT_PUBLIC_ENDPOINT
   : process.env.NEXT_PUBLIC_PROD_ENDPOINT;
 
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  const { cache } = operation.getContext();
+  const token = cache.readQuery({ query: READ_TOKEN });
+
+  console.log({ token });
+
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token?.loggedInToken}` : '',
+    },
+  }));
+
+  return forward(operation);
+});
+
 // this uses apollo-link-http under the hood, so all the options here come from that package
 const uploadLink = (headers: IncomingHttpHeaders | undefined) => {
-  // const token = localStorage.getItem('token');
-  const token = false;
-
-  const newHeaders = {
-    ...headers,
-    authorization: token ? `Bearer ${token}` : 'hi',
-  };
-
-  console.log(newHeaders);
   return createUploadLink({
     uri: `http://${endpoint}`,
     fetchOptions: {
       credentials: 'include',
     },
-    // // pass the headers along from this request. This enables SSR with logged in state
-    headers: newHeaders,
   });
 };
 
@@ -62,6 +87,7 @@ const splitLink = (headers: IncomingHttpHeaders | undefined) =>
 function createClient({ ctx, headers, initialState }: InitApolloOptions<any>) {
   return new ApolloClient({
     link: ApolloLink.from([
+      authMiddleware,
       onError(({ graphQLErrors, networkError }) => {
         if (graphQLErrors) {
           graphQLErrors.forEach(({ message, locations, path }) =>
@@ -81,13 +107,22 @@ function createClient({ ctx, headers, initialState }: InitApolloOptions<any>) {
     cache: new InMemoryCache({
       typePolicies: {
         Query: {
-          fields: {},
+          fields: {
+            loggedInToken: {
+              read() {
+                return loggedInTokenVar();
+              },
+            },
+          },
         },
       },
     }).restore(initialState || {}),
     connectToDevTools: isDev,
+    typeDefs,
   });
 }
+
+export const loggedInTokenVar = makeVar<string>('');
 
 //@ts-ignore
 export default withApollo(createClient, { getDataFromTree });

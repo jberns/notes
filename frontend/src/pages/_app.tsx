@@ -4,9 +4,9 @@ import { IRootStore, RootStore } from '../models/Project';
 import '../styles/globals.css';
 import type { Page } from '../utils/types';
 import { ApolloProvider } from '@apollo/client/react';
-import withData from '../utils/withData';
+import withData, { loggedInTokenVar } from '../utils/withData';
 import { NextPage, NextPageContext } from 'next';
-import { SessionProvider } from 'next-auth/react';
+import { getSession, SessionProvider } from 'next-auth/react';
 import { GlobalStyles } from 'twin.macro';
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
@@ -84,6 +84,9 @@ MyApp.getInitialProps = async function ({
   Component: NextPage;
   ctx: NextPageContext;
 }) {
+  const session = await getSession(ctx);
+  loggedInTokenVar(session?.token);
+
   let pageProps = {};
   if (Component.getInitialProps) {
     pageProps = await Component.getInitialProps(ctx);

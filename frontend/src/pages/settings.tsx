@@ -1,11 +1,11 @@
+import { useSession } from 'next-auth/react';
 import { useGet_All_UsersQuery } from '../generated/graphql';
 import { SidebarLayout } from '../layouts/SidebarLayout';
 import type { Page } from '../utils/types';
+import { loggedInTokenVar } from '../utils/withData';
 import { useMST } from './_app';
 
 const Settings: Page = () => {
-  const store = useMST();
-
   const { loading, error, data } = useGet_All_UsersQuery();
 
   return (

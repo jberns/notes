@@ -51,7 +51,7 @@ export const resolvers: Resolvers = {
     },
     getAllUsers: (_parent, _args, context: Context) => {
       const userId = getUserId(context);
-      console.log({ userId });
+      console.log('Updated: ', { userId });
       return context.prisma.user.findMany();
     },
 

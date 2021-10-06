@@ -8,9 +8,3 @@ declare module 'twin.macro' {
   const styled: typeof styledImport;
   const css: typeof cssImport;
 }
-
-// Used to import images
-declare module '*.jpg' {
-  const content: any;
-  export default content;
-}
