@@ -13,6 +13,8 @@ import withApollo, { InitApolloOptions } from 'next-with-apollo';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { IncomingHttpHeaders } from 'http';
+import { getToken } from 'next-auth/jwt';
+import { NextPageContext } from 'next';
 
 //! Web Socket Link Setup with SSR https://github.com/apollographql/subscriptions-transport-ws/issues/333
 
@@ -33,22 +35,42 @@ export const endpoint = isDev
   ? process.env.NEXT_PUBLIC_ENDPOINT
   : process.env.NEXT_PUBLIC_PROD_ENDPOINT;
 
-const authMiddleware = new ApolloLink((operation, forward) => {
-  // add the authorization to the headers
-  const { cache } = operation.getContext();
-  const token = cache.readQuery({ query: READ_TOKEN });
+const cookieToken = (ctx: NextPageContext | undefined): string => {
+  const secureCookie = !(
+    !process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL.startsWith('http://')
+  );
 
-  console.log({ token });
+  const cookieName = secureCookie
+    ? '__Secure-next-auth.session-token'
+    : 'next-auth.session-token';
 
-  operation.setContext(({ headers = {} }) => ({
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token?.loggedInToken}` : '',
-    },
-  }));
+  //@ts-ignore Cookies does not exist by default
+  let cookieToken = ctx?.req?.cookies[cookieName];
 
-  return forward(operation);
-});
+  return cookieToken;
+};
+
+const authMiddleware = (ctx: NextPageContext | undefined) =>
+  new ApolloLink((operation, forward) => {
+    // add the authorization to the headers
+
+    // const token = cookieToken(ctx);
+
+    const { cache } = operation.getContext();
+    const cacheToken = cache.readQuery({ query: READ_TOKEN });
+    const token = cacheToken?.loggedInToken;
+
+    operation.setContext(({ headers = {} }) => {
+      return {
+        headers: {
+          ...headers,
+          authorization: token ? `Bearer ${token}` : '',
+        },
+      };
+    });
+
+    return forward(operation);
+  });
 
 // this uses apollo-link-http under the hood, so all the options here come from that package
 const uploadLink = (headers: IncomingHttpHeaders | undefined) => {
@@ -87,7 +109,7 @@ const splitLink = (headers: IncomingHttpHeaders | undefined) =>
 function createClient({ ctx, headers, initialState }: InitApolloOptions<any>) {
   return new ApolloClient({
     link: ApolloLink.from([
-      authMiddleware,
+      authMiddleware(ctx),
       onError(({ graphQLErrors, networkError }) => {
         if (graphQLErrors) {
           graphQLErrors.forEach(({ message, locations, path }) =>
@@ -119,6 +141,7 @@ function createClient({ ctx, headers, initialState }: InitApolloOptions<any>) {
     }).restore(initialState || {}),
     connectToDevTools: isDev,
     typeDefs,
+    ssrMode: typeof window === 'undefined',
   });
 }
 

@@ -1,23 +1,22 @@
-import { observer } from 'mobx-react';
 import { Dark, DP } from '../Dark';
-import { TempLink } from '../TempLink';
+import { CreateProject } from './CreateProject';
 import { SidebarProjectList } from './SidebarProjectList';
 
-export const Sidebar = observer(() => {
+export const Sidebar = () => {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex">
       {/* <!-- Static sidebar for desktop --> */}
-      <div className="flex flex-shrink-0">
+      <div className="flex">
         <div className="flex flex-col w-64">
           {/* <!-- Sidebar component, swap this element with another sidebar if you like --> */}
-          <div className="flex flex-col flex-1 h-0 ">
-            <Dark dp={DP.dp03} className="min-h-full">
-              <div className="flex items-center flex-shrink-0 h-16 px-4 text-xl italic font-bold text-white opacity-h-emp">
+          <div className="flex flex-col flex-1">
+            <Dark dp={DP.dp03} className="h-screen overflow-y-auto">
+              <div className="flex items-center h-16 px-4 text-xl italic font-bold text-white opacity-h-emp">
                 Project Notes
               </div>
 
-              <nav className="flex-1 min-h-full px-2 py-4 space-y-1 overflow-y-auto">
-                <TempLink />
+              <nav className="px-2 py-4 space-y-1 overflow-y-auto">
+                <CreateProject />
                 <SidebarProjectList />
               </nav>
             </Dark>
@@ -26,4 +25,4 @@ export const Sidebar = observer(() => {
       </div>
     </div>
   );
-});
+};

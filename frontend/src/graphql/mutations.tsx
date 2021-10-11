@@ -25,3 +25,17 @@ export const USER_SIGNUP = gql`
     }
   }
 `;
+
+export const PROJECT_CREATE = gql`
+  mutation PROJECT_CREATE {
+    ProjectsCreate {
+      id
+      name
+      owner {
+        id
+        name
+        email
+      }
+    }
+  }
+`;

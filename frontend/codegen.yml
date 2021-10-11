@@ -20,3 +20,6 @@ generates:
       - typescript-react-apollo
     config:
       withHooks: true
+  # src/generated/fragmentTypes.json:
+  #   plugins:
+  #     - fragment-matcher

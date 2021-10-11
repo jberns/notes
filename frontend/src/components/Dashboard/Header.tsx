@@ -1,30 +1,32 @@
-import { observer } from 'mobx-react';
 import { IPage, IProject } from '../../models/Project';
 import 'twin.macro';
+import { ProjectAttributesFragment } from '../../generated/graphql';
 interface IProjectHeaderInputProps {
-  page: IProject | IPage;
+  page: ProjectAttributesFragment;
 }
 
 interface IProjectHeaderFixedProps {
   title: string;
 }
 
-export const HeaderInput = observer(({ page }: IProjectHeaderInputProps) => {
-  const onNameChange = (e: React.FormEvent<HTMLInputElement>) => {
-    page?.setName(e.currentTarget.value);
-  };
+export const HeaderInput = ({ page }: IProjectHeaderInputProps) => {
+  // const onNameChange = (e: React.FormEvent<HTMLInputElement>) => {
+  //   page?.setName(e.currentTarget.value);
+  // };
+
+  const name = page?.name || 'Add Name';
 
   return (
     <input
       type="text"
       name="title"
       id="title"
-      value={page.name}
-      onChange={onNameChange}
+      value={name}
+      // onChange={onNameChange}
       tw="bg-transparent w-full px-2 mt-12 -mx-2 text-5xl font-semibold text-white border-none !ring-purple-400 !border-0 !outline-none opacity-h-emp focus:outline-none"
     ></input>
   );
-});
+};
 
 export const HeaderFixed = ({ title }: IProjectHeaderFixedProps) => {
   return (

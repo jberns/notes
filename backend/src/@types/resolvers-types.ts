@@ -45,6 +45,7 @@ export type Mutation = {
   UserLogout: ResponseMessage;
   UserUpdate: User;
   createProject: Project;
+  ProjectsCreate: Project;
 };
 
 
@@ -123,6 +124,8 @@ export type Query = {
   getProject: Project;
   getAllProjects?: Maybe<Array<Maybe<Project>>>;
   getAllProjectsByUser?: Maybe<Array<Maybe<Project>>>;
+  ProjectById?: Maybe<Project>;
+  ProjectsAllByLoggedInUser?: Maybe<Array<Maybe<Project>>>;
 };
 
 
@@ -138,6 +141,11 @@ export type QueryGetProjectArgs = {
 
 export type QueryGetAllProjectsByUserArgs = {
   userId: Scalars['ID'];
+};
+
+
+export type QueryProjectByIdArgs = {
+  id: Scalars['ID'];
 };
 
 export type ResponseMessage = {
@@ -307,6 +315,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   UserLogout?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
   UserUpdate?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUserUpdateArgs, 'id' | 'name' | 'email'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType>;
+  ProjectsCreate?: Resolver<ResolversTypes['Project'], ParentType, ContextType>;
 }>;
 
 export type NoteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Note'] = ResolversParentTypes['Note']> = ResolversObject<{
@@ -354,6 +363,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<QueryGetProjectArgs, 'id'>>;
   getAllProjects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   getAllProjectsByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryGetAllProjectsByUserArgs, 'userId'>>;
+  ProjectById?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectByIdArgs, 'id'>>;
+  ProjectsAllByLoggedInUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
 }>;
 
 export type ResponseMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = ResolversObject<{
