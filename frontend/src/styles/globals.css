@@ -17,3 +17,7 @@
 .editor-menu > button {
   @apply bg-gray-600 text-white p-0.5 px-1 m-0.5 rounded;
 }
+
+.mention {
+  @apply p-0.5 bg-indigo-700 text-indigo-100 rounded;
+}

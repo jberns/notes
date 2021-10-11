@@ -11,7 +11,7 @@ export const Sidebar = observer(() => {
         <div className="flex flex-col w-64">
           {/* <!-- Sidebar component, swap this element with another sidebar if you like --> */}
           <div className="flex flex-col flex-1 h-0 ">
-            <Dark dp={DP.dp00} className="min-h-full">
+            <Dark dp={DP.dp03} className="min-h-full">
               <div className="flex items-center flex-shrink-0 h-16 px-4 text-xl italic font-bold text-white opacity-h-emp">
                 Project Notes
               </div>

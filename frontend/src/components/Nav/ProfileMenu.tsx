@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dark, DP } from './Dark';
+import { Dark, DP } from '../Dark';
 import { ProfileMenuLink } from './ProfileMenuLink';
 
 export const ProfileMenu = () => {
@@ -33,17 +33,16 @@ export const ProfileMenu = () => {
                         To: "transform opacity-0 scale-95"
                     --> */}
       {isMenuOpen && (
-        <Dark
-          className="absolute right-0 z-50 w-48 py-1 mt-2 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
+        <div
+          className="absolute right-0 z-50 w-48 p-2 origin-top-right bg-black rounded-md shadow-lg ring-1 ring-black"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="user-menu"
-          dp={DP.dp08}
         >
           <ProfileMenuLink href="/profile" title="Your Profile" />
           <ProfileMenuLink href="/settings" title="Settings" />
           <ProfileMenuLink href="/" title="Sign out" />
-        </Dark>
+        </div>
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { Dark, DP } from '../components/Dark';
 import { Sidebar } from '../components/Sidebar/Sidebar';
-import { Header } from '../components/Header';
+import { Nav } from '../components/Nav/Nav';
 import { PAGE_CONTAINER } from '../utils/constants';
 
 export const SidebarLayout = (props: any) => {
@@ -13,12 +13,12 @@ export const SidebarLayout = (props: any) => {
         <title>Simple Notes</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Dark dp={DP.dp01}>
+      <Dark dp={DP.dp06}>
         <div className="flex h-screen">
           {/* <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. --> */}
           <Sidebar />
           <div className="flex flex-col flex-1 w-0">
-            <Header />
+            <Nav />
             <main
               id={PAGE_CONTAINER}
               className="relative flex-1 overflow-y-auto focus:outline-none"

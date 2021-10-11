@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { DP } from './Dark';
 
 interface IProfileMenuLinkProps {
   icon?: JSX.Element;
@@ -13,7 +12,7 @@ export function ProfileMenuLink(props: IProfileMenuLinkProps) {
   return (
     <Link href={href}>
       <a
-        className={`block px-4 py-2 text-sm text-white opacity-l-emp hover:opacity-h-emp hover:${DP.dp25}`}
+        className={`block rounded px-4 py-2 text-sm text-white opacity-l-emp !ring-opacity-100 border-opacity-100 hover:opacity-h-emp hover:bg-indigo-600`}
         role="menuitem"
       >
         {icon}
