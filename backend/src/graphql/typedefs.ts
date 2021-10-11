@@ -100,6 +100,9 @@ export const typeDefs = gql`
     getProject(id: ID!): Project!
     getAllProjects: [Project]
     getAllProjectsByUser(userId: ID!): [Project]
+
+    ProjectById(id: ID!): Project
+    ProjectsAllByLoggedInUser: [Project]
   }
 
   #CREATE UPDATE, DELETE
@@ -110,6 +113,8 @@ export const typeDefs = gql`
     UserLogout: ResponseMessage!
     UserUpdate(id: ID!, name: String!, email: String!): User!
     createProject: Project!
+
+    ProjectsCreate: Project!
   }
 
   type Subscription {

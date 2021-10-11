@@ -14,6 +14,7 @@ import { sign } from 'jsonwebtoken';
 import { Role } from '.prisma/client';
 
 import { PubSub } from 'graphql-subscriptions';
+import { AuthenticationError } from 'apollo-server-errors';
 
 const pubsub = new PubSub();
 const messages: ChatMessage[] = [];
@@ -58,6 +59,53 @@ export const resolvers: Resolvers = {
     getAllProjects: (_parent, _args, context: Context) => {
       return context.prisma.project.findMany({
         include: { owner: true },
+      });
+    },
+    ProjectById: (_parent, args, context: Context) => {
+      const userId = getUserId(context);
+
+      if (!userId) {
+        throw new AuthenticationError('Must be logged in');
+      }
+
+      return context.prisma.project.findUnique({
+        where: {
+          id: args.id,
+        },
+        include: { owner: true, team: true },
+      });
+    },
+
+    ProjectsAllByLoggedInUser: (_parent, _args, context: Context) => {
+      const userId = getUserId(context);
+
+      if (!userId) {
+        throw new AuthenticationError('Must be logged in');
+      }
+
+      return context.prisma.project.findMany({
+        where: {
+          OR: [
+            {
+              userId: {
+                equals: userId,
+              },
+            },
+            {
+              team: {
+                some: {
+                  id: {
+                    equals: userId,
+                  },
+                },
+              },
+            },
+          ],
+        },
+        include: { owner: true, team: true },
+        orderBy: {
+          createdAt: 'asc',
+        },
       });
     },
   },
@@ -157,12 +205,17 @@ export const resolvers: Resolvers = {
         },
       });
     },
-    createProject: (_parent, _args, context: Context) => {
+    ProjectsCreate: (_parent, _args, context: Context) => {
+      const userId = getUserId(context);
+      if (!userId) {
+        throw new AuthenticationError('Must be logged in');
+      }
+
       return context.prisma.project.create({
         data: {
           name: 'New Project',
           owner: {
-            connect: { email: 'alice@prisma.io' },
+            connect: { id: userId },
           },
         },
         include: { owner: true },

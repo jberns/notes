@@ -1,14 +1,13 @@
 import { observer } from 'mobx-react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+
 import { Gradient } from '../../../components/Dashboard/Gradient';
 import { HeaderInput } from '../../../components/Dashboard/Header';
 import Editor from '../../../components/Editor/Editor';
 import { SidebarLayout } from '../../../layouts/SidebarLayout';
 import { INote, IPage, IProject } from '../../../models/Project';
 import type { Page } from '../../../utils/types';
-import { useMST } from '../../_app';
 
 export interface INewBlock {
   text: string;
