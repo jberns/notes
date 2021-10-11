@@ -8,6 +8,7 @@ import withData, { loggedInTokenVar } from '../utils/withData';
 import { NextPage, NextPageContext } from 'next';
 import { getSession, SessionProvider } from 'next-auth/react';
 import { GlobalStyles } from 'twin.macro';
+import { RouteGuard } from '../components/RouteGuard';
 
 //https://github.com/mobxjs/mobx-state-tree/issues/1363
 // @ts-ignore
@@ -68,9 +69,11 @@ function MyApp({
       <ApolloProvider client={apollo}>
         <MSTProvider value={rootStore}>
           <GlobalStyles />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <RouteGuard>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </RouteGuard>
         </MSTProvider>
       </ApolloProvider>
     </SessionProvider>
@@ -85,7 +88,9 @@ MyApp.getInitialProps = async function ({
   ctx: NextPageContext;
 }) {
   const session = await getSession(ctx);
-  loggedInTokenVar(session?.token);
+  const token = session?.token;
+
+  loggedInTokenVar(token);
 
   let pageProps = {};
   if (Component.getInitialProps) {

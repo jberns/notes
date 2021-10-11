@@ -1,30 +1,14 @@
-import { values } from 'mobx';
-import { Observer, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { ReactEventHandler, useEffect, useState } from 'react';
-import {
-  DragDropContext,
-  Droppable,
-  DroppableStateSnapshot,
-  DropResult,
-} from 'react-beautiful-dnd';
+import { useState } from 'react';
 import { Gradient } from '../../../components/Dashboard/Gradient';
 import { HeaderInput } from '../../../components/Dashboard/Header';
-import { EditableBlock } from '../../../components/EditableBlockClass';
+import Editor from '../../../components/Editor/Editor';
 import { SidebarLayout } from '../../../layouts/SidebarLayout';
-import {
-  IBlock,
-  INote,
-  IPage,
-  IProject,
-  Note,
-  Block,
-} from '../../../models/Project';
-import { setCaretToEnd, uid } from '../../../utils';
+import { INote, IPage, IProject } from '../../../models/Project';
 import type { Page } from '../../../utils/types';
 import { useMST } from '../../_app';
-import Tiptap from '../../../components/Tiptap';
 
 export interface INewBlock {
   text: string;
@@ -51,8 +35,6 @@ const NotesPage: Page = () => {
   const router = useRouter();
   const { projectId, pageId } = router.query;
 
-  const [selectBlock, setSelectBlock] = useState<String>();
-
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
   let projectDetails: IProject | undefined | null = null;
@@ -69,7 +51,7 @@ const NotesPage: Page = () => {
       <div className="relative px-4 mx-auto sm:px-6 md:px-8">
         <HeaderInput page={pageDetails} />
 
-        <Tiptap />
+        <Editor />
       </div>
     </div>
   ) : (

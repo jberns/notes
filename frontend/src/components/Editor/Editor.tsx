@@ -1,6 +1,122 @@
 import { Editor } from '@tiptap/core';
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, ReactRenderer } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Mention from '@tiptap/extension-mention';
+import tippy, { Instance } from 'tippy.js';
+import { MentionList } from './MentionList';
+import { BlockId } from './BlockId';
+
+const Tiptap = () => {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      BlockId,
+      Mention.configure({
+        HTMLAttributes: {
+          class: 'mention',
+        },
+        suggestion: {
+          items: (query) => {
+            return [
+              'Lea Thompson',
+              'Cyndi Lauper',
+              'Tom Cruise',
+              'Madonna',
+              'Jerry Hall',
+              'Joan Collins',
+              'Winona Ryder',
+              'Christina Applegate',
+              'Alyssa Milano',
+              'Molly Ringwald',
+              'Ally Sheedy',
+              'Debbie Harry',
+              'Olivia Newton-John',
+              'Elton John',
+              'Michael J. Fox',
+              'Axl Rose',
+              'Emilio Estevez',
+              'Ralph Macchio',
+              'Rob Lowe',
+              'Jennifer Grey',
+              'Mickey Rourke',
+              'John Cusack',
+              'Matthew Broderick',
+              'Justine Bateman',
+              'Lisa Bonet',
+            ]
+              .filter((item) =>
+                item.toLowerCase().startsWith(query.toLowerCase()),
+              )
+              .slice(0, 5);
+          },
+          render: () => {
+            let reactRenderer: ReactRenderer;
+            let popup: [Instance];
+
+            return {
+              onStart: (props) => {
+                reactRenderer = new ReactRenderer(MentionList, {
+                  props,
+                  //@ts-ignore Directly from example
+                  editor: props.editor,
+                });
+
+                //@ts-ignore
+                popup = tippy('body', {
+                  getReferenceClientRect: props.clientRect,
+                  appendTo: () => document.body,
+                  content: reactRenderer.element,
+                  showOnCreate: true,
+                  interactive: true,
+                  trigger: 'manual',
+                  placement: 'bottom-start',
+                });
+                console.log(popup);
+              },
+              onUpdate(props) {
+                reactRenderer.updateProps(props);
+                popup[0].setProps({
+                  getReferenceClientRect: props.clientRect,
+                });
+              },
+              onKeyDown(props) {
+                if (props.event.key === 'Escape') {
+                  popup[0].hide();
+
+                  return true;
+                }
+                //@ts-ignore Part of Example
+                return reactRenderer.ref?.onKeyDown(props);
+              },
+              onExit() {
+                popup[0].destroy();
+                reactRenderer.destroy();
+              },
+            };
+          },
+        },
+      }),
+    ],
+    content: '<p> Hello World! 🌐 👋 </p>',
+  });
+
+  const json = editor?.getJSON();
+
+  return (
+    <div>
+      <MenuBar editor={editor} />
+      <div className="text-white text-opacity-h-emp">
+        <EditorContent editor={editor} />
+      </div>
+      <div className="mt-20 text-white text-opacity-l-emp">
+        Editor JSON Output
+        <pre className="text-xs">{JSON.stringify(json, null, 2)}</pre>
+      </div>
+    </div>
+  );
+};
+
+export default Tiptap;
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
@@ -176,27 +292,3 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
     </div>
   );
 };
-
-const Tiptap = () => {
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: '<p> Hello World! 🌐 👋 </p>',
-  });
-
-  const json = editor?.getJSON();
-
-  return (
-    <div>
-      <MenuBar editor={editor} />
-      <div className="text-white text-opacity-h-emp">
-        <EditorContent editor={editor} />
-      </div>
-      <div className="mt-20 text-white text-opacity-l-emp">
-        Editor JSON Output
-        <pre className="text-xs">{JSON.stringify(json, null, 2)}</pre>
-      </div>
-    </div>
-  );
-};
-
-export default Tiptap;
