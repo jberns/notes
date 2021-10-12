@@ -19,7 +19,7 @@ module.exports = {
           dp25: '#383838',
         },
       },
-      opacity: {
+      textOpacity: {
         'h-emp': '87%',
         'l-emp': '50%',
         disabled: '38%',

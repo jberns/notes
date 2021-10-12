@@ -23,8 +23,8 @@ export type AuthPayload = {
 export type Block = {
   __typename?: 'Block';
   id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
   content?: Maybe<Note>;
+  page?: Maybe<Page>;
   createdAt?: Maybe<Scalars['DateTime']>;
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
@@ -45,7 +45,9 @@ export type Mutation = {
   UserLogout: ResponseMessage;
   UserUpdate: User;
   createProject: Project;
-  ProjectsCreate: Project;
+  ProjectCreate: Project;
+  PageCreate: Page;
+  PageUpdate: Page;
 };
 
 
@@ -74,6 +76,17 @@ export type MutationUserUpdateArgs = {
   email: Scalars['String'];
 };
 
+
+export type MutationPageCreateArgs = {
+  projectId: Scalars['ID'];
+};
+
+
+export type MutationPageUpdateArgs = {
+  id: Scalars['ID'];
+  content: Scalars['String'];
+};
+
 export type Note = {
   __typename?: 'Note';
   id: Scalars['ID'];
@@ -83,7 +96,7 @@ export type Note = {
   creator?: Maybe<User>;
   assigned?: Maybe<User>;
   complete?: Maybe<Scalars['Boolean']>;
-  block?: Maybe<Block>;
+  blocks?: Maybe<Array<Maybe<Block>>>;
   createdAt?: Maybe<Scalars['DateTime']>;
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
@@ -98,6 +111,7 @@ export type Page = {
   name?: Maybe<Scalars['String']>;
   icon?: Maybe<Scalars['String']>;
   blocksArray?: Maybe<Scalars['String']>;
+  blocks?: Maybe<Array<Maybe<Block>>>;
   project: Project;
   createdAt?: Maybe<Scalars['DateTime']>;
   updatedAt?: Maybe<Scalars['DateTime']>;
@@ -108,7 +122,7 @@ export type Project = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   icon?: Maybe<Scalars['String']>;
-  pages?: Maybe<Page>;
+  pages?: Maybe<Array<Maybe<Page>>>;
   team?: Maybe<Array<Maybe<User>>>;
   owner?: Maybe<User>;
   createdAt?: Maybe<Scalars['DateTime']>;
@@ -126,6 +140,7 @@ export type Query = {
   getAllProjectsByUser?: Maybe<Array<Maybe<Project>>>;
   ProjectById?: Maybe<Project>;
   ProjectsAllByLoggedInUser?: Maybe<Array<Maybe<Project>>>;
+  PageById?: Maybe<Page>;
 };
 
 
@@ -145,6 +160,11 @@ export type QueryGetAllProjectsByUserArgs = {
 
 
 export type QueryProjectByIdArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryPageByIdArgs = {
   id: Scalars['ID'];
 };
 
@@ -290,8 +310,8 @@ export type AuthPayloadResolvers<ContextType = any, ParentType extends Resolvers
 
 export type BlockResolvers<ContextType = any, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   content?: Resolver<Maybe<ResolversTypes['Note']>, ParentType, ContextType>;
+  page?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -315,7 +335,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   UserLogout?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
   UserUpdate?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUserUpdateArgs, 'id' | 'name' | 'email'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType>;
-  ProjectsCreate?: Resolver<ResolversTypes['Project'], ParentType, ContextType>;
+  ProjectCreate?: Resolver<ResolversTypes['Project'], ParentType, ContextType>;
+  PageCreate?: Resolver<ResolversTypes['Page'], ParentType, ContextType, RequireFields<MutationPageCreateArgs, 'projectId'>>;
+  PageUpdate?: Resolver<ResolversTypes['Page'], ParentType, ContextType, RequireFields<MutationPageUpdateArgs, 'id' | 'content'>>;
 }>;
 
 export type NoteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Note'] = ResolversParentTypes['Note']> = ResolversObject<{
@@ -326,7 +348,7 @@ export type NoteResolvers<ContextType = any, ParentType extends ResolversParentT
   creator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   assigned?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   complete?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  block?: Resolver<Maybe<ResolversTypes['Block']>, ParentType, ContextType>;
+  blocks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Block']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -337,6 +359,7 @@ export type PageResolvers<ContextType = any, ParentType extends ResolversParentT
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   blocksArray?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  blocks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Block']>>>, ParentType, ContextType>;
   project?: Resolver<ResolversTypes['Project'], ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -347,7 +370,7 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  pages?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType>;
+  pages?: Resolver<Maybe<Array<Maybe<ResolversTypes['Page']>>>, ParentType, ContextType>;
   team?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -365,6 +388,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getAllProjectsByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryGetAllProjectsByUserArgs, 'userId'>>;
   ProjectById?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectByIdArgs, 'id'>>;
   ProjectsAllByLoggedInUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
+  PageById?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<QueryPageByIdArgs, 'id'>>;
 }>;
 
 export type ResponseMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = ResolversObject<{

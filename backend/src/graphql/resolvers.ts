@@ -102,10 +102,29 @@ export const resolvers: Resolvers = {
             },
           ],
         },
-        include: { owner: true, team: true },
+        include: {
+          owner: true,
+          team: true,
+          pages: { select: { id: true, project: true, name: true } },
+        },
         orderBy: {
           createdAt: 'asc',
         },
+      });
+    },
+    PageById: (_parent, args, context: Context) => {
+      const { id } = args;
+      const userId = getUserId(context);
+
+      if (!userId) {
+        throw new AuthenticationError('Must be logged in');
+      }
+
+      return context.prisma.page.findFirst({
+        where: {
+          id: id,
+        },
+        include: { project: true },
       });
     },
   },
@@ -205,7 +224,7 @@ export const resolvers: Resolvers = {
         },
       });
     },
-    ProjectsCreate: (_parent, _args, context: Context) => {
+    ProjectCreate: (_parent, _args, context: Context) => {
       const userId = getUserId(context);
       if (!userId) {
         throw new AuthenticationError('Must be logged in');
@@ -219,6 +238,39 @@ export const resolvers: Resolvers = {
           },
         },
         include: { owner: true },
+      });
+    },
+    PageCreate: (_parent, args, context: Context) => {
+      const { projectId } = args;
+      const userId = getUserId(context);
+      if (!userId) {
+        throw new AuthenticationError('Must be logged in');
+      }
+
+      return context.prisma.page.create({
+        data: {
+          name: 'New Page',
+          project: {
+            connect: { id: projectId },
+          },
+        },
+        include: { project: true },
+      });
+    },
+    PageUpdate: (_parent, args, context: Context) => {
+      const { id, content } = args;
+
+      const userId = getUserId(context);
+      if (!userId) {
+        throw new AuthenticationError('Must be logged in');
+      }
+
+      return context.prisma.page.update({
+        where: {
+          id: id,
+        },
+        data: { blocksArray: content },
+        include: { project: true },
       });
     },
   },

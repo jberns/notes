@@ -118,11 +118,11 @@ export const SelectMenu = (props: ISelectMenuProps) => {
           return (
             <div
               className={`
-              ${isSelected ? 'opacity-h-emp' : 'opacity-l-emp'} 
+              ${isSelected ? 'text-opacity-h-emp' : 'text-opacity-l-emp'} 
               block text-white px-4 py-2 text-sm 
               hover:bg-purple-400 
               hover:text-gray-900
-              hover:opacity-h-emp`}
+              hover:text-opacity-h-emp`}
               key={key}
               tabIndex={0}
               onClick={() => onSelect(item)}

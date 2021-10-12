@@ -45,7 +45,7 @@ export const TaskTable = ({ project }: ITaskTableProps) => {
             const { content } = block;
             return (
               <tr key={block.id}>
-                <td className="text-sm font-medium text-white opacity-h-emp whitespace-nowrap">
+                <td className="text-sm font-medium text-white text-opacity-h-emp whitespace-nowrap">
                   <label className="inline-flex w-full">
                     <input
                       type="checkbox"
@@ -57,13 +57,13 @@ export const TaskTable = ({ project }: ITaskTableProps) => {
                     />
                   </label>
                 </td>
-                <td className="px-6 py-4 text-sm text-white opacity-h-emp">
+                <td className="px-6 py-4 text-sm text-white text-opacity-h-emp">
                   {content.text}
                 </td>
-                <td className="px-6 py-4 text-sm text-white opacity-h-emp whitespace-nowrap">
+                <td className="px-6 py-4 text-sm text-white text-opacity-h-emp whitespace-nowrap">
                   {content.assignedTo}
                 </td>
-                <td className="px-6 py-4 text-sm text-white opacity-h-emp whitespace-nowrap">
+                <td className="px-6 py-4 text-sm text-white text-opacity-h-emp whitespace-nowrap">
                   {content.createdOn.toDateString()}
                 </td>
                 <td className="px-6 py-4 text-sm font-medium text-right">

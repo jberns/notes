@@ -5,8 +5,7 @@ import { useAll_ProjectsQuery } from '../../generated/graphql';
 export const SidebarProjectList = () => {
   const { loading, error, data } = useAll_ProjectsQuery();
   const projects = data?.ProjectsAllByLoggedInUser;
-
-  console.log({ data });
+  console.log({ projects });
 
   return (
     <div>
@@ -22,17 +21,18 @@ export const SidebarProjectList = () => {
                 data={project}
               />
 
-              {/* {project?.pages
-                ? Array.from(project.pages).map((page) => (
+              {project?.pages?.map(
+                (page) =>
+                  page && (
                     <SidebarLink
                       key={page.id}
                       leftMargin="ml-10"
                       icon={DocumentText()}
                       href={`/projects/${project.id}/${page.id}`}
-                      type={page}
+                      data={page}
                     />
-                  ))
-                : null} */}
+                  ),
+              )}
             </div>
           ),
       )}

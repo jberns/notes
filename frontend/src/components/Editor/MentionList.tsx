@@ -1,5 +1,3 @@
-import { MentionOptions } from '@tiptap/extension-mention';
-import { Editor } from '@tiptap/react';
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import 'twin.macro';
 import tw, { css } from 'twin.macro';
