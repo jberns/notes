@@ -34,10 +34,10 @@ export const ContextMenu = (props: ISelectMenuProps) => {
           return (
             <div
               className={`
-              opacity-l-emp
+              text-opacity-l-emp
               block text-white px-4 py-2 text-sm 
               hover:${DP.dp06} 
-              hover:opacity-h-emp`}
+              hover:text-opacity-h-emp`}
               key={key}
               tabIndex={0}
               onClick={() => {

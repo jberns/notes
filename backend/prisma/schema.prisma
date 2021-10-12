@@ -50,6 +50,7 @@ model Page {
   name        String?
   icon        String?
   blocksArray String?
+  blocks      Block[]  @relation("PageBlocks")
   project     Project  @relation(fields: [projectId], references: [id])
   projectId   String
   createdAt   DateTime @default(now())
@@ -58,15 +59,17 @@ model Page {
 
 model Block {
   id        String   @id @default(uuid())
-  content   Note     @relation(fields: [noteId], references: [id])
+  note      Note     @relation(fields: [noteId], references: [id])
   noteId    String
+  page      Page?    @relation("PageBlocks", fields: [pageId], references: [id])
+  pageId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Note {
   id         String   @id @default(uuid())
-  text       String?
+  content    String?
   tag        String?
   type       NoteType @default(Note)
   creator    User     @relation("Creator", fields: [creatorId], references: [id])
@@ -74,7 +77,7 @@ model Note {
   assigned   User?    @relation("Assigned", fields: [assignedId], references: [id])
   assignedId String
   complete   Boolean  @default(false)
-  block      Block[]
+  blocks     Block[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }

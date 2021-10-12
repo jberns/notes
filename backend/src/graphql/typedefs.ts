@@ -46,7 +46,7 @@ export const typeDefs = gql`
     id: ID!
     name: String
     icon: String
-    pages: Page
+    pages: [Page]
     team: [User]
     owner: User
     createdAt: DateTime
@@ -58,6 +58,7 @@ export const typeDefs = gql`
     name: String
     icon: String
     blocksArray: String
+    blocks: [Block]
     project: Project!
     createdAt: DateTime
     updatedAt: DateTime
@@ -65,8 +66,8 @@ export const typeDefs = gql`
 
   type Block {
     id: ID!
-    name: String
     content: Note
+    page: Page
     createdAt: DateTime
     updatedAt: DateTime
   }
@@ -79,7 +80,7 @@ export const typeDefs = gql`
     creator: User
     assigned: User
     complete: Boolean
-    block: Block
+    blocks: [Block]
     createdAt: DateTime
     updatedAt: DateTime
   }
@@ -103,6 +104,8 @@ export const typeDefs = gql`
 
     ProjectById(id: ID!): Project
     ProjectsAllByLoggedInUser: [Project]
+
+    PageById(id: ID!): Page
   }
 
   #CREATE UPDATE, DELETE
@@ -114,7 +117,10 @@ export const typeDefs = gql`
     UserUpdate(id: ID!, name: String!, email: String!): User!
     createProject: Project!
 
-    ProjectsCreate: Project!
+    ProjectCreate: Project!
+    PageCreate(projectId: ID!): Page!
+
+    PageUpdate(id: ID!, content: String!): Page!
   }
 
   type Subscription {

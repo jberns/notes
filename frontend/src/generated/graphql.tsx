@@ -24,8 +24,8 @@ export type AuthPayload = {
 export type Block = {
   __typename?: 'Block';
   id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
   content?: Maybe<Note>;
+  page?: Maybe<Page>;
   createdAt?: Maybe<Scalars['DateTime']>;
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
@@ -46,7 +46,9 @@ export type Mutation = {
   UserLogout: ResponseMessage;
   UserUpdate: User;
   createProject: Project;
-  ProjectsCreate: Project;
+  ProjectCreate: Project;
+  PageCreate: Page;
+  PageUpdate: Page;
 };
 
 
@@ -75,6 +77,17 @@ export type MutationUserUpdateArgs = {
   email: Scalars['String'];
 };
 
+
+export type MutationPageCreateArgs = {
+  projectId: Scalars['ID'];
+};
+
+
+export type MutationPageUpdateArgs = {
+  id: Scalars['ID'];
+  content: Scalars['String'];
+};
+
 export type Note = {
   __typename?: 'Note';
   id: Scalars['ID'];
@@ -84,7 +97,7 @@ export type Note = {
   creator?: Maybe<User>;
   assigned?: Maybe<User>;
   complete?: Maybe<Scalars['Boolean']>;
-  block?: Maybe<Block>;
+  blocks?: Maybe<Array<Maybe<Block>>>;
   createdAt?: Maybe<Scalars['DateTime']>;
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
@@ -100,6 +113,7 @@ export type Page = {
   name?: Maybe<Scalars['String']>;
   icon?: Maybe<Scalars['String']>;
   blocksArray?: Maybe<Scalars['String']>;
+  blocks?: Maybe<Array<Maybe<Block>>>;
   project: Project;
   createdAt?: Maybe<Scalars['DateTime']>;
   updatedAt?: Maybe<Scalars['DateTime']>;
@@ -110,7 +124,7 @@ export type Project = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   icon?: Maybe<Scalars['String']>;
-  pages?: Maybe<Page>;
+  pages?: Maybe<Array<Maybe<Page>>>;
   team?: Maybe<Array<Maybe<User>>>;
   owner?: Maybe<User>;
   createdAt?: Maybe<Scalars['DateTime']>;
@@ -128,6 +142,7 @@ export type Query = {
   getAllProjectsByUser?: Maybe<Array<Maybe<Project>>>;
   ProjectById?: Maybe<Project>;
   ProjectsAllByLoggedInUser?: Maybe<Array<Maybe<Project>>>;
+  PageById?: Maybe<Page>;
 };
 
 
@@ -147,6 +162,11 @@ export type QueryGetAllProjectsByUserArgs = {
 
 
 export type QueryProjectByIdArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryPageByIdArgs = {
   id: Scalars['ID'];
 };
 
@@ -218,7 +238,7 @@ export type Project_CreateMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type Project_CreateMutation = (
   { __typename?: 'Mutation' }
-  & { ProjectsCreate: (
+  & { ProjectCreate: (
     { __typename?: 'Project' }
     & Pick<Project, 'id' | 'name'>
     & { owner?: Maybe<(
@@ -226,6 +246,38 @@ export type Project_CreateMutation = (
       & Pick<User, 'id' | 'name' | 'email'>
     )> }
   ) }
+);
+
+export type Page_CreateMutationVariables = Exact<{
+  projectId: Scalars['ID'];
+}>;
+
+
+export type Page_CreateMutation = (
+  { __typename?: 'Mutation' }
+  & { PageCreate: (
+    { __typename?: 'Page' }
+    & Pick<Page, 'id' | 'name'>
+  ) }
+);
+
+export type Page_UpdateMutationVariables = Exact<{
+  id: Scalars['ID'];
+  content: Scalars['String'];
+}>;
+
+
+export type Page_UpdateMutation = (
+  { __typename?: 'Mutation' }
+  & { PageUpdate: (
+    { __typename?: 'Page' }
+    & Pick<Page, 'id' | 'name' | 'blocksArray'>
+  ) }
+);
+
+export type PageAttributesFragment = (
+  { __typename?: 'Page' }
+  & Pick<Page, 'id' | 'name'>
 );
 
 export type ProjectAttributesFragment = (
@@ -247,6 +299,10 @@ export type All_ProjectsQuery = (
   { __typename?: 'Query' }
   & { ProjectsAllByLoggedInUser?: Maybe<Array<Maybe<(
     { __typename?: 'Project' }
+    & { pages?: Maybe<Array<Maybe<(
+      { __typename?: 'Page' }
+      & PageAttributesFragment
+    )>>> }
     & ProjectAttributesFragment
   )>>> }
 );
@@ -286,6 +342,25 @@ export type Get_All_UsersQuery = (
   )>>> }
 );
 
+export type PageByIdQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type PageByIdQuery = (
+  { __typename?: 'Query' }
+  & { PageById?: Maybe<(
+    { __typename?: 'Page' }
+    & Pick<Page, 'id' | 'name' | 'blocksArray'>
+  )> }
+);
+
+export const PageAttributesFragmentDoc = gql`
+    fragment PageAttributes on Page {
+  id
+  name
+}
+    `;
 export const ProjectAttributesFragmentDoc = gql`
     fragment ProjectAttributes on Project {
   id
@@ -382,7 +457,7 @@ export type User_SignupMutationResult = Apollo.MutationResult<User_SignupMutatio
 export type User_SignupMutationOptions = Apollo.BaseMutationOptions<User_SignupMutation, User_SignupMutationVariables>;
 export const Project_CreateDocument = gql`
     mutation PROJECT_CREATE {
-  ProjectsCreate {
+  ProjectCreate {
     id
     name
     owner {
@@ -418,13 +493,87 @@ export function useProject_CreateMutation(baseOptions?: Apollo.MutationHookOptio
 export type Project_CreateMutationHookResult = ReturnType<typeof useProject_CreateMutation>;
 export type Project_CreateMutationResult = Apollo.MutationResult<Project_CreateMutation>;
 export type Project_CreateMutationOptions = Apollo.BaseMutationOptions<Project_CreateMutation, Project_CreateMutationVariables>;
+export const Page_CreateDocument = gql`
+    mutation PAGE_CREATE($projectId: ID!) {
+  PageCreate(projectId: $projectId) {
+    id
+    name
+  }
+}
+    `;
+export type Page_CreateMutationFn = Apollo.MutationFunction<Page_CreateMutation, Page_CreateMutationVariables>;
+
+/**
+ * __usePage_CreateMutation__
+ *
+ * To run a mutation, you first call `usePage_CreateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePage_CreateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [pageCreateMutation, { data, loading, error }] = usePage_CreateMutation({
+ *   variables: {
+ *      projectId: // value for 'projectId'
+ *   },
+ * });
+ */
+export function usePage_CreateMutation(baseOptions?: Apollo.MutationHookOptions<Page_CreateMutation, Page_CreateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<Page_CreateMutation, Page_CreateMutationVariables>(Page_CreateDocument, options);
+      }
+export type Page_CreateMutationHookResult = ReturnType<typeof usePage_CreateMutation>;
+export type Page_CreateMutationResult = Apollo.MutationResult<Page_CreateMutation>;
+export type Page_CreateMutationOptions = Apollo.BaseMutationOptions<Page_CreateMutation, Page_CreateMutationVariables>;
+export const Page_UpdateDocument = gql`
+    mutation PAGE_UPDATE($id: ID!, $content: String!) {
+  PageUpdate(id: $id, content: $content) {
+    id
+    name
+    blocksArray
+  }
+}
+    `;
+export type Page_UpdateMutationFn = Apollo.MutationFunction<Page_UpdateMutation, Page_UpdateMutationVariables>;
+
+/**
+ * __usePage_UpdateMutation__
+ *
+ * To run a mutation, you first call `usePage_UpdateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePage_UpdateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [pageUpdateMutation, { data, loading, error }] = usePage_UpdateMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      content: // value for 'content'
+ *   },
+ * });
+ */
+export function usePage_UpdateMutation(baseOptions?: Apollo.MutationHookOptions<Page_UpdateMutation, Page_UpdateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<Page_UpdateMutation, Page_UpdateMutationVariables>(Page_UpdateDocument, options);
+      }
+export type Page_UpdateMutationHookResult = ReturnType<typeof usePage_UpdateMutation>;
+export type Page_UpdateMutationResult = Apollo.MutationResult<Page_UpdateMutation>;
+export type Page_UpdateMutationOptions = Apollo.BaseMutationOptions<Page_UpdateMutation, Page_UpdateMutationVariables>;
 export const All_ProjectsDocument = gql`
     query ALL_PROJECTS {
   ProjectsAllByLoggedInUser {
     ...ProjectAttributes
+    pages {
+      ...PageAttributes
+    }
   }
 }
-    ${ProjectAttributesFragmentDoc}`;
+    ${ProjectAttributesFragmentDoc}
+${PageAttributesFragmentDoc}`;
 
 /**
  * __useAll_ProjectsQuery__
@@ -559,3 +708,40 @@ export function useGet_All_UsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type Get_All_UsersQueryHookResult = ReturnType<typeof useGet_All_UsersQuery>;
 export type Get_All_UsersLazyQueryHookResult = ReturnType<typeof useGet_All_UsersLazyQuery>;
 export type Get_All_UsersQueryResult = Apollo.QueryResult<Get_All_UsersQuery, Get_All_UsersQueryVariables>;
+export const PageByIdDocument = gql`
+    query PageById($id: ID!) {
+  PageById(id: $id) {
+    id
+    name
+    blocksArray
+  }
+}
+    `;
+
+/**
+ * __usePageByIdQuery__
+ *
+ * To run a query within a React component, call `usePageByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePageByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePageByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePageByIdQuery(baseOptions: Apollo.QueryHookOptions<PageByIdQuery, PageByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PageByIdQuery, PageByIdQueryVariables>(PageByIdDocument, options);
+      }
+export function usePageByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PageByIdQuery, PageByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PageByIdQuery, PageByIdQueryVariables>(PageByIdDocument, options);
+        }
+export type PageByIdQueryHookResult = ReturnType<typeof usePageByIdQuery>;
+export type PageByIdLazyQueryHookResult = ReturnType<typeof usePageByIdLazyQuery>;
+export type PageByIdQueryResult = Apollo.QueryResult<PageByIdQuery, PageByIdQueryVariables>;

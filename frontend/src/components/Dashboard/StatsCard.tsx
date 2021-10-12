@@ -21,10 +21,10 @@ export const StatsCard = (props: IStatsCardProps) => {
   return (
     <div className={`${DP.dp12} sm:overflow-hidden rounded-lg shadow`}>
       <div className="px-4 py-5 sm:p-6">
-        <dt className="text-sm font-medium text-white truncate opacity-l-emp">
+        <dt className="text-sm font-medium text-white truncate text-opacity-l-emp">
           {props.title}
         </dt>
-        <dd className="mt-1 text-3xl font-semibold text-white opacity-h-emp">
+        <dd className="mt-1 text-3xl font-semibold text-white text-opacity-h-emp">
           {stat}
         </dd>
       </div>

@@ -1,63 +1,45 @@
 import { observer } from 'mobx-react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-
 import { Gradient } from '../../../components/Dashboard/Gradient';
 import { HeaderInput } from '../../../components/Dashboard/Header';
 import Editor from '../../../components/Editor/Editor';
+import { usePageByIdQuery } from '../../../generated/graphql';
 import { SidebarLayout } from '../../../layouts/SidebarLayout';
-import { INote, IPage, IProject } from '../../../models/Project';
 import type { Page } from '../../../utils/types';
 
-export interface INewBlock {
-  text: string;
-  tag: string;
-}
-
-//TODO Clean this up with IContentEditable Interface
-export interface IAddBlock {
-  index: number;
-  newBlock: INewBlock;
-}
-
-export interface IPasteBlockReference {
-  index: number;
-  referenceContent: INote;
-}
-export interface IDeleteBlock {
-  id: string;
-  index: number;
-}
-
 const NotesPage: Page = () => {
-  const store = useMST();
   const router = useRouter();
-  const { projectId, pageId } = router.query;
+  let { projectId, pageId } = router.query;
 
-  // The query can return an array if the query has multiple parameters
-  // https://nextjs.org/docs/routing/dynamic-routes
-  let projectDetails: IProject | undefined | null = null;
-  let pageDetails: IPage | undefined | null = null;
-  projectDetails = store.projects.find((project) => project.id === projectId);
-  pageDetails = projectDetails?.pages.find((page) => page.id === pageId);
+  if (typeof pageId != 'string') {
+    pageId = '';
+  }
 
-  return projectDetails && pageDetails ? (
+  const { loading, error, data } = usePageByIdQuery({
+    variables: { id: pageId },
+  });
+  console.warn('REFETCH DATA', { data });
+
+  const page = data ? data.PageById : null;
+  const blocksArray = page?.blocksArray || '';
+
+  return page ? (
     <div>
       <Head>
-        <title>{projectDetails.name}</title>
+        <title>{page.name}</title>
       </Head>
       <Gradient startColor="from-purple-900" />
       <div className="relative px-4 mx-auto sm:px-6 md:px-8">
-        <HeaderInput page={pageDetails} />
-
-        <Editor />
+        <HeaderInput title={page.name || 'New Page Placeholder'} />
+        <Editor key={pageId} id={pageId} content={blocksArray || null} />
       </div>
     </div>
   ) : (
-    <div>Loading</div>
+    <div>Loading...</div>
   );
 };
 
 NotesPage.Layout = SidebarLayout;
 
-export default observer(NotesPage);
+export default NotesPage;

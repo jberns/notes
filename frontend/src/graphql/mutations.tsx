@@ -28,7 +28,7 @@ export const USER_SIGNUP = gql`
 
 export const PROJECT_CREATE = gql`
   mutation PROJECT_CREATE {
-    ProjectsCreate {
+    ProjectCreate {
       id
       name
       owner {
@@ -36,6 +36,25 @@ export const PROJECT_CREATE = gql`
         name
         email
       }
+    }
+  }
+`;
+
+export const PAGE_CREATE = gql`
+  mutation PAGE_CREATE($projectId: ID!) {
+    PageCreate(projectId: $projectId) {
+      id
+      name
+    }
+  }
+`;
+
+export const PAGE_UPDATE = gql`
+  mutation PAGE_UPDATE($id: ID!, $content: String!) {
+    PageUpdate(id: $id, content: $content) {
+      id
+      name
+      blocksArray
     }
   }
 `;

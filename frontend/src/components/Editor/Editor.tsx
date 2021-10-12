@@ -5,8 +5,12 @@ import Mention from '@tiptap/extension-mention';
 import tippy, { Instance } from 'tippy.js';
 import { MentionList } from './MentionList';
 import { BlockId } from './BlockId';
+import { usePage_UpdateMutation } from '../../generated/graphql';
+import { useEffect } from 'react';
 
-const Tiptap = () => {
+const Tiptap = ({ id, content }: { id: string; content: string | null }) => {
+  const initialContent: string = content ? JSON.parse(content) : 'Hello World!';
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -97,18 +101,38 @@ const Tiptap = () => {
         },
       }),
     ],
-    content: '<p> Hello World! 🌐 👋 </p>',
+    content: initialContent,
   });
 
   const json = editor?.getJSON();
+  const editorContent = JSON.stringify(json);
+
+  const [updatePageMutation, { loading, error, data }] =
+    usePage_UpdateMutation();
+
+  const defaultContent =
+    '{"type":"doc","content":[{"type":"paragraph","attrs":{"blockId":null}}]}';
+  useEffect(() => {
+    if (
+      id &&
+      editorContent &&
+      editorContent !== JSON.stringify(initialContent) &&
+      editorContent !== JSON.stringify(defaultContent)
+    ) {
+      updatePageMutation({ variables: { id: id, content: editorContent } });
+      console.warn('UPDATE DATA', { id, editorContent });
+    }
+  }, [id, editorContent, updatePageMutation]);
+
+  console.log('Page Content:', { editorContent, data });
 
   return (
-    <div>
+    <div key={id}>
       <MenuBar editor={editor} />
-      <div className="text-white text-opacity-h-emp">
-        <EditorContent editor={editor} />
+      <div className="text-white text-text-opacity-h-emp">
+        <EditorContent key={id} editor={editor} />
       </div>
-      <div className="mt-20 text-white text-opacity-l-emp">
+      <div className="mt-20 text-white text-text-opacity-l-emp">
         Editor JSON Output
         <pre className="text-xs">{JSON.stringify(json, null, 2)}</pre>
       </div>

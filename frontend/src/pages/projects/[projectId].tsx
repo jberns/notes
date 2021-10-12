@@ -12,7 +12,6 @@ import { NextPageContext } from 'next';
 import { useUnique_ProjectQuery } from '../../generated/graphql';
 
 const ProjectPage: Page = () => {
-  let project = null;
   const router = useRouter();
 
   let { projectId } = router.query;
@@ -25,7 +24,7 @@ const ProjectPage: Page = () => {
     variables: { id: projectId },
   });
 
-  project = data?.ProjectById;
+  const project = data ? data?.ProjectById : null;
 
   // The query can return an array if the query has multiple parameters
   // https://nextjs.org/docs/routing/dynamic-routes
@@ -40,7 +39,7 @@ const ProjectPage: Page = () => {
       <Gradient startColor="from-blue-900" />
 
       <div className="px-4 mx-auto sm:px-6 md:px-8">
-        <HeaderInput page={project} />
+        <HeaderInput title={project?.name || 'New Project PlaceHolder'} />
 
         <div className="flex flex-col">
           <div className="z-10 py-4 overflow-x-auto">
