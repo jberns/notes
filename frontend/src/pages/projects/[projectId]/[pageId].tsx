@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Gradient } from '../../../components/Dashboard/Gradient';
