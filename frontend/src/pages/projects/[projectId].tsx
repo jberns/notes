@@ -2,13 +2,10 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { SidebarLayout } from '../../layouts/SidebarLayout';
 import type { Page } from '../../utils/types';
-import { observer } from 'mobx-react';
-import { IProject } from '../../models/Project';
 import { StatsCard, StatsCardGrid } from '../../components/Dashboard/StatsCard';
 import { TaskTable } from '../../components/Dashboard/TaskTable';
 import { HeaderInput } from '../../components/Dashboard/Header';
 import { Gradient } from '../../components/Dashboard/Gradient';
-import { NextPageContext } from 'next';
 import { useUnique_ProjectQuery } from '../../generated/graphql';
 
 const ProjectPage: Page = () => {
@@ -63,4 +60,4 @@ const ProjectPage: Page = () => {
 
 ProjectPage.Layout = SidebarLayout;
 
-export default observer(ProjectPage);
+export default ProjectPage;
